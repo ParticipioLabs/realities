@@ -4,7 +4,11 @@ A tool for tribal decentralised organisations. Read more about the concept behin
 
 ## Wanna talk about it?
 
-To report a bug or suggest an improvement, create an issue right here on GitHub. If you want to chat to other members of the community in real-time head over to our [Gitter](https://gitter.im/realities).
+To discuss and learn more about the overall concepts behind the Realities Platform, head over to our [Loomio Group](https://www.loomio.org/g/cbghMtnL/borderland-realities).
+
+To report a bug or suggest a specific improvement or feature, create an issue right here on GitHub.
+
+If you want to chat to other members of the community and collaborate in real-time, head over to our [Gitter](https://gitter.im/realities).
 
 ## Install and run locally
 
