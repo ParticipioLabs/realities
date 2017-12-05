@@ -1,0 +1,36 @@
+{
+  "name": "realities-ui",
+  "version": "0.0.1",
+  "description": "A frontend for tribal decentralised organisations.",
+  "engines": {
+    "npm": "5.5.1",
+    "node": "8.9.1"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikfrisk/realities.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/erikfrisk/realities/issues"
+  },
+  "homepage": "https://github.com/erikfrisk/realities#readme",
+  "dependencies": {
+    "apollo-client-preset": "^1.0.1",
+    "graphql": "^0.11.7",
+    "graphql-anywhere": "^3.1.0",
+    "graphql-tag": "^2.5.0",
+    "isomorphic-fetch": "^2.2.1",
+    "next": "4.2.0",
+    "prop-types": "^15.5.8",
+    "react": "16.2.0",
+    "react-apollo": "^2.0.0",
+    "react-dom": "16.2.0"
+  }
+}
