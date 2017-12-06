@@ -6,8 +6,9 @@
     ],
     "folder_exclude_patterns": [
       ".git",
+      "node_modules",
       "api/build",
-      "node_modules"
+      "ui/.next"
     ]
   }]
 }
