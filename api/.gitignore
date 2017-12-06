@@ -3,3 +3,6 @@ node_modules/
 
 # Build artifacts
 build/
+
+# Logs
+npm-debug.log
