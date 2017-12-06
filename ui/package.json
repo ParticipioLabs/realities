@@ -7,9 +7,9 @@
     "node": "8.9.1"
   },
   "scripts": {
-    "dev": "next src",
+    "start": "next src",
     "build": "next build src",
-    "start": "next start src"
+    "serve": "next start src"
   },
   "repository": {
     "type": "git",
