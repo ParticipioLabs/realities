@@ -6,8 +6,10 @@ export default {
   }, {
     id: 'need2',
     title: 'Need 2',
+    dependsOn: [],
   }, {
     id: 'need3',
     title: 'Need 3',
+    dependsOn: [],
   }],
 };

@@ -1,5 +1,6 @@
 import {
   GraphQLID,
+  GraphQLList,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
@@ -22,6 +23,12 @@ export default new GraphQLObjectType({
       },
       resolve(parent, { id }) {
         return mockData.needs.find(need => need.id === id);
+      },
+    },
+    needs: {
+      type: new GraphQLList(NeedType),
+      resolve() {
+        return mockData.needs;
       },
     },
   },
