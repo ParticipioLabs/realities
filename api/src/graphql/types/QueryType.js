@@ -1,4 +1,10 @@
-import { GraphQLObjectType, GraphQLString } from 'graphql';
+import {
+  GraphQLID,
+  GraphQLObjectType,
+  GraphQLString,
+} from 'graphql';
+import NeedType from './NeedType';
+import mockData from '../../data/mockData';
 
 export default new GraphQLObjectType({
   name: 'Query',
@@ -7,6 +13,15 @@ export default new GraphQLObjectType({
       type: GraphQLString,
       resolve() {
         return 'borderland';
+      },
+    },
+    need: {
+      type: NeedType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve(parent, { id }) {
+        return mockData.needs.find(need => need.id === id);
       },
     },
   },
