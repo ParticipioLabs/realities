@@ -10,4 +10,6 @@ const app = express();
 app.use('/graphql', bodyParser.json(), graphqlExpress({ schema: Schema }));
 app.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql' })); // Remove this to disable graphiql
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`API ready on port ${PORT}`);
+});

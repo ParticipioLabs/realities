@@ -7,4 +7,7 @@ module.exports = {
     node: true,
   },
   extends: 'airbnb-base',
-}
+  'rules': {
+    'no-console': 'off',
+  },
+};
