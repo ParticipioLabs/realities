@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
+    "test": "mocha",
     "build": "NODE_ENV=prod webpack",
     "serve": "npm run build && node build/bundle.js"
   },
@@ -33,6 +34,7 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.8.0",
+    "mocha": "^4.0.1",
     "nodemon": "^1.12.4",
     "path": "^0.12.7",
     "source-map-support": "^0.5.0",
