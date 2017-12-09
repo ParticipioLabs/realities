@@ -27,4 +27,4 @@ const SearchResultList = props => (
 //   status: PropTypes.oneOf(['red', 'yellow', 'green']),
 // };
 
-export default { SearchResultList };
+export default SearchResultList;

@@ -1,23 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+// import SearchField from '../components/SearchField';
+import SearchResultList from './SearchResultList';
 
-function Home({ data }) {
+const results = [{
+  id: 'need1',
+  title: 'Fire Safety',
+  dependsOn: ['need2'],
+}, {
+  id: 'need2',
+  title: 'Safe Burn Environment',
+  dependsOn: [],
+}, {
+  id: 'need3',
+  title: 'Water',
+  dependsOn: [],
+}];
+
+function Home() {
   // console.log(data);
   return (
     <div>
-      <SearchField />
-      <SearchResultList />
+      <SearchResultList searchResults={results} />
     </div>
   );
 }
 
-Home.propTypes = {
-  data: PropTypes.shape({
-    name: PropTypes.string,
-  }).isRequired,
-};
 
 const person = gql`
   query {
