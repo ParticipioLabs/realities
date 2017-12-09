@@ -1,2 +1,3 @@
 # IDE and text editor artifacts
 *.sublime-workspace
+package-lock.json
