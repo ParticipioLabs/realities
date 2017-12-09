@@ -21,4 +21,4 @@ SearchResultItem.propTypes = {
 //   status: PropTypes.oneOf(['red', 'yellow', 'green']),
 };
 
-export default { SearchResultItem };
+export default SearchResultItem;
