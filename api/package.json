@@ -26,11 +26,13 @@
     "apollo-server-express": "^1.2.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "graphql": "^0.11.7"
+    "graphql": "^0.11.7",
+    "neo4j-driver": "^1.5.1",
+    "neo4j-graphql-js": "^0.1.6"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
-    "eslint": "^4.12.1",
+    "eslint": "^4.13.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.8.0",

@@ -4,21 +4,24 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 function Hello({ data }) {
-  return <div>Hello {data.hello}</div>;
+  console.log(data);
+  return <div>Hello {data.name}</div>;
 }
 
 Hello.propTypes = {
   data: PropTypes.shape({
-    hello: PropTypes.string,
+    name: PropTypes.string,
   }).isRequired,
 };
 
-const hello = gql`
+const person = gql`
   query {
-    hello
+    person {
+      name
+    }
   }
 `;
 
 // The `graphql` wrapper executes a GraphQL query and makes the results
 // available on the `data` prop of the wrapped component (Hello)
-export default graphql(hello)(Hello);
+export default graphql(person)(Hello);
