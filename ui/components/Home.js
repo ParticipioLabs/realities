@@ -1,5 +1,7 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, FormText,
+  Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle } from 'reactstrap';
 // import PropTypes from 'prop-types';
 // import SearchField from '../components/SearchField';
 import SearchResultList from './SearchResultList';
@@ -24,17 +26,17 @@ function Home() {
     <div className="container">
       <div className="row">
         <div id="" className="col-xs-12 col-lg-6">
-          <form>
-            <div className="form-group">
-              <input
+          <Form>
+            <FormGroup>
+              <Input
                 type="text"
-                className="form-control form-control-lg"
+                className="form-control-lg"
                 id="searchInput"
                 aria-describedby="searchInput"
                 placeholder="Enter search term"
               />
-            </div>
-          </form>
+            </FormGroup>
+          </Form>
           <div className="row">
             <div id="needs" className="col-xs-12 col-lg-6">
               <h3>Needs</h3>
