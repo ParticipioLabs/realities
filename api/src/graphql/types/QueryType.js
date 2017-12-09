@@ -40,7 +40,7 @@ export default new GraphQLObjectType({
       type: PersonType,
       resolve() {
         return session
-          .run('MATCH (n:Person {name:"Vishnu"}) RETURN n.name')
+          .run('MATCH (n:Person {name:"Vishnu"}) RETURN n')
           .then(function(result) {
               console.log(result.records[0]);
               return result.records[0];
