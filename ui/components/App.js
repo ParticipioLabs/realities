@@ -1,5 +1,9 @@
+// import bootstrap from 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap-loader';
 import React from 'react';
 import PropTypes from 'prop-types';
+
+// ${bootstrap}
 
 function App({ children }) {
   return (

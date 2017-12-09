@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText,
   Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle } from 'reactstrap';

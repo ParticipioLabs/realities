@@ -1,8 +1,10 @@
 module.exports = {
   webpack: (config, { dev }) => {
+    // config.module.entry = 'bootstrap-loader';
+    // console.log(config);
     config.module.rules.push({
       test: /\.css$/,
-      loader: 'css-loader',
+      loader: 'bootstrap-loader',
     });
     if (dev) {
       config.module.rules.push({
@@ -12,5 +14,5 @@ module.exports = {
       });
     }
     return config;
-  },
+  }
 };
