@@ -8,16 +8,24 @@ import neo4jDriver from './db/neo4jDriver';
 const typeDefs = `
 type Person {
   name: String
+  guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
+  realizesNeed: [Need] @relation(name: "REALIZES", direction: "OUT")
+  guidesResponsibility: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
+  realizesResponsibility: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
 }
 
 type Need {
   title: String
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
+  guide: Person @relation(name: "GUIDES", direction: "IN")
+  realizer: Person @relation(name: "REALIZES", direction: "IN")
 }
 
 type Responsibility {
   title: String
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
+  guide: Person @relation(name: "GUIDES", direction: "IN")
+  realizer: Person @relation(name: "REALIZES", direction: "IN")
 }
 
 type Query {
