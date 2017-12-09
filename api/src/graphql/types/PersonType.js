@@ -8,7 +8,7 @@ const PersonType = new GraphQLObjectType({
   name: 'Person',
   fields: () => ({
     id: { type: GraphQLID },
-    name: { type: GraphQLString }
+    name: { type: GraphQLString },
   }),
 });
 

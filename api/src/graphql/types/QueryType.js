@@ -1,16 +1,14 @@
 import {
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import neo4j from 'neo4j-driver';
+import { v1 as neo4j } from 'neo4j-driver';
 import NeedType from './NeedType';
 import PersonType from './PersonType';
 import mockData from '../../data/mockData';
-
-const driver = neo4j.driver('bolt://hobby-nfdmkjnckhclgbkeifnhbial.dbs.graphenedb.com:24786', neo4j.auth.basic('realities-dev', 'b.JOosRDbMCr7h.O4fBS2qPIbARuhRo'));
-const session = driver.session();
 
 export default new GraphQLObjectType({
   name: 'Query',
@@ -26,7 +24,7 @@ export default new GraphQLObjectType({
       args: {
         id: { type: GraphQLID },
       },
-      resolve(parent, { id }) {
+      resolve(object, { id }) {
         return mockData.needs.find(need => need.id === id);
       },
     },
@@ -38,18 +36,22 @@ export default new GraphQLObjectType({
     },
     person: {
       type: PersonType,
-      resolve() {
-        return session
-          .run('MATCH (n:Person {name:"Vishnu"}) RETURN n')
-          .then(function(result) {
-              console.log(result.records[0]);
-              return result.records[0];
-              session.close();
-          })
-          .catch(function(error) {
-              console.log(error);
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve(object, { id }, { neo4jSession }) {
+        return neo4jSession
+          .run('MATCH (n) WHERE ID(n)={idParam} RETURN n', { idParam: neo4j.int(id) })
+          .then((result) => {
+            const singleRecord = result.records[0];
+            const person = singleRecord.get(0);
+            neo4jSession.close();
+            return {
+              id,
+              name: person.properties.name,
+            };
           });
-      }
-    }
+      },
+    },
   },
 });
