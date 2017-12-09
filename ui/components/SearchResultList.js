@@ -1,12 +1,13 @@
 import React from 'react';
+import SearchResultItem from './SearchResultItem';
 // import PropTypes from 'prop-types';
 
-const SearchResultItem = props => (
+const SearchResultList = props => (
   <div>
     <ul>
       {props.searchResults.map(item => (
         <li>
-          {item.title}
+          <SearchResultItem title={item.title} description={item.description} />
         </li>
         ))}
     </ul>
@@ -26,4 +27,4 @@ const SearchResultItem = props => (
 //   status: PropTypes.oneOf(['red', 'yellow', 'green']),
 // };
 
-export default { SearchResultItem };
+export default { SearchResultList };
