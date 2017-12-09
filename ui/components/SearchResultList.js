@@ -3,13 +3,14 @@ import SearchResultItem from './SearchResultItem';
 // import PropTypes from 'prop-types';
 
 const SearchResultList = props => (
-  <div>
+  <div className="list-group">
     <ul>
       {props.searchResults.map(item => (
-        <li>
-          <SearchResultItem title={item.title} description={item.description} />
-        </li>
-        ))}
+        <SearchResultItem
+          active={item.isActive}
+          title={item.title}
+        />
+        ))};
     </ul>
   </div>
 );
@@ -27,4 +28,4 @@ const SearchResultList = props => (
 //   status: PropTypes.oneOf(['red', 'yellow', 'green']),
 // };
 
-export default { SearchResultList };
+export default SearchResultList;
