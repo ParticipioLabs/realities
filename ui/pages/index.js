@@ -1,11 +1,11 @@
 import React from 'react';
 import App from '../components/App';
-import Hello from '../components/Hello';
+import Home from '../components/Home';
 import withData from '../lib/withData';
 
 export default withData(() => (
   <App>
-    <Hello />
+    <Home />
   </App>
 ));
 
