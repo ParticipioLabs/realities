@@ -7,8 +7,8 @@ import neo4jDriver from './db/neo4jDriver';
 
 const typeDefs = `
 type Person {
-  name: String
-  email: String
+  name: String!
+  email: String!
   guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
   realizesNeed: [Need] @relation(name: "REALIZES", direction: "OUT")
   guidesResponsibility: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
@@ -16,19 +16,23 @@ type Person {
 }
 
 type Need {
-  title: String
+  title: String!
   description: String
-  fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
-  guide: Person @relation(name: "GUIDES", direction: "IN")
+  guide: Person! @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
+  fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
+  dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
+  dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
 }
 
 type Responsibility {
-  title: String
+  title: String!
   description: String
-  fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
-  guide: Person @relation(name: "GUIDES", direction: "IN")
+  guide: Person! @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
+  fulfills: Need! @relation(name: "FULFILLS", direction:"OUT")
+  dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
+  dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
 }
 
 type Query {
