@@ -14,19 +14,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erikfrisk/realities.git"
+    "url": "git+https://github.com/theborderland/realities.git"
   },
   "author": "",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/erikfrisk/realities/issues"
+    "url": "https://github.com/theborderland/realities/issues"
   },
-  "homepage": "https://github.com/erikfrisk/realities#readme",
+  "homepage": "https://github.com/theborderland/realities#readme",
   "dependencies": {
-    "apollo-server-express": "^1.2.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "graphql": "^0.11.7",
+    "graphql-server-express": "^1.2.0",
+    "graphql-tools": "^2.12.0",
     "neo4j-driver": "^1.5.1",
     "neo4j-graphql-js": "^0.1.6"
   },
