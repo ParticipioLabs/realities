@@ -29,7 +29,7 @@ type Responsibility {
 }
 
 type Query {
-  allPersons: [Person]
+  persons: [Person]
   responsibilities: [Responsibility]
   needs: [Need]
 }
@@ -38,7 +38,7 @@ type Query {
 const resolvers = {
   // root entry point to GraphQL service
   Query: {
-    allPersons(object, params, ctx, resolveInfo) {
+    persons(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
     responsibilities(object, params, ctx, resolveInfo) {
