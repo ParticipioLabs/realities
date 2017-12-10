@@ -7,8 +7,6 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 import neo4jDriver from './db/neo4jDriver';
 
-const { NODE_ENV } = process.env.NODE_ENV;
-
 const typeDefs = `
 type Person {
   name: String!
@@ -78,6 +76,7 @@ const context = (headers) => {
   };
 };
 
+const { NODE_ENV } = process.env;
 const PORT = NODE_ENV && NODE_ENV.includes('prod') ? 3000 : 3100;
 const app = express();
 
