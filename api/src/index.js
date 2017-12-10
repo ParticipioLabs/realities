@@ -77,10 +77,12 @@ const context = (headers) => {
 };
 
 const { NODE_ENV } = process.env;
-const PORT = NODE_ENV && NODE_ENV.includes('prod') ? 3000 : 3100;
+const PORT = NODE_ENV && NODE_ENV.includes('prod') ? process.env.PORT || 3000 : 3100;
 const app = express();
 
-app.use(cors());
+if (!NODE_ENV || NODE_ENV.includes('dev')) {
+  app.use(cors());
+}
 app.use(express.static(path.resolve(__dirname, '../../ui/build'))); // Frontend files
 app.use('/graphql', bodyParser.json(), graphqlExpress(request => ({ schema, context: context(request.headers, process.env) })));
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
