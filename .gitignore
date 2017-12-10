@@ -1,3 +1,6 @@
 # IDE and text editor artifacts
 *.sublime-workspace
 package-lock.json
+
+# Misc
+.DS_Store
