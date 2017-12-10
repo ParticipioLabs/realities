@@ -29,3 +29,5 @@ $ cd ui/
 $ npm install
 $ npm start
 ```
+
+The structure of the frontend code is inspired by an [article written by Alexis Mangin](https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1). It'll allow us to keep the project structured and consitent as the codebase grows. 
