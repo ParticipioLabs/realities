@@ -20,9 +20,10 @@ type Person {
 
 type Need {
   nodeId: ID!
+  _id: Int
   title: String!
   description: String
-  guide: Person! @relation(name: "GUIDES", direction: "IN")
+  guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
@@ -45,7 +46,23 @@ type Query {
   responsibilities: [Responsibility]
   needs: [Need]
 }
+
+type Mutation {
+  createNeed(title: String!): Need
+}
 `;
+
+let driver;
+
+const context = (headers) => {
+  if (!driver) {
+    driver = neo4jDriver;
+  }
+  return {
+    driver,
+    headers,
+  };
+};
 
 const resolvers = {
   // root entry point to GraphQL service
@@ -60,24 +77,32 @@ const resolvers = {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
   },
+  Mutation: {
+    createNeed(_, params) {
+      const session = driver.session();
+      const query = `MERGE (need:Need {title:{title}} )
+    	WITH (need)
+    	SET need.nodeId = ID(need)
+    	RETURN need`;
+
+      return session.run(query, params)
+        .then((result) => {
+          session.close();
+          console.log(result);
+          const singleRecord = result.records[0];
+          const need = singleRecord.get(0);
+          return need.properties;
+        }).catch((error) => {
+          console.log(error);
+        });
+    },
+  },
 };
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
-
-let driver;
-
-const context = (headers) => {
-  if (!driver) {
-    driver = neo4jDriver;
-  }
-  return {
-    driver,
-    headers,
-  };
-};
 
 const { NODE_ENV, PORT } = process.env;
 const API_PORT = NODE_ENV && NODE_ENV.includes('prod') ? PORT || 3000 : 3100;
