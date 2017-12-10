@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Badge, Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle, Button } from 'reactstrap';
@@ -20,41 +20,43 @@ const Title = styled(CardTitle)`
   display: inline-block;
 `;
 
-const DetailView = ({ data }) => {
-  console.log(data);
-  if (data && data.title) {
-    return (
-      <Card>
-        <CardBody>
-          <Title><RIEInput
-            value={data.title}
-            change={data => onEditTitle(data)}
-            propName="title"
-            validate={_.isString}
-          />
-          </Title>
-          <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label>
-          <CardText>
-            {data.description ? <RIETextArea
-              value={data.description}
-              change={data => onEditDescription(data)}
-              propName="description"
-              validate={_.isString}
-            /> : <div /> }
-          </CardText>
-        </CardBody>
-      </Card>
-    );
+const Description = styled(CardText)`
+  width: 100%;
+`;
+
+class DetailView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { newTitle: undefined, newDescription: undefined };
   }
-  return <div />;
-};
-
-function onEditTitle(data) {
-  console.log(`changed ${data.title}`);
-}
-
-function onEditDescription(data) {
-  console.log(`changed ${data.description}`);
+  render() {
+    const { data } = this.props;
+    if (data) {
+      return (
+        <Card>
+          <CardBody>
+            <Title><RIEInput
+              value={data.title}
+              change={data => this.setState({ newTitle: data.title })}
+              propName="title"
+              validate={_.isString}
+            />
+            </Title>
+            <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label>
+            <Description>
+              {data.description ? <RIETextArea
+                value={data.description}
+                change={data => this.setState({ newDescription: data.description })}
+                propName="description"
+                validate={_.isString}
+              /> : <div /> }
+            </Description>
+          </CardBody>
+        </Card>
+      );
+    }
+    return <div />;
+  }
 }
 
 DetailView.defaultProps = {
