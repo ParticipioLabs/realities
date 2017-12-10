@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/theborderland/realities/issues"
   },
-  "homepage": "https://github.com/theborderland/realities#readme",
+  "homepage": "",
   "dependencies": {
     "apollo-cache-inmemory": "^1.1.4",
     "apollo-client": "^2.0.4",

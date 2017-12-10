@@ -1,3 +1,4 @@
+import path from 'path';
 import { makeExecutableSchema } from 'graphql-tools';
 import { neo4jgraphql } from 'neo4j-graphql-js';
 import express from 'express';
@@ -79,9 +80,8 @@ const PORT = 3100;
 const app = express();
 
 app.use(cors());
-
+app.use(express.static(path.resolve(__dirname, '../../ui/build'))); // Frontend files
 app.use('/graphql', bodyParser.json(), graphqlExpress(request => ({ schema, context: context(request.headers, process.env) })));
-
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 app.listen(PORT, () => {
