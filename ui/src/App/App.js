@@ -1,14 +1,12 @@
 import React from 'react';
-import { Alert } from 'reactstrap';
+import { ApolloProvider } from 'react-apollo';
+import apolloClient from '@/services/apolloClient';
 import RoutesContainer from './components/RoutesContainer';
 
 const App = () => (
-  <div>
-    <Alert color="primary">
-      We have Bootstrap 4!
-    </Alert>
+  <ApolloProvider client={apolloClient}>
     <RoutesContainer />
-  </div>
+  </ApolloProvider>
 );
 
 export default App;

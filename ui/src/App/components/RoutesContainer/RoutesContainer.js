@@ -5,6 +5,7 @@ import {
   Link,
 } from 'react-router-dom';
 import {
+  Alert,
   Navbar,
   NavbarBrand,
   Nav,
@@ -17,6 +18,9 @@ import About from '@/scenes/About';
 const RoutesContainer = () => (
   <Router>
     <div>
+      <Alert color="primary">
+        We have Bootstrap 4!
+      </Alert>
       <Navbar color="faded" light expand="md">
         <NavbarBrand tag={Link} to="/">Realities Platform</NavbarBrand>
         <Nav className="ml-auto" navbar>
