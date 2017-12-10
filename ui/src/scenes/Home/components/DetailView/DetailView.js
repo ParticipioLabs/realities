@@ -24,6 +24,10 @@ const RealitiesInput = styled(Input)`
     border-bottom: 1px dotted #85bcf7;
 `
 
+const Underlined = styled.div`
+  border-bottom: 1px dotted;
+  display: inline-block;
+`;
 
 const Title = styled(CardTitle)`
   border-bottom: 1px dotted;
@@ -51,6 +55,7 @@ class DetailView extends Component {
       return (
         <Card>
           <CardBody>
+          <BadgeLabel color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>{data && data.__typename}</BadgeLabel> 
             <Title><RIEInput
               value={data.title}
               change={data => this.setState({ data: { title: data.title } })}
@@ -58,7 +63,30 @@ class DetailView extends Component {
               validate={_.isString}
             />
             </Title>
-            <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label>
+            <br />
+
+ 			<Underlined>
+            <RIEInput
+              value={data.guide && data.guide.name}
+              change={data => this.setState({ data: { guideName: data.guide.name } })}
+              propName="guideName"
+              validate={_.isString}
+            />
+            </Underlined>
+            <br />
+    
+            <Underlined>
+            <RIEInput
+              value={data.realizer && data.realizer.name}
+              change={data => this.setState({ data: { realizerame: data.realizer.name } })}
+              propName="realizerName"
+              validate={_.isString}
+            />
+            </Underlined>
+            <br />
+
+            
+            
             <Description>
               {data.description ? <RIETextArea
                 value={data.description}
@@ -67,6 +95,20 @@ class DetailView extends Component {
                 validate={_.isString}
               /> : <div /> }
             </Description>
+
+            <Card>
+			  <CardBody>
+		         <Row>
+		           <Col>
+		             <DependencyList
+		              dependsOnNeeds={this.dependsOnNeeds}
+		              dependsOnResponsibilities={this.dependsOnResponsibilities}
+		            />
+		           </Col>
+		          </Row>
+			  </CardBody>
+			</Card>
+
           </CardBody>
         </Card>
       );

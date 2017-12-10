@@ -25,6 +25,7 @@ const RealitiesListHeader = styled.p`
 `;
 const RealitiesListGroupItem = styled(ListGroupItem)`
     background-color: ${props => (props.selected ? '#00cf19' : '#fff')};
+    color: ${props => (props.selected ? '#fff' : '#666')};
 `;
 
 const renderListItems = (needs, onSelectNeed, selectedNeed) => {
