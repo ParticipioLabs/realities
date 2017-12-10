@@ -3,7 +3,7 @@ import { Alert } from 'reactstrap';
 import RoutesContainer from './components/RoutesContainer';
 
 const App = () => (
-  <div className="App">
+  <div>
     <Alert color="primary">
       We have Bootstrap 4!
     </Alert>
