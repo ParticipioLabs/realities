@@ -9,6 +9,7 @@ import {
 } from 'reactstrap';
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
+import DetailView from './components/DetailView';
 
 class Home extends React.Component {
   constructor() {
@@ -16,15 +17,19 @@ class Home extends React.Component {
 
     this.state = { selectedNeed: null, selectedResponsibility: null };
     this.onSelectNeed = this.onSelectNeed.bind(this);
+    this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
   }
 
   onSelectNeed(need) {
-    this.setState({ selectedNeed: need });
+    this.setState({ selectedNeed: need, selectedResponsibility: null });
+  }
+
+  onSelectResponsibility(responsibility) {
+    this.setState({ selectedResponsibility: responsibility });
   }
 
   render() {
-    const { data } = this.props;
-    const { needs } = data;
+    const { needs } = this.props.data;
     return (
       <Container fluid>
         <Row>
@@ -39,7 +44,11 @@ class Home extends React.Component {
           <Col>
             <ResponsibilitiesList
               responsibilities={this.state.selectedNeed && this.state.selectedNeed.fulfilledBy}
+              onSelectResponsibility={this.onSelectResponsibility}
             />
+          </Col>
+          <Col>
+            <DetailView data={this.state.selectedResponsibility || this.state.selectedNeed} />
           </Col>
         </Row>
       </Container>

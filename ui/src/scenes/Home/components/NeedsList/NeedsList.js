@@ -16,8 +16,12 @@ const NeedsList = ({ needs, onSelectNeed }) => (
   </div>
 );
 
+NeedsList.defaultProps = {
+  needs: [],
+};
+
 NeedsList.propTypes = {
-  needs: PropTypes.array.isRequired,
+  needs: PropTypes.array,
   onSelectNeed: PropTypes.func.isRequired,
 };
 
