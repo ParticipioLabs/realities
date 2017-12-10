@@ -88,7 +88,6 @@ const resolvers = {
       return session.run(query, params)
         .then((result) => {
           session.close();
-          console.log(result);
           const singleRecord = result.records[0];
           const need = singleRecord.get(0);
           return need.properties;
