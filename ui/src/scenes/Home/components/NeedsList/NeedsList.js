@@ -32,6 +32,19 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
     return needs.map((need, i) => {
       const selected = need === selectedNeed;
       return (
+/*
+  .active {
+    background-color: #00cf19;
+    color: #fff;
+    }
+`
+const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
+  <div>
+    <RealitiesListHeader>Needs</RealitiesListHeader>
+    <ListGroup>
+      {needs && needs.map((need, i) => (
+        // eslint-disable-next-line react/no-array-index-key
+*/
         <RealitiesListGroupItem
               // eslint-disable-next-line react/no-array-index-key
           key={i}
