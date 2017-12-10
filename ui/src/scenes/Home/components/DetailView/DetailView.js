@@ -24,20 +24,26 @@ const Description = styled(CardText)`
   width: 100%;
 `;
 
+
 class DetailView extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { newTitle: undefined, newDescription: undefined };
+  state = { data: undefined }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props && nextProps.data) {
+      const { data } = nextProps;
+      this.setState({ data });
+    }
   }
+
   render() {
-    const { data } = this.props;
-    if (data) {
+    if (this.state.data) {
+      const { data } = this.state;
       return (
         <Card>
           <CardBody>
             <Title><RIEInput
               value={data.title}
-              change={data => this.setState({ newTitle: data.title })}
+              change={data => this.setState({ data: { title: data.title } })}
               propName="title"
               validate={_.isString}
             />
@@ -46,7 +52,7 @@ class DetailView extends Component {
             <Description>
               {data.description ? <RIETextArea
                 value={data.description}
-                change={data => this.setState({ newDescription: data.description })}
+                change={data => this.setState({ data: { description: data.description } })}
                 propName="description"
                 validate={_.isString}
               /> : <div /> }
