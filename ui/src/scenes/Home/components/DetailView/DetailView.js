@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Badge } from 'reactstrap';
+import { Badge, Card, CardImg, CardText, CardBody,
+  CardTitle, CardSubtitle, Button  } from 'reactstrap';
 import styled from 'styled-components';
 
 const Label = styled.span`
@@ -14,12 +15,12 @@ const Label = styled.span`
 const DetailView = ({ data }) => {
   console.log(data);
   return (
-    <div>
-      <h4>Details</h4>
-      <h5>{data && data.title} <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label></h5>
-      <p>{data && data.description}</p>
-
-    </div>
+    <Card>
+      <CardBody>
+        <CardTitle><Label color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>{data && data.__typename}</Label> {data && data.title} </CardTitle>
+        <CardText>{data && data.description}</CardText>
+        </CardBody>
+    </Card>
   );
 };
 
