@@ -20,7 +20,6 @@ type Person {
 
 type Need {
   nodeId: ID!
-  _id: Int
   title: String!
   description: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
@@ -34,7 +33,7 @@ type Responsibility {
   nodeId: ID!
   title: String!
   description: String
-  guide: Person! @relation(name: "GUIDES", direction: "IN")
+  guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfills: Need! @relation(name: "FULFILLS", direction:"OUT")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
