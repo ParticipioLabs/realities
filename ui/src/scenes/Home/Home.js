@@ -35,11 +35,6 @@ class Home extends React.Component {
       <Container fluid>
         <Row>
           <Col>
-            <h1>Home</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
             <NeedsList
               needs={needs}
               onSelectNeed={this.onSelectNeed}
