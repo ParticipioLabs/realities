@@ -13,7 +13,7 @@
     "serve": "npm run build && node build/bundle.js"
   },
   "repository": {
-    "type": "git", 
+    "type": "git",
     "url": "https://github.com/theborderland/realities.git"
   },
   "license": "GPL-3.0",
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/theborderland/realities#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "graphql-server-express": "^1.2.0",
     "graphql-tools": "^2.12.0",

@@ -1,6 +1,7 @@
 import { makeExecutableSchema } from 'graphql-tools';
 import { neo4jgraphql } from 'neo4j-graphql-js';
 import express from 'express';
+import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 import neo4jDriver from './db/neo4jDriver';
@@ -75,13 +76,15 @@ const context = (headers) => {
 };
 
 const PORT = 3100;
-const server = express();
+const app = express();
 
-server.use('/graphql', bodyParser.json(), graphqlExpress(request => ({ schema, context: context(request.headers, process.env) })));
+app.use(cors());
 
-server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+app.use('/graphql', bodyParser.json(), graphqlExpress(request => ({ schema, context: context(request.headers, process.env) })));
 
-server.listen(PORT, () => {
+app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+
+app.listen(PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${PORT}/graphql`);
   console.log(`View GraphiQL at http://localhost:${PORT}/graphiql`);
 });
