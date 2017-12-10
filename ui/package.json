@@ -74,6 +74,7 @@
     "react-dev-utils": "^4.2.1",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
+    "react-tag-input": "^4.7.2",
     "reactstrap": "^5.0.0-alpha.4",
     "style-loader": "0.19.0",
     "styled-components": "^2.2.4",
