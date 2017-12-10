@@ -79,11 +79,12 @@ export default graphql(gql`
       dependsOnNeeds {
         title
         description
-        }
-      dependsOnResponsibilities {
+      }
+      dependsOnResponsibilites {
         title
         description
-        }
+        guide { name }
+      }
       fulfilledBy {
         nodeId
         title
