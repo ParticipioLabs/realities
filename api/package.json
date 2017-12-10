@@ -43,9 +43,7 @@
     "graphql-server-express": "^1.2.0",
     "graphql-tools": "^2.12.0",
     "neo4j-driver": "^1.5.1",
-    "neo4j-graphql-js": "^0.1.6"
-  },
-  "devDependencies": {
+    "neo4j-graphql-js": "^0.1.6",
     "concurrently": "^3.5.1",
     "eslint": "^4.13.0",
     "eslint-config-airbnb-base": "^12.1.0",
