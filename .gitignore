@@ -2,7 +2,10 @@
 *.sublime-workspace
 package-lock.json
 .idea
-*.log
+
+# Dependencies
+node_modules/
+/yarn.lock
 
 # Misc
-.DS_Store
+*.log
