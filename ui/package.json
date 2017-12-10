@@ -50,6 +50,7 @@
     "react": "^16.2.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2",
     "reactstrap": "^5.0.0-alpha.4",
     "style-loader": "0.19.0",
     "sw-precache-webpack-plugin": "0.11.4",
@@ -110,10 +111,26 @@
       "jest": true
     },
     "rules": {
-      "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".js",
+            ".jsx"
+          ]
+        }
+      ],
       "import/no-extraneous-dependencies": 0,
       "import/no-unresolved": 0,
-      "import/extensions": 0
+      "import/extensions": 0,
+      "jsx-a11y/anchor-is-valid": [
+        1,
+        {
+          "components": [ "Link" ],
+          "specialLink": [ "to", "hrefLeft", "hrefRight" ],
+          "aspects": [ "noHref", "invalidHref", "preferButton" ]
+        }
+      ]
     }
   }
 }

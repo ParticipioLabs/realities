@@ -8,10 +8,11 @@ const ExampleReusedComponent = () => (
       go in the src/components directory. Webpack is configured to
       use @ as an alias for the src directory, so you can import components
       using the @/components/ComponentName pattern from anywhere.
-      <br /><br />
+    </p>
+    <p>
       Example:
-      <br /><br />
-      {'import ExampleReusedComponent from \'components/ExampleReusedComponent\';'}
+      <br />
+      {'import ExampleReusedComponent from \'@/components/ExampleReusedComponent\';'}
     </p>
     <ExampleChildComponent />
   </div>
