@@ -18,13 +18,16 @@ const RealitiesListGroupItem = styled(ListGroupItem)`
     }
 `
 
-const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility }) => (
+const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility, selectedResp }) => (
   <div>
     <RealitiesListHeader>Responsibilities</RealitiesListHeader>
     <ListGroup>
       {responsibilities && responsibilities.map((responsibility, i) => (
         // eslint-disable-next-line react/no-array-index-key
-        <RealitiesListGroupItem key={i} onClick={() => onSelectResponsibility(responsibility)}>
+        <RealitiesListGroupItem
+          key={i}
+          className={responsibility === selectedResp && "active"}
+          onClick={() => onSelectResponsibility(responsibility)}>
           {responsibility.title}
         </RealitiesListGroupItem>
       ))}

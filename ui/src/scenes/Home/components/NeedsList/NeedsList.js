@@ -25,17 +25,20 @@ const RealitiesListHeader = styled.p`
 `;
 const RealitiesListGroupItem = styled(ListGroupItem)`
   .active {
-    background-color: #00cf19;
+    background-color: #fff;
     color: #fff;
     }
 `
-const NeedsList = ({ needs, onSelectNeed }) => (
+const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
   <div>
     <RealitiesListHeader>Needs</RealitiesListHeader>
     <ListGroup>
       {needs && needs.map((need, i) => (
         // eslint-disable-next-line react/no-array-index-key
-        <RealitiesListGroupItem key={i} onClick={() => onSelectNeed(need)}>
+        <RealitiesListGroupItem
+          key={i}
+          className={need === selectedNeed && "active"}
+          onClick={() => onSelectNeed(need)}>
           {need.title}
         </RealitiesListGroupItem>
       ))}
