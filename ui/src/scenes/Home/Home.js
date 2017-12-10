@@ -7,6 +7,7 @@ import {
   Row,
   Col,
 } from 'reactstrap';
+
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
