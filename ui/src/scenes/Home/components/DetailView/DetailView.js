@@ -24,7 +24,7 @@ const RealitiesInput = styled(Input)`
     border-bottom: 1px dotted #85bcf7;
 `
 
-const Underlined = styled.p`
+const Underlined = styled.div`
   border-bottom: 1px dotted;
   display: inline-block;
 `;
@@ -95,6 +95,20 @@ class DetailView extends Component {
                 validate={_.isString}
               /> : <div /> }
             </Description>
+
+            <Card>
+			  <CardBody>
+		         <Row>
+		           <Col>
+		             <DependencyList
+		              dependsOnNeeds={this.dependsOnNeeds}
+		              dependsOnResponsibilities={this.dependsOnResponsibilities}
+		            />
+		           </Col>
+		          </Row>
+			  </CardBody>
+			</Card>
+
           </CardBody>
         </Card>
       );

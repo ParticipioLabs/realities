@@ -11,13 +11,11 @@ const RealitiesListGroupItem = styled(ListGroupItem)`
     }
 `
 const DependencyList = function({ dependsOnNeeds, dependsOnResponsibilities, onSelectDependency, selectedDependency }) {
-  const dependencies = _concat(dependsOnNeeds, dependsOnResponsibilities)
-  console.log(dependencies)
+  const dependencies = _concat(dependsOnNeeds, dependsOnResponsibilities);
   return (
   <div>
     <ListGroup>
       {dependencies && dependencies.map((dependency, i) => (
-        // eslint-disable-next-line react/no-array-index-key
         <RealitiesListGroupItem
           key={i}
           className={dependency === selectedDependency && "active"}
