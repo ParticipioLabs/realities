@@ -76,9 +76,11 @@ Home.propTypes = {
 export default graphql(gql`
   query {
     needs {
+      nodeId
       title
       description
       fulfilledBy {
+        nodeId
         title
         description
       }
