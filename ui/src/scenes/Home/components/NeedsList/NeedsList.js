@@ -24,24 +24,33 @@ const RealitiesListHeader = styled.p`
       background-color: #00cf19;
 `;
 const RealitiesListGroupItem = styled(ListGroupItem)`
-  .active {
-    background-color: #fff;
-    color: #fff;
-    }
-`
+    background-color: ${props => (props.selected ? '#00cf19' : '#fff')};
+`;
+
+const renderListItems = (needs, onSelectNeed, selectedNeed) => {
+  if (needs) {
+    return needs.map((need, i) => {
+      const selected = need === selectedNeed;
+      return (
+        <RealitiesListGroupItem
+              // eslint-disable-next-line react/no-array-index-key
+          key={i}
+          selected={selected}
+          onClick={() => onSelectNeed(need)}
+        >
+          {need.title}
+        </RealitiesListGroupItem>
+      );
+    });
+  }
+  return null;
+};
+
 const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
   <div>
     <RealitiesListHeader>Needs</RealitiesListHeader>
     <ListGroup>
-      {needs && needs.map((need, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <RealitiesListGroupItem
-          key={i}
-          className={need === selectedNeed && "active"}
-          onClick={() => onSelectNeed(need)}>
-          {need.title}
-        </RealitiesListGroupItem>
-      ))}
+      {renderListItems(needs, onSelectNeed, selectedNeed)}
     </ListGroup>
   </div>
 );
@@ -53,6 +62,7 @@ NeedsList.defaultProps = {
 NeedsList.propTypes = {
   needs: PropTypes.array,
   onSelectNeed: PropTypes.func.isRequired,
+  selectedNeed: PropTypes.object,
 };
 
 export default NeedsList;

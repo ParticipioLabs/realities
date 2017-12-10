@@ -12,25 +12,34 @@ const RealitiesListHeader = styled.p`
       background-color: #843cfd;
 `;
 const RealitiesListGroupItem = styled(ListGroupItem)`
-  .active {
-    background-color: #843cfd;
-    color: #fff;
-    }
-`
+    background-color: ${props => (props.selected ? '#843cfd' : '#fff')};
+`;
+
+const renderListItems = (responsibilities, onSelectResponsibility, selectedResp) => {
+  if (responsibilities) {
+    return responsibilities.map((responsibility, i) => {
+      const selected = responsibility === selectedResp;
+      return (
+        <RealitiesListGroupItem
+                // eslint-disable-next-line react/no-array-index-key
+          key={i}
+          selected={selected}
+          onClick={() => onSelectResponsibility(responsibility)}
+        >
+          {responsibility.title}
+        </RealitiesListGroupItem>
+      );
+    });
+  }
+  return null;
+};
+
 
 const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility, selectedResp }) => (
   <div>
     <RealitiesListHeader>Responsibilities</RealitiesListHeader>
     <ListGroup>
-      {responsibilities && responsibilities.map((responsibility, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <RealitiesListGroupItem
-          key={i}
-          className={responsibility === selectedResp && "active"}
-          onClick={() => onSelectResponsibility(responsibility)}>
-          {responsibility.title}
-        </RealitiesListGroupItem>
-      ))}
+      {renderListItems(responsibilities, onSelectResponsibility, selectedResp)}
     </ListGroup>
   </div>
 );
@@ -42,7 +51,8 @@ ResponsibilitiesList.defaultProps = {
 ResponsibilitiesList.propTypes = {
   responsibilities: PropTypes.array,
   onSelectResponsibility: PropTypes.func.isRequired,
-}
+  selectedResp: PropTypes.object,
+};
 
 
 export default ResponsibilitiesList;
