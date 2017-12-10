@@ -12,56 +12,41 @@ const Label = styled.span`
   padding: 5px;
   display: inline-block;
   color: white;
-  margin-left: 10px;
+  float: right;
 `;
 
-const Title = styled.h5`
+const Title = styled(CardTitle)`
   border-bottom: 1px dotted;
   display: inline-block;
 `;
 
 const DetailView = ({ data }) => {
   console.log(data);
-  return (
-    <Card>
-      <CardBody>
-        <CardTitle><Label color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>{data && data.__typename}</Label> {data && data.title} </CardTitle>
-        <CardText>{data && data.description}</CardText>
-      </CardBody>
-    </Card>
-  );
-
-  /*
-  Arvin 2017-12-10
-  Code needs to be tested
-  Merge when server is back up
-
   if (data && data.title) {
     return (
-      <div>
-        <h4>Details</h4>
-        <Title><RIEInput
-          value={data.title}
-          change={data => onEditTitle(data)}
-          propName="title"
-          validate={_.isString}
-        />
-        </Title>
-        <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label>
-        <p>
-          {data.description ? <RIETextArea
-            value={data.description}
-            change={data => onEditDescription(data)}
-            propName="description"
+      <Card>
+        <CardBody>
+          <Title><RIEInput
+            value={data.title}
+            change={data => onEditTitle(data)}
+            propName="title"
             validate={_.isString}
-          /> : <div /> }
-        </p>
-      </div>
+          />
+          </Title>
+          <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label>
+          <CardText>
+            {data.description ? <RIETextArea
+              value={data.description}
+              change={data => onEditDescription(data)}
+              propName="description"
+              validate={_.isString}
+            /> : <div /> }
+          </CardText>
+        </CardBody>
+      </Card>
     );
   }
   return <div />;
-
-  */
 };
 
 function onEditTitle(data) {

@@ -35,11 +35,6 @@ class Home extends React.Component {
       <Container fluid>
         <Row>
           <Col>
-            <h1>Home</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
             <NeedsList
               needs={needs}
               onSelectNeed={this.onSelectNeed}
@@ -76,9 +71,11 @@ Home.propTypes = {
 export default graphql(gql`
   query {
     needs {
+      nodeId
       title
       description
       fulfilledBy {
+        nodeId
         title
         description
       }
