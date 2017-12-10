@@ -2,6 +2,7 @@
 *.sublime-workspace
 package-lock.json
 .idea
+*.log
 
 # Misc
 .DS_Store
