@@ -9,7 +9,7 @@ import neo4jDriver from './db/neo4jDriver';
 
 const typeDefs = `
 type Person {
-  nodeId: Int!
+  nodeId: ID!
   name: String!
   email: String!
   guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
@@ -19,7 +19,7 @@ type Person {
 }
 
 type Need {
-  nodeId: Int!
+  nodeId: ID!
   title: String!
   description: String
   guide: Person! @relation(name: "GUIDES", direction: "IN")
@@ -30,7 +30,7 @@ type Need {
 }
 
 type Responsibility {
-  nodeId: Int!
+  nodeId: ID!
   title: String!
   description: String
   guide: Person! @relation(name: "GUIDES", direction: "IN")
