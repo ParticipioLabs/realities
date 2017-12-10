@@ -40,12 +40,16 @@ class Home extends React.Component {
         </Row>
         <Row>
           <Col>
-            <NeedsList needs={needs} onSelectNeed={this.onSelectNeed} />
+            <NeedsList
+              needs={needs}
+              onSelectNeed={this.onSelectNeed}
+              selectedNeed={this.state.selectedNeed}/>
           </Col>
           <Col>
             <ResponsibilitiesList
               responsibilities={this.state.selectedNeed && this.state.selectedNeed.fulfilledBy}
               onSelectResponsibility={this.onSelectResponsibility}
+              selectedResp={this.state.selectedResponsibility}
             />
           </Col>
           <Col>

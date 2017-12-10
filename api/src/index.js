@@ -1,3 +1,4 @@
+import path from 'path';
 import { makeExecutableSchema } from 'graphql-tools';
 import { neo4jgraphql } from 'neo4j-graphql-js';
 import express from 'express';
@@ -75,16 +76,18 @@ const context = (headers) => {
   };
 };
 
-const PORT = 3100;
+const { NODE_ENV, PORT } = process.env;
+const API_PORT = NODE_ENV && NODE_ENV.includes('prod') ? PORT || 3000 : 3100;
 const app = express();
 
-app.use(cors());
-
+if (!NODE_ENV || NODE_ENV.includes('dev')) {
+  app.use(cors());
+}
+app.use(express.static(path.resolve(__dirname, '../../ui/build'))); // Frontend files
 app.use('/graphql', bodyParser.json(), graphqlExpress(request => ({ schema, context: context(request.headers, process.env) })));
-
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
-app.listen(PORT, () => {
-  console.log(`GraphQL Server is now running on http://localhost:${PORT}/graphql`);
-  console.log(`View GraphiQL at http://localhost:${PORT}/graphiql`);
+app.listen(API_PORT, () => {
+  console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
+  console.log(`View GraphiQL at http://localhost:${API_PORT}/graphiql`);
 });
