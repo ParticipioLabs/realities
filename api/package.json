@@ -20,7 +20,7 @@
       }
     },
     "serve": {
-      "command": "npm run build && node build/bundle.js",
+      "command": "node build/bundle.js",
       "env": {
         "NODE_ENV": "production"
       }
