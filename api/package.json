@@ -9,8 +9,22 @@
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
     "test": "mocha",
-    "build": "NODE_ENV=prod webpack",
-    "serve": "npm run build && node build/bundle.js"
+    "build": "better-npm-run build",
+    "serve": "better-npm-run serve"
+  },
+  "betterScripts": {
+    "build": {
+      "command": "webpack",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "serve": {
+      "command": "npm run build && node build/bundle.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -22,6 +36,7 @@
   },
   "homepage": "https://github.com/theborderland/realities#readme",
   "dependencies": {
+    "better-npm-run": "^0.1.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
