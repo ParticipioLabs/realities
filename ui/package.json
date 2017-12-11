@@ -6,14 +6,6 @@
     "npm": "5.5.1",
     "node": "8.9.1"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/theborderland/realities.git"
-  },
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/theborderland/realities/issues"
-  },
   "homepage": "",
   "scripts": {
     "start": "node scripts/start.js",

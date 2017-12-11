@@ -26,15 +26,6 @@
       }
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/theborderland/realities.git"
-  },
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/theborderland/realities/issues"
-  },
-  "homepage": "https://github.com/theborderland/realities#readme",
   "dependencies": {
     "better-npm-run": "^0.1.0",
     "body-parser": "^1.18.2",

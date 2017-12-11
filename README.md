@@ -11,23 +11,11 @@ To report a bug or suggest a specific improvement or feature, create an issue ri
 If you want to chat to other members of the community and collaborate in real-time, head over to our [Gitter](https://gitter.im/realities).
 
 ## Install and run locally
-
-### Backend
-
 ```bash
-$ cd api/
 $ npm install
-$ npm start
+$ npm run dev
 ```
 
 Explore the API using GraphiQL at [http://localhost:3100/graphiql](http://localhost:3100/graphiql). 
-
-### Frontend
-
-```bash
-$ cd ui/
-$ npm install
-$ npm start
-```
 
 The structure of the frontend code is inspired by an [article written by Alexis Mangin](https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1). It'll allow us to keep the project structured and consitent as the codebase grows. 
