@@ -33,7 +33,7 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
     return needs.map((need, i) => {
       const selected = need === selectedNeed;
       return (
-/*
+      /*
   .active {
     background-color: #00cf19;
     color: #fff;

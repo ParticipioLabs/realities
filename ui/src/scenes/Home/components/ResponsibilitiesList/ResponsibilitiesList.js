@@ -35,7 +35,7 @@ const renderListItems = (responsibilities, onSelectResponsibility, selectedResp)
   }
   return null;
 };
-        /*
+/*
 const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility }) => (
   <div>
     <RealitiesListHeader>Responsibilities</RealitiesListHeader>

@@ -9,32 +9,36 @@ const RealitiesListGroupItem = styled(ListGroupItem)`
     background-color: #00cf19;
     color: #fff;
     }
-`
-const DependencyList = function({ dependsOnNeeds, dependsOnResponsibilities, onSelectDependency, selectedDependency }) {
+`;
+const DependencyList = function ({
+  dependsOnNeeds, dependsOnResponsibilities, onSelectDependency, selectedDependency,
+}) {
   const dependencies = _concat(dependsOnNeeds, dependsOnResponsibilities);
   return (
-  <div>
-    <ListGroup>
-      {dependencies && dependencies.map((dependency, i) => (
-        <RealitiesListGroupItem
-          key={i}
-          className={dependency === selectedDependency && "active"}
-          onClick={() => onSelectDependency(dependency)}>
-          {dependency.title}
-        </RealitiesListGroupItem>
+    <div>
+      <ListGroup>
+        {dependencies && dependencies.map((dependency, i) => (
+          <RealitiesListGroupItem
+            key={i}
+            className={dependency === selectedDependency && 'active'}
+            onClick={() => onSelectDependency(dependency)}
+          >
+            {dependency.title}
+          </RealitiesListGroupItem>
       ))}
-    </ListGroup>
-  </div>
-)};
+      </ListGroup>
+    </div>
+  );
+};
 
 DependencyList.defaultProps = {
   dependsOnNeeds: [],
-  dependsOnResponsibilities: []
+  dependsOnResponsibilities: [],
 };
 
 DependencyList.propTypes = {
   dependsOnNeeds: PropTypes.array,
-  dependsOnResponsibilities: PropTypes.array
+  dependsOnResponsibilities: PropTypes.array,
 };
 
 export default DependencyList;
