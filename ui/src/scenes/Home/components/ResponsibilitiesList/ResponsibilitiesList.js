@@ -56,12 +56,13 @@ const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility, select
 
 ResponsibilitiesList.defaultProps = {
   responsibilities: [],
+  selectedResp: {},
 };
 
 ResponsibilitiesList.propTypes = {
-  responsibilities: PropTypes.array,
+  responsibilities: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectResponsibility: PropTypes.func.isRequired,
-  selectedResp: PropTypes.object,
+  selectedResp: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
 
 

@@ -38,7 +38,8 @@ class Home extends React.Component {
             <NeedsList
               needs={needs}
               onSelectNeed={this.onSelectNeed}
-              selectedNeed={this.state.selectedNeed}/>
+              selectedNeed={this.state.selectedNeed}
+            />
           </Col>
           <Col>
             <ResponsibilitiesList

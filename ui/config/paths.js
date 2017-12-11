@@ -1,5 +1,3 @@
-'use strict';
-
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
@@ -11,19 +9,20 @@ const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const envPublicUrl = process.env.PUBLIC_URL;
 
-function ensureSlash(path, needsSlash) {
-  const hasSlash = path.endsWith('/');
+function ensureSlash(input, needsSlash) {
+  const hasSlash = input.endsWith('/');
   if (hasSlash && !needsSlash) {
-    return path.substr(path, path.length - 1);
+    return input.substr(input, input.length - 1);
   } else if (!hasSlash && needsSlash) {
-    return `${path}/`;
-  } else {
-    return path;
+    return `${input}/`;
   }
+  return input;
 }
 
+/* eslint-disable import/no-dynamic-require */
 const getPublicUrl = appPackageJson =>
-  envPublicUrl || require(appPackageJson).homepage;
+  envPublicUrl || require(appPackageJson).homepage; // eslint-disable-line global-require
+/* eslint-enable import/no-dynamic-require */
 
 // We use `PUBLIC_URL` environment variable or "homepage" field to infer
 // "public path" at which the app is served.
