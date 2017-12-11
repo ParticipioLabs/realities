@@ -9,18 +9,26 @@ transaction.run(
 	RETURN need', 
 	{titleParam: 'titleGoesHere'});
 
-// createNeedResponsibility Resolver
+// createNeedResponsibilityMutation Resolver
 // When we have auth, this should also take RealityGuide at creation
 // This write query also ensures that you can't create a responsibility with the same title as another responsibility for the same need
 transaction.run(
 	'MATCH (need) 
-	WHERE ID(need) = {needIdParam} 
+	WHERE need.nodeId = {needIdParam} 
 	MERGE (resp:Responsibility {title:{titleParam}}) -[:FULFILLS]-> (need)
     WITH (resp)
     SET resp.nodeId = ID(resp)
 	RETURN resp', 
 	{needIdParam: 'needIdGoesHere', titleParam: 'titleGoesHere'};)
 
-// removeResponsibility Resolver
+// removeResponsibilityMutation Resolver
 // Sets is_deleted timestamp to 
-transaction.run('MATCH (resp) WHERE ID(resp) = {respIdParam} WITH (resp) MATCH (resp)-[r]-() SET resp.is_deleted = timestamp() SET r.is_deleted =  timestamp() RETURN resp, r',{respIdParam: 'needIdGoesHere'};)
+transaction.run(
+	'MATCH (resp) 
+	WHERE resp.nodeId = {respIdParam} 
+	WITH (resp) 
+	MATCH (resp)-[r]-() 
+	SET resp.is_deleted = timestamp() 
+	SET r.is_deleted =  timestamp() 
+	RETURN resp, r',
+	{respIdParam: 'needIdGoesHere'};)

@@ -13,6 +13,7 @@ const RealitiesListHeader = styled.p`
 `;
 const RealitiesListGroupItem = styled(ListGroupItem)`
     background-color: ${props => (props.selected ? '#843cfd' : '#fff')};
+    color: ${props => (props.selected ? '#fff' : '#666')};
 `;
 
 const renderListItems = (responsibilities, onSelectResponsibility, selectedResp) => {
@@ -26,6 +27,7 @@ const renderListItems = (responsibilities, onSelectResponsibility, selectedResp)
           selected={selected}
           onClick={() => onSelectResponsibility(responsibility)}
         >
+
           {responsibility.title}
         </RealitiesListGroupItem>
       );
@@ -33,7 +35,15 @@ const renderListItems = (responsibilities, onSelectResponsibility, selectedResp)
   }
   return null;
 };
-
+        /*
+const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility }) => (
+  <div>
+    <RealitiesListHeader>Responsibilities</RealitiesListHeader>
+    <ListGroup>
+      {responsibilities && responsibilities.map((responsibility, i) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <RealitiesListGroupItem key={i} onClick={() => onSelectResponsibility(responsibility)}>
+*/
 
 const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility, selectedResp }) => (
   <div>

@@ -75,10 +75,23 @@ export default graphql(gql`
       nodeId
       title
       description
+      guide { name }
+      realizer { name }
+      dependsOnNeeds {
+        title
+        description
+      }
+      dependsOnResponsibilites {
+        title
+        description
+        guide { name }
+      }
       fulfilledBy {
         nodeId
         title
         description
+        guide { name }
+        realizer { name}
       }
     }
   }
