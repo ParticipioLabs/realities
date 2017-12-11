@@ -11,6 +11,7 @@ import {
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
+import TokenField from './components/DetailView/TokenField';
 
 class Home extends React.Component {
   constructor() {
