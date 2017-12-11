@@ -114,6 +114,17 @@ class DetailView extends Component {
               /> : <div /> }
             </DescriptionDiv>
 
+              <InputDiv><LabelSpan>Deliberation:</LabelSpan>
+              <Underlined>
+                {data.deliberationion ? <RIEInput
+                  value={data.deliberation.url}
+                  change={data => this.setState({ data: { deliberationUrl: data.deliberation.url } })}
+                  propName="deliberationUrl"
+                  validate={this.isStringAcceptable}
+                /> : <div /> }
+              </Underlined>
+            </InputDiv>
+
             <InputDiv><LabelSpan>Dependencies:</LabelSpan>
             <Card>
               <CardBody>
