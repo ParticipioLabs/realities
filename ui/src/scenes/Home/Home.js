@@ -34,14 +34,14 @@ class Home extends React.Component {
     return (
       <Container fluid>
         <Row>
-          <Col>
+          <Col sm={3}>
             <NeedsList
               needs={needs}
               onSelectNeed={this.onSelectNeed}
               selectedNeed={this.state.selectedNeed}
             />
           </Col>
-          <Col>
+          <Col sm={3}>
             <ResponsibilitiesList
               responsibilities={this.state.selectedNeed && this.state.selectedNeed.fulfilledBy}
               onSelectResponsibility={this.onSelectResponsibility}

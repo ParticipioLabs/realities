@@ -9,6 +9,14 @@ import { Badge, Card, CardImg, CardText, CardBody, CardBlock,
 
 import DependencyList from '../DependencyList';
 
+const InputDiv = styled.div`
+  margin: 1.0em 0 1.0em 0;
+`
+const LabelSpan = styled.span`
+  font-weight: bold;
+  margin-right: 0.5em;
+`
+
 
 const BadgeLabel = styled.span`
   border-radius: 4px;
@@ -34,8 +42,10 @@ const Title = styled(CardTitle)`
   display: inline-block;
 `;
 
-const Description = styled(CardText)`
-  width: 100%;
+const DescriptionDiv = styled.div`
+  border: none;
+  padding-left: 0;
+  margin-bottom: 1em;
 `;
 
 
@@ -49,6 +59,12 @@ class DetailView extends Component {
     }
   }
 
+  // Validate length of strings for title, guide nane, realizer name
+  isStringAcceptable = (string) => {
+    return (_.isString && string.length >= 1 && string.length <= 100);
+  };
+
+
   render() {
     if (this.state.data) {
       const { data } = this.state;
@@ -60,41 +76,45 @@ class DetailView extends Component {
               value={data.title}
               change={data => this.setState({ data: { title: data.title } })}
               propName="title"
-              validate={_.isString}
+              validate={this.isStringAcceptable}
             />
             </Title>
-            <br />
+            
 
-            <Underlined>
-              <RIEInput
-                value={data.guide && data.guide.name}
-                change={data => this.setState({ data: { guideName: data.guide.name } })}
-                propName="guideName"
-                validate={_.isString}
-              />
-            </Underlined>
-            <br />
+            <InputDiv><LabelSpan>Guide:</LabelSpan>
+              <Underlined>
+                {data.guide ? <RIEInput
+                  value={data.guide.name}
+                  change={data => this.setState({ data: { guideName: data.guide.name } })}
+                  propName="guideName"
+                  validate={this.isStringAcceptable}
+                /> : <div /> }
+              </Underlined>
+            </InputDiv>
 
-            <Underlined>
-              <RIEInput
-                value={data.realizer && data.realizer.name}
-                change={data => this.setState({ data: { realizerame: data.realizer.name } })}
-                propName="realizerName"
-                validate={_.isString}
-              />
-            </Underlined>
-            <br />
+            <InputDiv><LabelSpan>Realizer:</LabelSpan>
+              <Underlined>
+                {data.realizer ? <RIEInput
+                  value={data.realizer.name}
+                  change={data => this.setState({ data: { realizerName: data.realizer.name } })}
+                  propName="realizerName"
+                  validate={this.isStringAcceptable}
+                /> : <div /> }
+              </Underlined>
+            </InputDiv>
 
-
-            <Description>
+            <DescriptionDiv>
+              <div><LabelSpan>Description:</LabelSpan></div>
               {data.description ? <RIETextArea
                 value={data.description}
                 change={data => this.setState({ data: { description: data.description } })}
                 propName="description"
+                classEditing="form-control"
                 validate={_.isString}
               /> : <div /> }
-            </Description>
+            </DescriptionDiv>
 
+            <InputDiv><LabelSpan>Dependencies:</LabelSpan>
             <Card>
               <CardBody>
                 <Row>
@@ -107,9 +127,23 @@ class DetailView extends Component {
                 </Row>
               </CardBody>
             </Card>
+            </InputDiv>
+
+            <InputDiv><LabelSpan>Graph:</LabelSpan>
+            <Card>
+              <CardBody>
+                <Row>
+                  <Col>
+                    <div style={{height: '20' + 'em'}}></div>
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
+            </InputDiv>
 
           </CardBody>
         </Card>
+
       );
     }
     return <div />;
