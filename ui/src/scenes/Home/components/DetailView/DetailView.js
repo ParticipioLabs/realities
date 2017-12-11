@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Badge, Card, CardImg, CardText, CardBody,
-  CardTitle, CardSubtitle, Button } from 'reactstrap';
+import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
 import styled from 'styled-components';
 import { RIEInput, RIETextArea } from 'riek';
 import _ from 'lodash';
@@ -26,7 +25,7 @@ const Description = styled(CardText)`
 
 
 class DetailView extends Component {
-  state = { data: undefined }
+  state = { data: undefined };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps !== this.props && nextProps.data) {
@@ -43,16 +42,16 @@ class DetailView extends Component {
           <CardBody>
             <Title><RIEInput
               value={data.title}
-              change={data => this.setState({ data: { title: data.title } })}
+              change={newData => this.setState({ data: { title: newData.title } })}
               propName="title"
               validate={_.isString}
             />
             </Title>
-            <Label color={data && data.__typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.__typename}</Label>
+            <Label color={data && data.typename === 'Responsibility' ? 'green' : 'purple'}>{data && data.typename}</Label>
             <Description>
               {data.description ? <RIETextArea
                 value={data.description}
-                change={data => this.setState({ data: { description: data.description } })}
+                change={newData => this.setState({ data: { description: newData.description } })}
                 propName="description"
                 validate={_.isString}
               /> : <div /> }

@@ -43,7 +43,7 @@ const cssFilename = 'static/css/[name].[contenthash:8].css';
 // To have this structure working with relative paths, we have to use custom options.
 const extractTextPluginOptions = shouldUseRelativeAssetPaths
   ? // Making sure that the publicPath goes back to to build folder.
-  { publicPath: Array(cssFilename.split('/').length).join('../') }
+  { publicPath: new Array(cssFilename.split('/').length).join('../') }
   : {};
 
 // This is the production configuration.
@@ -78,9 +78,8 @@ module.exports = {
     // We placed these paths second because we want `node_modules` to "win"
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
-    modules: ['node_modules', paths.appNodeModules].concat(
-      // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)),
+    modules: ['node_modules', paths.appNodeModules].concat(process.env.NODE_PATH.split(path.delimiter).filter(Boolean)),
+    // It is guaranteed to exist because we tweak it in `env.js`
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
@@ -193,7 +192,7 @@ module.exports = {
                       // https://github.com/facebookincubator/create-react-app/issues/2677
                       ident: 'postcss',
                       plugins: () => [
-                        require('postcss-flexbugs-fixes'),
+                        require('postcss-flexbugs-fixes'), // eslint-disable-line global-require
                         autoprefixer({
                           browsers: [
                             '>1%',
@@ -312,7 +311,7 @@ module.exports = {
           // https://github.com/facebookincubator/create-react-app/issues/2612
           return;
         }
-        console.log(message);
+        console.warn(message); // eslint-disable-line no-console
       },
       minify: true,
       // For unknown URLs, fallback to the index page

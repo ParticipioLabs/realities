@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import styled from 'styled-components';
 
-const ListDiv = styled.div`
-  .list-heading {
-    color: green;
-  }
-  .list-area {
-    border: 1px solid red;
-  }
-`;
-
-const List = styled(ListGroup)`
-  color: red;
-`;
+// const ListDiv = styled.div`
+//   .list-heading {
+//     color: green;
+//   }
+//   .list-area {
+//     border: 1px solid red;
+//   }
+// `;
+//
+// const List = styled(ListGroup)`
+//   color: red;
+// `;
 
 const RealitiesListHeader = styled.p`
       font-size: 1.5em;
@@ -57,12 +57,13 @@ const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
 
 NeedsList.defaultProps = {
   needs: [],
+  selectedNeed: {},
 };
 
 NeedsList.propTypes = {
-  needs: PropTypes.array,
+  needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectNeed: PropTypes.func.isRequired,
-  selectedNeed: PropTypes.object,
+  selectedNeed: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
 
 export default NeedsList;

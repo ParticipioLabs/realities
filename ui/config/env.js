@@ -1,13 +1,12 @@
-
-
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 const paths = require('./paths');
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
 
-const NODE_ENV = process.env.NODE_ENV;
+const { NODE_ENV } = process.env;
 if (!NODE_ENV) {
   throw new Error('The NODE_ENV environment variable is required but was not specified.');
 }
@@ -29,7 +28,7 @@ const dotenvFiles = [
 // https://github.com/motdotla/dotenv
 dotenvFiles.forEach((dotenvFile) => {
   if (fs.existsSync(dotenvFile)) {
-    require('dotenv').config({
+    dotenv.config({
       path: dotenvFile,
     });
   }
@@ -59,7 +58,8 @@ function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
     .reduce(
-      (env, key) => {
+      (envVars, key) => {
+        const env = envVars;
         env[key] = process.env[key];
         return env;
       },
@@ -76,7 +76,8 @@ function getClientEnvironment(publicUrl) {
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
   const stringified = {
-    'process.env': Object.keys(raw).reduce((env, key) => {
+    'process.env': Object.keys(raw).reduce((envVars, key) => {
+      const env = envVars;
       env[key] = JSON.stringify(raw[key]);
       return env;
     }, {}),
