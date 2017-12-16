@@ -11,12 +11,12 @@ import DependencyList from '../DependencyList';
 
 const InputDiv = styled.div`
   margin: 1.0em 0 1.0em 0;
-`
+`;
+
 const LabelSpan = styled.span`
   font-weight: bold;
   margin-right: 0.5em;
-`
-
+`;
 
 const BadgeLabel = styled.span`
   border-radius: 4px;
@@ -26,6 +26,7 @@ const BadgeLabel = styled.span`
   color: white;
   float: right;
 `;
+
 const RealitiesInput = styled(Input)`
     padding-bottom: 0;
     border: none;
@@ -60,10 +61,7 @@ class DetailView extends Component {
   }
 
   // Validate length of strings for title, guide nane, realizer name
-  isStringAcceptable = (string) => {
-    return (_.isString && string.length >= 1 && string.length <= 100);
-  };
-
+  isStringAcceptable = string => _.isString && string.length >= 1 && string.length <= 100;
 
   render() {
     if (this.state.data) {
@@ -72,15 +70,14 @@ class DetailView extends Component {
         <Card>
           <CardBody>
             <BadgeLabel color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>{data && data.__typename}</BadgeLabel>
-            <Title><RIEInput
-              value={data.title}
-              change={data => this.setState({ data: { title: data.title } })}
-              propName="title"
-              validate={this.isStringAcceptable}
-            />
-            </Title>
-            
-
+            <Title>
+              <RIEInput
+                value={data.title}
+                change={data => this.setState({ data: { title: data.title } })}
+                propName="title"
+                validate={this.isStringAcceptable}
+              />
+            </Title>            
             <InputDiv><LabelSpan>Guide:</LabelSpan>
               <Underlined>
                 {data.guide ? <RIEInput
@@ -114,7 +111,8 @@ class DetailView extends Component {
               /> : <div /> }
             </DescriptionDiv>
 
-              <InputDiv><LabelSpan>Deliberation:</LabelSpan>
+            <InputDiv>
+              <LabelSpan>Deliberation:</LabelSpan>
               <Underlined>
                 {data.deliberationion ? <RIEInput
                   value={data.deliberation.url}
@@ -125,31 +123,33 @@ class DetailView extends Component {
               </Underlined>
             </InputDiv>
 
-            <InputDiv><LabelSpan>Dependencies:</LabelSpan>
-            <Card>
-              <CardBody>
-                <Row>
-                  <Col>
-                    <DependencyList
-                      dependsOnNeeds={this.dependsOnNeeds}
-                      dependsOnResponsibilities={this.dependsOnResponsibilities}
-                    />
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
+            <InputDiv>
+              <LabelSpan>Dependencies:</LabelSpan>
+              <Card>
+                <CardBody>
+                  <Row>
+                    <Col>
+                      <DependencyList
+                        dependsOnNeeds={this.dependsOnNeeds}
+                        dependsOnResponsibilities={this.dependsOnResponsibilities}
+                      />
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
             </InputDiv>
 
-            <InputDiv><LabelSpan>Graph:</LabelSpan>
-            <Card>
-              <CardBody>
-                <Row>
-                  <Col>
-                    <div style={{height: '20' + 'em'}}></div>
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
+            <InputDiv>
+              <LabelSpan>Graph:</LabelSpan>
+              <Card>
+                <CardBody>
+                  <Row>
+                    <Col>
+                      <div style={{ height: '20em' }}></div>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
             </InputDiv>
 
           </CardBody>

@@ -11,7 +11,10 @@ const RealitiesListGroupItem = styled(ListGroupItem)`
     }
 `;
 const DependencyList = function ({
-  dependsOnNeeds, dependsOnResponsibilities, onSelectDependency, selectedDependency,
+  dependsOnNeeds,
+  dependsOnResponsibilities,
+  onSelectDependency,
+  selectedDependency,
 }) {
   const dependencies = _concat(dependsOnNeeds, dependsOnResponsibilities);
   return (
