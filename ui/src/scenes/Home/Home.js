@@ -14,7 +14,7 @@ import {
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
-import TokenField from './components/DetailView/TokenField';
+import TokenField from './components/TokenField';
 
 const SearchForm = styled(Form)`
   margin-bottom: 1em;
