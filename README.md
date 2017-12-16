@@ -13,7 +13,7 @@ If you want to chat to other members of the community and collaborate in real-ti
 ## Install and run locally
 ```bash
 $ npm install
-$ npm run dev
+$ npm start
 ```
 
 Explore the API using GraphiQL at [http://localhost:3100/graphiql](http://localhost:3100/graphiql). 
