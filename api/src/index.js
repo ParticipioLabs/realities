@@ -80,9 +80,9 @@ const resolvers = {
     createNeed(_, params) {
       const session = driver.session();
       const query = `MERGE (need:Need {title:{title}} )
-    	WITH (need)
-    	SET need.nodeId = ID(need)
-    	RETURN need`;
+        WITH (need)
+        SET need.nodeId = ID(need)
+        RETURN need`;
 
       return session.run(query, params)
         .then((result) => {
