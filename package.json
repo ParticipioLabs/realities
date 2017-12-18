@@ -15,8 +15,9 @@
     "npm": "5.5.1"
   },
   "scripts": {
-    "dev": "concurrently --kill-others \"npm start --prefix api\" \"npm start --prefix ui\"",
-    "postinstall": "npm install --prefix api && npm install --prefix ui && npm run build --prefix api && npm run build --prefix ui"
+    "start": "concurrently --kill-others \"npm start --prefix api\" \"npm start --prefix ui\"",
+    "postinstall": "npm install --prefix api && npm install --prefix ui",
+    "build": "npm run build --prefix api && npm run build --prefix ui"
   },
   "dependencies": {
     "concurrently": "^3.5.1"

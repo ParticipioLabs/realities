@@ -8,13 +8,12 @@ import {
   Row,
   Col,
   Form,
-  Input
+  Input,
 } from 'reactstrap';
 
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
-import TokenField from './components/DetailView/TokenField';
 
 const SearchForm = styled(Form)`
   margin-bottom: 1em;
