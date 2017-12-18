@@ -12,6 +12,8 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
 
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -46,8 +48,10 @@ module.exports = {
     // require.resolve('webpack-dev-server/client') + '?/',
     // require.resolve('webpack/hot/dev-server'),
     require.resolve('react-dev-utils/webpackHotDevClient'),
+    // Path to bootstrap SCSS configuration overrides file.
+    //paths.appMainScss,
     // Finally, this is your app's code:
-    paths.appIndexJs,
+    paths.appIndexJs
     // We include the app code last so that if there is a runtime error during
     // initialization, it doesn't blow up the WebpackDevServer client, and
     // changing JS code would still trigger a refresh.
@@ -89,6 +93,10 @@ module.exports = {
 
       // Allow imports like @/components/..., @/services..., etc.
       '@': paths.appSrc,
+
+
+      //'bootstrap-sass$': 'bootstrap-sass/assets/stylesheets/bootstrap',
+       
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -152,43 +160,139 @@ module.exports = {
               cacheDirectory: true,
             },
           },
+          {
+            test: /\.(scss|css)$/,
+            exclude: /(?:node_modules\/.*\.(scss|css))|(?:custom_bootstrap\.scss)/,
+            use: ExtractTextPlugin.extract({
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: {
+                    modules: true,
+                    importLoaders: 2,
+                    sourceMap: true,
+                  },
+                },
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: true,
+                  },
+                },
+                {
+                  loader: 'postcss-loader',
+                },
+              ],
+              fallback: 'style-loader',
+            }),
+          },
+          {
+            test: /(?:node_modules\/.*\.(scss|css))|(?:custom_bootstrap\.scss)$/,
+            use: ExtractTextPlugin.extract({
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: {
+                    modules: false,
+                    importLoaders: 1,
+                    sourceMap: true,
+                  },
+                },
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: true,
+                  },
+                },
+              ],
+              fallback: 'style-loader',
+            }),
+          },
+          // {
+          //   test: /\.(scss|css)$/,
+          //   use: [
+          //     { loader: 'style-loader' },
+          //     {
+          //       loader: 'css-loader',
+          //       options: {
+          //         modules: true,
+          //         //importLoaders: 1,
+          //         sourceMap: true,
+          //         localIdentName: "[local]___[hash:base64:5]",
+          //       },
+          //     },
+          //     {
+          //       loader: 'sass-loader',
+          //       options: {
+          //         sourceMap: true,
+          //         outputStyle: 'expanded',
+          //       },
+          //     },
+          //   ], 
+          // },
+          // Adding these to pre-process bootstrap files.
+          // {
+          //   test: /\.woff2?$|\.ttf$|\.eot$|\.svg$/,
+          //   loader: "file"
+          // },
+          // {
+          //   test: /\.scss$/,
+          //   //loaders: ["style", "css", "sass"]
+          //   include: paths.appSrc,
+          //   use: [
+          //       {
+          //           loader: 'style-loader'
+          //       },
+          //       {
+          //           loader: 'css-loader',
+          //           options: {
+          //               modules: true,
+          //               sourceMap: true,
+          //               importLoaders: 1
+          //           }
+          //       },
+          //       {
+          //           loader: 'sass-loader'
+          //       }
+          //   ]
+          // },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
           // "style" loader turns CSS into JS modules that inject <style> tags.
           // In production, we use a plugin to extract that CSS to a file, but
           // in development "style" loader enables hot editing of CSS.
-          {
-            test: /\.css$/,
-            use: [
-              require.resolve('style-loader'),
-              {
-                loader: require.resolve('css-loader'),
-                options: {
-                  importLoaders: 1,
-                },
-              },
-              {
-                loader: require.resolve('postcss-loader'),
-                options: {
-                  // Necessary for external CSS imports to work
-                  // https://github.com/facebookincubator/create-react-app/issues/2677
-                  ident: 'postcss',
-                  plugins: () => [
-                    require('postcss-flexbugs-fixes'), // eslint-disable-line global-require
-                    autoprefixer({
-                      browsers: [
-                        '>1%',
-                        'last 4 versions',
-                        'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
-                      ],
-                      flexbox: 'no-2009',
-                    }),
-                  ],
-                },
-              },
-            ],
-          },
+          // {
+          //   test: /\.css$/,
+          //   use: [
+          //     require.resolve('style-loader'),
+          //     {
+          //       loader: require.resolve('css-loader'),
+          //       options: {
+          //         importLoaders: 1,
+          //       },
+          //     },
+          //     {
+          //       loader: require.resolve('postcss-loader'),
+          //       options: {
+          //         // Necessary for external CSS imports to work
+          //         // https://github.com/facebookincubator/create-react-app/issues/2677
+          //         ident: 'postcss',
+          //         plugins: () => [
+          //           require('postcss-flexbugs-fixes'), // eslint-disable-line global-require
+          //           autoprefixer({
+          //             browsers: [
+          //               '>1%',
+          //               'last 4 versions',
+          //               'Firefox ESR',
+          //               'not ie < 9', // React doesn't support IE8 anyway
+          //             ],
+          //             flexbox: 'no-2009',
+          //           }),
+          //         ],
+          //       },
+          //     },
+          //   ],
+          // },
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
           // In production, they would get copied to the `build` folder.
@@ -212,6 +316,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new ExtractTextPlugin('styles.[contenthash].css'),
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">

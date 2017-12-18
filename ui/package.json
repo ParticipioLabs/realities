@@ -36,7 +36,6 @@
     "bootstrap": "^4.0.0-beta.2",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
     "chalk": "1.1.3",
-    "css-loader": "0.28.7",
     "dotenv": "4.0.0",
     "eslint": "4.10.0",
     "eslint-config-airbnb": "^16.1.0",
@@ -46,7 +45,6 @@
     "eslint-plugin-jsx-a11y": "6.0.2",
     "eslint-plugin-react": "7.4.0",
     "extract-text-webpack-plugin": "3.0.2",
-    "file-loader": "1.1.5",
     "fs-extra": "3.0.1",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.6.0",
@@ -69,11 +67,9 @@
     "react-router-dom": "^4.2.2",
     "react-tag-input": "^4.7.2",
     "reactstrap": "^5.0.0-alpha.4",
-    "style-loader": "0.19.0",
     "styled-components": "^2.2.4",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.6.2",
-    "webpack": "3.8.1",
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3"
@@ -170,6 +166,12 @@
     }
   },
   "devDependencies": {
-    "riek": "^1.1.0"
+    "css-loader": "^0.28.7",
+    "file-loader": "^1.1.5",
+    "node-sass": "^4.7.2",
+    "riek": "^1.1.0",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.0",
+    "webpack": "^3.8.1"
   }
 }

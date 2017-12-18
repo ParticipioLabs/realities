@@ -11,14 +11,22 @@ import {
   NavItem,
   NavLink,
 } from 'reactstrap';
+import styled from 'styled-components';
 import Home from '@/scenes/Home';
 import About from '@/scenes/About';
+
+const RealitiesNavbarBrand = styled(NavbarBrand)`
+  text-shadow: 0px 1px #fff, 0px -1px #666;
+  text-transform: uppercase;
+  font-size: 2.75em;
+  font-weight: bold;
+`;
 
 const RoutesContainer = () => (
   <Router>
     <div>
       <Navbar color="faded" light expand="md">
-        <NavbarBrand tag={Link} to="/">Realities Platform</NavbarBrand>
+        <RealitiesNavbarBrand tag={Link} to="/">Realities Platform</RealitiesNavbarBrand>
         <Nav className="ml-auto" navbar>
           <NavItem>
             <NavLink tag={Link} to="/about">About</NavLink>

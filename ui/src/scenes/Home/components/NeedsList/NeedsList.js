@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import { ListGroup, ListGroupItem, Card } from 'reactstrap';
 import styled from 'styled-components';
 
 // const ListDiv = styled.div`
@@ -16,16 +16,21 @@ import styled from 'styled-components';
 //   color: red;
 // `;
 
-const RealitiesListHeader = styled.p`
+const RealitiesListHeader = styled(Card)`
       font-size: 1.5em;
       padding: .5em 0 .5em 0;
-      color: #fff;
       text-align:center;
+      color: #fff;
       background-color: #00cf19;
+      margin-bottom: 0.5em;
 `;
+
 const RealitiesListGroupItem = styled(ListGroupItem)`
-    background-color: ${props => (props.selected ? '#00cf19' : '#fff')};
-    color: ${props => (props.selected ? '#fff' : '#666')};
+    &.active { 
+      background-color: #00cf19;
+      border-color: #00cf19;
+      color: #fff;
+    }
 `;
 
 const renderListItems = (needs, onSelectNeed, selectedNeed) => {
@@ -33,23 +38,12 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
     return needs.map((need, i) => {
       const selected = need === selectedNeed;
       return (
-      /*
-  .active {
-    background-color: #00cf19;
-    color: #fff;
-    }
-`
-const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
-  <div>
-    <RealitiesListHeader>Needs</RealitiesListHeader>
-    <ListGroup>
-      {needs && needs.map((need, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-*/
         <RealitiesListGroupItem
-              // eslint-disable-next-line react/no-array-index-key
           key={i}
-          selected={selected}
+          tag="a"
+          href="#"
+          action
+          active={selected}
           onClick={() => onSelectNeed(need)}
         >
           {need.title}

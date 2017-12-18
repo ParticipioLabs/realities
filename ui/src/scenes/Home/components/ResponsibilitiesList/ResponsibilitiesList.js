@@ -1,19 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import { ListGroup, ListGroupItem, Card } from 'reactstrap';
 import styled from 'styled-components';
 
-const RealitiesListHeader = styled.p`
+const RealitiesListHeader = styled(Card)`
       font-size: 1.5em;
       padding: .5em 0 .5em 0;
       color: #fff;
       text-align:center;
       background-color: #843cfd;
+      margin-bottom:0.5em;
 `;
 const RealitiesListGroupItem = styled(ListGroupItem)`
-    background-color: ${props => (props.selected ? '#843cfd' : '#fff')};
-    color: ${props => (props.selected ? '#fff' : '#666')};
+  &.active { 
+    background-color: #843cfd;
+    border-color: #843cfd;
+    color: #fff;
+  }
 `;
 
 const renderListItems = (responsibilities, onSelectResponsibility, selectedResp) => {
@@ -22,9 +26,11 @@ const renderListItems = (responsibilities, onSelectResponsibility, selectedResp)
       const selected = responsibility === selectedResp;
       return (
         <RealitiesListGroupItem
-                // eslint-disable-next-line react/no-array-index-key
           key={i}
-          selected={selected}
+          tag="a"
+          href="#"
+          action
+          active={selected}
           onClick={() => onSelectResponsibility(responsibility)}
         >
 

@@ -2,6 +2,8 @@
 *.sublime-workspace
 package-lock.json
 .idea
+*~
+*.bak
 
 # Dependencies
 node_modules/
@@ -9,3 +11,4 @@ node_modules/
 
 # Misc
 *.log
+

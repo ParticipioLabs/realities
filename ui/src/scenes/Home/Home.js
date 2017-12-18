@@ -46,6 +46,7 @@ class Home extends React.Component {
           <Col sm={6}>
             <SearchForm>
               <Input
+                bsSize='lg'
                 placeholder={'Search for Need or Responsibility'}
                 />
             </SearchForm>
