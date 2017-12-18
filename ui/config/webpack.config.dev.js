@@ -208,54 +208,6 @@ module.exports = {
               fallback: 'style-loader',
             }),
           },
-          // {
-          //   test: /\.(scss|css)$/,
-          //   use: [
-          //     { loader: 'style-loader' },
-          //     {
-          //       loader: 'css-loader',
-          //       options: {
-          //         modules: true,
-          //         //importLoaders: 1,
-          //         sourceMap: true,
-          //         localIdentName: "[local]___[hash:base64:5]",
-          //       },
-          //     },
-          //     {
-          //       loader: 'sass-loader',
-          //       options: {
-          //         sourceMap: true,
-          //         outputStyle: 'expanded',
-          //       },
-          //     },
-          //   ], 
-          // },
-          // Adding these to pre-process bootstrap files.
-          // {
-          //   test: /\.woff2?$|\.ttf$|\.eot$|\.svg$/,
-          //   loader: "file"
-          // },
-          // {
-          //   test: /\.scss$/,
-          //   //loaders: ["style", "css", "sass"]
-          //   include: paths.appSrc,
-          //   use: [
-          //       {
-          //           loader: 'style-loader'
-          //       },
-          //       {
-          //           loader: 'css-loader',
-          //           options: {
-          //               modules: true,
-          //               sourceMap: true,
-          //               importLoaders: 1
-          //           }
-          //       },
-          //       {
-          //           loader: 'sass-loader'
-          //       }
-          //   ]
-          // },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
           // "style" loader turns CSS into JS modules that inject <style> tags.
