@@ -52,7 +52,6 @@ const DescriptionDiv = styled.div`
 
 class DetailView extends Component {
   state = { data: undefined }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps !== this.props && nextProps.data) {
       const { data } = nextProps;
@@ -130,8 +129,9 @@ class DetailView extends Component {
                   <Row>
                     <Col>
                       <DependencyList
-                        dependsOnNeeds={this.dependsOnNeeds}
-                        dependsOnResponsibilities={this.dependsOnResponsibilities}
+                        dependsOnNeeds={data.dependsOnNeeds}
+                        dependsOnResponsibilities={data.dependsOnResponsibilites}
+                        onSelectDependency={this.props.onSelectDependency}
                       />
                     </Col>
                   </Row>
