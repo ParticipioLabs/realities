@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import styled from 'styled-components';
-import _concat from 'lodash';
+import _ from 'lodash';
 
 const RealitiesListGroupItem = styled(ListGroupItem)`
   .active {
@@ -16,7 +16,7 @@ const DependencyList = function ({
   onSelectDependency,
   selectedDependency,
 }) {
-  const dependencies = _concat(dependsOnNeeds, dependsOnResponsibilities);
+  const dependencies = _.concat(dependsOnResponsibilities, dependsOnNeeds);
   return (
     <div>
       <ListGroup>
@@ -42,6 +42,7 @@ DependencyList.defaultProps = {
 DependencyList.propTypes = {
   dependsOnNeeds: PropTypes.array,
   dependsOnResponsibilities: PropTypes.array,
+  onSelectDependency: PropTypes.func.isRequired
 };
 
 export default DependencyList;

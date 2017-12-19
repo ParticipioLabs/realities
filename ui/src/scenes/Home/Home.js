@@ -27,6 +27,7 @@ class Home extends React.Component {
     this.state = { selectedNeed: null, selectedResponsibility: null };
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
+    this.onSelectDependency = this.onSelectDependency.bind(this);
   }
 
   onSelectNeed(need) {
@@ -35,6 +36,19 @@ class Home extends React.Component {
 
   onSelectResponsibility(responsibility) {
     this.setState({ selectedResponsibility: responsibility });
+  }
+
+  onSelectDependency(dependency) {
+    let needs = this.props.data.needs;
+    if(dependency.__typename === 'Responsibility') {
+      let need = _.find(needs, function(o) { return o.nodeId === dependency.fulfills.nodeId})
+      let responsibility = _.find(need.fulfilledBy, function(o) { return o.nodeId === dependency.nodeId});
+      this.onSelectNeed(need);
+      this.onSelectResponsibility(responsibility);
+    } else {
+      let need = _.find(needs, function(o) { return o.nodeId === dependency.nodeId; });
+      this.onSelectNeed(need);
+    }
   }
 
   render() {
@@ -67,7 +81,10 @@ class Home extends React.Component {
             </Row>
           </Col>
           <Col>
-            <DetailView data={this.state.selectedResponsibility || this.state.selectedNeed} />
+            <DetailView 
+              data={this.state.selectedResponsibility || this.state.selectedNeed} 
+              onSelectDependency={this.onSelectDependency}
+            />
           </Col>
         </Row>
       </Container>
@@ -96,13 +113,19 @@ export default graphql(gql`
       guide { name }
       realizer { name }
       dependsOnNeeds {
+        nodeId
         title
         description
       }
       dependsOnResponsibilites {
+        nodeId
         title
         description
         guide { name }
+        fulfills {
+          nodeId
+          title
+        }
       }
       fulfilledBy {
         nodeId
@@ -110,6 +133,21 @@ export default graphql(gql`
         description
         guide { name }
         realizer { name}
+        dependsOnNeeds {
+          nodeId
+          title
+          description
+        }
+        dependsOnResponsibilites {
+          nodeId
+          title
+          description
+          guide { name }
+          fulfills {
+            nodeId
+            title
+          }
+        }
       }
     }
   }
