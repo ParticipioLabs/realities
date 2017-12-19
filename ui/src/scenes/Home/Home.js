@@ -41,10 +41,16 @@ class Home extends React.Component {
   onSelectDependency(dependency) {
     let needs = this.props.data.needs;
     if(dependency.__typename === 'Responsibility') {
-      let need = _.find(needs, function(o) { return o.nodeId === dependency.fulfills.nodeId})
-      let responsibility = _.find(need.fulfilledBy, function(o) { return o.nodeId === dependency.nodeId});
-      this.onSelectNeed(need);
-      this.onSelectResponsibility(responsibility);
+      try {
+        let need = _.find(needs, function(o) { return o.nodeId === dependency.fulfills.nodeId})
+        let responsibility = _.find(need.fulfilledBy, function(o) { return o.nodeId === dependency.nodeId});
+        this.onSelectNeed(need);
+        this.onSelectResponsibility(responsibility);
+      }
+      catch(err) {
+        alert('Unfilfilled dependency?', err)
+      }
+      
     } else {
       let need = _.find(needs, function(o) { return o.nodeId === dependency.nodeId; });
       this.onSelectNeed(need);
