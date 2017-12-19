@@ -35,7 +35,7 @@ type Responsibility {
   description: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
-  fulfills: Need! @relation(name: "FULFILLS", direction:"OUT")
+  fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
   dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
 }
