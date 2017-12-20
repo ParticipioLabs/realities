@@ -26,7 +26,7 @@ const RealitiesListHeader = styled(Card)`
 `;
 
 const RealitiesListGroupItem = styled(ListGroupItem)`
-    &.active { 
+    &.active {
       background-color: #00cf19;
       border-color: #00cf19;
       color: #fff;
@@ -62,6 +62,7 @@ const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
     </ListGroup>
   </div>
 );
+
 
 NeedsList.defaultProps = {
   needs: [],

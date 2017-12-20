@@ -9,8 +9,12 @@ import {
   Col,
   Form,
   Input,
+  InputGroup,
+  InputGroupButton,
+  Button,
 } from 'reactstrap';
 import _ from 'lodash';
+import CreateNeed from './components/CreateNeed';
 
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
@@ -25,7 +29,7 @@ class Home extends React.Component {
   constructor() {
     super();
 
-    this.state = { selectedNeed: null, selectedResponsibility: null };
+    this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
@@ -57,6 +61,7 @@ class Home extends React.Component {
   }
 
   render() {
+    const { newNeed } = this.state;
     const { needs } = this.props.data;
     return (
       <Container fluid>
@@ -74,7 +79,9 @@ class Home extends React.Component {
                   needs={needs}
                   onSelectNeed={this.onSelectNeed}
                   selectedNeed={this.state.selectedNeed}
+                  createNewNeed={this.createNewNeed}
                 />
+                <Button onClick={() => this.setState({ newNeed: true })}>New Need</Button>
               </Col>
               <Col sm={6}>
                 <ResponsibilitiesList
@@ -91,6 +98,10 @@ class Home extends React.Component {
               onSelectDependency={this.onSelectDependency}
             />
           </Col>
+          <CreateNeed
+            newNeed={newNeed}
+            onSelectDependency={this.onSelectDependency}
+          />
         </Row>
       </Container>
     );
