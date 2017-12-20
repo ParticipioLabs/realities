@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 
 const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
@@ -72,7 +72,7 @@ module.exports = function (proxy, allowedHost) { // eslint-disable-line func-nam
         `^(?!${path
           .normalize(`${paths.appSrc}/`)
           .replace(/[\\]+/g, '\\\\')}).+[\\\\/]node_modules[\\\\/]`,
-        'g'
+        'g',
       ),
     },
     // Enable HTTPS if the HTTPS environment variable is set to 'true'
