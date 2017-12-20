@@ -10,6 +10,7 @@ import {
   Form,
   Input,
 } from 'reactstrap';
+import _ from 'lodash';
 
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
