@@ -39,20 +39,18 @@ class Home extends React.Component {
   }
 
   onSelectDependency(dependency) {
-    let needs = this.props.data.needs;
-    if(dependency.__typename === 'Responsibility') {
+    const needs = this.props.data.needs;
+    if (dependency.__typename === 'Responsibility') {
       try {
-        let need = _.find(needs, function(o) { return o.nodeId === dependency.fulfills.nodeId})
-        let responsibility = _.find(need.fulfilledBy, function(o) { return o.nodeId === dependency.nodeId});
+        const need = _.find(needs, o => o.nodeId === dependency.fulfills.nodeId);
+        const responsibility = _.find(need.fulfilledBy, o => o.nodeId === dependency.nodeId);
         this.onSelectNeed(need);
         this.onSelectResponsibility(responsibility);
+      } catch (err) {
+        alert('Unfilfilled dependency?', err);
       }
-      catch(err) {
-        alert('Unfilfilled dependency?', err)
-      }
-      
     } else {
-      let need = _.find(needs, function(o) { return o.nodeId === dependency.nodeId; });
+      const need = _.find(needs, o => o.nodeId === dependency.nodeId);
       this.onSelectNeed(need);
     }
   }
@@ -65,9 +63,9 @@ class Home extends React.Component {
           <Col sm={6}>
             <SearchForm>
               <Input
-                bsSize='lg'
-                placeholder={'Search for Need or Responsibility'}
-                />
+                bsSize="lg"
+                placeholder="Search for Need or Responsibility"
+              />
             </SearchForm>
             <Row>
               <Col sm={6}>
@@ -87,8 +85,8 @@ class Home extends React.Component {
             </Row>
           </Col>
           <Col>
-            <DetailView 
-              data={this.state.selectedResponsibility || this.state.selectedNeed} 
+            <DetailView
+              data={this.state.selectedResponsibility || this.state.selectedNeed}
               onSelectDependency={this.onSelectDependency}
             />
           </Col>
