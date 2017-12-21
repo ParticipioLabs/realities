@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
 import styled from 'styled-components';
 import _ from 'lodash';
 
-const RealitiesListGroupItem = styled(ListGroupItem)`
-  .active {
-    background-color: #00cf19;
-    color: #fff;
-    }
-`;
+const RealitiesBadge = styled(Badge)`
+  margin-right: .5em;
+  background-color: ${ props => props.dependency.__typename === 'Need' ? '#00cf19' : '#843cfd' };
+`
+
 const DependencyList = function ({
   dependsOnNeeds,
   dependsOnResponsibilities,
@@ -21,13 +20,22 @@ const DependencyList = function ({
     <div>
       <ListGroup>
         {dependencies && dependencies.map((dependency, i) => (
-          <RealitiesListGroupItem
+
+          <ListGroupItem
             key={i}
-            className={dependency === selectedDependency && 'active'}
+            tag="a"
+            href="#"
+            action
+            active={dependency === selectedDependency}
             onClick={() => onSelectDependency(dependency)}
           >
+            <RealitiesBadge dependency={dependency}>{dependency.__typename[0]}</RealitiesBadge>
             {dependency.title}
-          </RealitiesListGroupItem>
+            {/*}This also works, see the custom scss file.
+            <Badge color={
+              dependency.__typename === 'Need' ? 'need' : 'responsibility'
+            }>{dependency.__typename[0]}</Badge>{dependency.title} */}
+          </ListGroupItem>
       ))}
       </ListGroup>
     </div>

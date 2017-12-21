@@ -19,4 +19,16 @@ $enable-gradients: true;
 $enable-shadows: true;
 $navbar-light-active-color: #aaa;
 
+$need-color: #00cf19;
+$responsibility-color: #843cfd;
+
+.badge-need {
+    color: #fff;
+    background-color: $need-color;
+}
+.badge-responsibility {
+    color: #fff;
+	background-color: $responsibility-color;
+}
+
 @import '~bootstrap/scss/bootstrap.scss';

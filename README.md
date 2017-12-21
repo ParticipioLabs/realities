@@ -11,6 +11,9 @@ To report a bug or suggest a specific improvement or feature, create an issue ri
 If you want to chat to other members of the community and collaborate in real-time, head over to our [Gitter](https://gitter.im/realities).
 
 ## Install and run locally
+
+Make sure you're running node 8.9.x or later, then...
+
 ```bash
 $ npm install
 $ npm start

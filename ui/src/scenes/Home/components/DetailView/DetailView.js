@@ -78,7 +78,7 @@ class DetailView extends Component {
                 propName="title"
                 validate={this.isStringAcceptable}
               />
-            </Title>            
+            </Title>
             <InputDiv><LabelSpan>Guide:</LabelSpan>
               <Underlined>
                 {data.guide ? <RIEInput
@@ -166,59 +166,6 @@ class DetailView extends Component {
     return <div />;
   }
 }
-/*
-const DetailView = ({ data }) => {
-  console.log(data);
-  return (
-    <Card>
-      <CardBody>
-        <CardTitle><BadgeLabel color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>{data && data.__typename}</BadgeLabel> {data && data.title} </CardTitle>
-          <Form>
-            <FormGroup row>
-              <Label for="guideName" sm={3}>Guide</Label>
-              <Col sm={9}>
-                <RealitiesInput type="text" name="guide" id="guideName" placeholder={data && data.guide.name} />
-              </Col>
-            </FormGroup>
-            <FormGroup row>
-             <Label for="realizerName" sm={3}>Realizer</Label>
-              <Col sm={9}>
-                <RealitiesInput type="text" name="realizer" id="realizerName" placeholder={data && data.realizer.name} />
-              </Col>
-            </FormGroup>
-            <FormGroup row>
-              <Label for="descriptionName" sm={4}>Description</Label>
-              <Col sm={12}>
-                <FormText name="description" id="descriptionName">
-                 {data && data.description}
-                 </FormText>
-              </Col>
-            </FormGroup>
-            <FormGroup row>
-             <Label for="deliberationName" sm={4}>Deliberation</Label>
-              <Col sm={8}>
-                <RealitiesInput type="text" name="deliberation" id="deliberationName" placeholder={data && data.deliberation} />
-              </Col>
-            </FormGroup>
-          </Form>
-
-      <Card>
-        <CardBody>
-             <Row>
-               <Col>
-                 <DependencyList
-                  dependsOnNeeds={this.dependsOnNeeds}
-                  dependsOnResponsibilities={this.dependsOnResponsibilities}
-                />
-               </Col>
-              </Row>
-        </CardBody>
-      </Card>
-    </CardBody>
-  </Card>
-  );
-};
-*/
 
 DetailView.defaultProps = {
   data: { title: '', description: '' },

@@ -1,9 +1,20 @@
-import React from "react";
-import gql from "graphql-tag";
-import PropTypes from "prop-types";
-import { graphql } from "react-apollo";
-import styled from "styled-components";
-import { Container, Row, Col, Form, Input } from "reactstrap";
+import React from 'react';
+import gql from 'graphql-tag';
+import PropTypes from 'prop-types';
+import { graphql } from 'react-apollo';
+import styled from 'styled-components';
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Input,
+  InputGroup,
+  InputGroupButton,
+  Button,
+} from 'reactstrap';
+import _ from 'lodash';
+import CreateNeed from './components/CreateNeed';
 
 import NeedsList from "./components/NeedsList";
 import ResponsibilitiesList from "./components/ResponsibilitiesList";
@@ -18,7 +29,7 @@ class Home extends React.Component {
   constructor() {
     super();
 
-    this.state = { selectedNeed: null, selectedResponsibility: null };
+    this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
@@ -33,25 +44,24 @@ class Home extends React.Component {
   }
 
   onSelectDependency(dependency) {
-    let needs = this.props.data.needs;
-    if (dependency.__typename === "Responsibility") {
-      let need = _.find(needs, function(o) {
-        return o.nodeId === dependency.fulfills.nodeId;
-      });
-      let responsibility = _.find(need.fulfilledBy, function(o) {
-        return o.nodeId === dependency.nodeId;
-      });
-      this.onSelectNeed(need);
-      this.onSelectResponsibility(responsibility);
+    const needs = this.props.data.needs;
+    if (dependency.__typename === 'Responsibility') {
+      try {
+        const need = _.find(needs, o => o.nodeId === dependency.fulfills.nodeId);
+        const responsibility = _.find(need.fulfilledBy, o => o.nodeId === dependency.nodeId);
+        this.onSelectNeed(need);
+        this.onSelectResponsibility(responsibility);
+      } catch (err) {
+        alert('Unfilfilled dependency?', err);
+      }
     } else {
-      let need = _.find(needs, function(o) {
-        return o.nodeId === dependency.nodeId;
-      });
+      const need = _.find(needs, o => o.nodeId === dependency.nodeId);
       this.onSelectNeed(need);
     }
   }
 
   render() {
+    const { newNeed } = this.state;
     const { needs } = this.props.data;
     const { responsibilities } = this.props.data;
     return (
@@ -61,7 +71,7 @@ class Home extends React.Component {
             <SearchForm>
               <Input
                 bsSize="lg"
-                placeholder={"Search for Need or Responsibility"}
+                placeholder="Search for Need or Responsibility"
               />
             </SearchForm>
             <Row>
@@ -70,7 +80,9 @@ class Home extends React.Component {
                   needs={needs}
                   onSelectNeed={this.onSelectNeed}
                   selectedNeed={this.state.selectedNeed}
+                  createNewNeed={this.createNewNeed}
                 />
+                <Button onClick={() => this.setState({ newNeed: true })}>New Need</Button>
               </Col>
               <Col sm={6}>
                 <ResponsibilitiesList
@@ -86,14 +98,14 @@ class Home extends React.Component {
           </Col>
           <Col>
             <DetailView
-              data={
-                this.state.selectedResponsibility || this.state.selectedNeed
-              }
-              needs={needs}
-              responsibilities={responsibilities}
+              data={this.state.selectedResponsibility || this.state.selectedNeed}
               onSelectDependency={this.onSelectDependency}
             />
           </Col>
+          <CreateNeed
+            newNeed={newNeed}
+            onSelectDependency={this.onSelectDependency}
+          />
         </Row>
       </Container>
     );
