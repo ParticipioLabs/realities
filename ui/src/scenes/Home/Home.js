@@ -16,9 +16,9 @@ import {
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
 
-import NeedsList from './components/NeedsList';
-import ResponsibilitiesList from './components/ResponsibilitiesList';
-import DetailView from './components/DetailView';
+import NeedsList from "./components/NeedsList";
+import ResponsibilitiesList from "./components/ResponsibilitiesList";
+import DetailView from "./components/DetailView";
 
 const SearchForm = styled(Form)`
   margin-bottom: 1em;
@@ -63,6 +63,7 @@ class Home extends React.Component {
   render() {
     const { newNeed } = this.state;
     const { needs } = this.props.data;
+    const { responsibilities } = this.props.data;
     return (
       <Container fluid>
         <Row>
@@ -85,7 +86,10 @@ class Home extends React.Component {
               </Col>
               <Col sm={6}>
                 <ResponsibilitiesList
-                  responsibilities={this.state.selectedNeed && this.state.selectedNeed.fulfilledBy}
+                  responsibilities={
+                    this.state.selectedNeed &&
+                    this.state.selectedNeed.fulfilledBy
+                  }
                   onSelectResponsibility={this.onSelectResponsibility}
                   selectedResp={this.state.selectedResponsibility}
                 />
@@ -110,14 +114,14 @@ class Home extends React.Component {
 
 Home.defaultProps = {
   data: {
-    needs: [],
-  },
+    needs: []
+  }
 };
 
 Home.propTypes = {
   data: PropTypes.shape({
-    needs: PropTypes.array,
-  }),
+    needs: PropTypes.array
+  })
 };
 
 export default graphql(gql`
@@ -126,8 +130,14 @@ export default graphql(gql`
       nodeId
       title
       description
-      guide { name }
-      realizer { name }
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
       dependsOnNeeds {
         nodeId
         title
@@ -137,7 +147,44 @@ export default graphql(gql`
         nodeId
         title
         description
-        guide { name }
+        guide {
+          nodeId
+          name
+        }
+        realizer {
+          nodeId
+          name
+        }
+        fulfills {
+          nodeId
+          title
+        }
+      }
+      needsThatDependOnThis {
+        nodeId
+        title
+        description
+        guide {
+          nodeId
+          name
+        }
+        realizer {
+          nodeId
+          name
+        }
+      }
+      responsibilitiesThatDependOnThis {
+        nodeId
+        title
+        description
+        guide {
+          nodeId
+          name
+        }
+        realizer {
+          nodeId
+          name
+        }
         fulfills {
           nodeId
           title
@@ -147,18 +194,82 @@ export default graphql(gql`
         nodeId
         title
         description
-        guide { name }
-        realizer { name}
+        guide {
+          nodeId
+          name
+        }
+        realizer {
+          nodeId
+          name
+        }
+        fulfills {
+          nodeId
+          title
+          description
+          guide {
+            nodeId
+            name
+          }
+          realizer {
+            nodeId
+            name
+          }
+        }
         dependsOnNeeds {
           nodeId
           title
           description
+          guide {
+            nodeId
+            name
+          }
+          realizer {
+            nodeId
+            name
+          }
         }
         dependsOnResponsibilites {
           nodeId
           title
           description
-          guide { name }
+          guide {
+            nodeId
+            name
+          }
+          realizer {
+            nodeId
+            name
+          }
+          fulfills {
+            nodeId
+            title
+          }
+        }
+        needsThatDependOnThis {
+          nodeId
+          title
+          description
+          guide {
+            nodeId
+            name
+          }
+          realizer {
+            nodeId
+            name
+          }
+        }
+        responsibilitiesThatDependOnThis {
+          nodeId
+          title
+          description
+          guide {
+            nodeId
+            name
+          }
+          realizer {
+            nodeId
+            name
+          }
           fulfills {
             nodeId
             title

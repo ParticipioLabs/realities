@@ -27,6 +27,8 @@ type Need {
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
   dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
+  needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
+  responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
 
 type Responsibility {
@@ -38,6 +40,8 @@ type Responsibility {
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
   dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
+  needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
+  responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
 
 type Query {
