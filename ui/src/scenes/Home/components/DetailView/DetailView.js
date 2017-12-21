@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { RIEInput, RIETextArea } from 'riek';
 import _ from 'lodash';
+import graphUtils from '@/services/graphUtils';
 
 import { Badge, Card, CardImg, CardText, CardBody, CardBlock,
   CardTitle, CardSubtitle, Form, FormGroup, Label, Input, FormText, Row, Col, Button } from 'reactstrap';
 
 import DependencyList from '../DependencyList';
+
+import LocalGraph from '../LocalGraph';
 
 const InputDiv = styled.div`
   margin: 1.0em 0 1.0em 0;
@@ -48,7 +51,6 @@ const DescriptionDiv = styled.div`
   padding-left: 0;
   margin-bottom: 1em;
 `;
-
 
 class DetailView extends Component {
   state = { data: undefined }
@@ -145,7 +147,11 @@ class DetailView extends Component {
                 <CardBody>
                   <Row>
                     <Col>
-                      <div style={{ height: '20em' }}></div>
+                      <div style={{ height: '20em' }}>
+                        <LocalGraph 
+                          graph={graphUtils.getSubGraph(data)}
+                        />
+                      </div>
                     </Col>
                   </Row>
                 </CardBody>
