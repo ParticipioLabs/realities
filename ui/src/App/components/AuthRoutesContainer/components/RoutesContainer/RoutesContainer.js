@@ -6,11 +6,15 @@ import {
   Link,
 } from 'react-router-dom';
 import {
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Nav,
   Navbar,
   NavbarBrand,
-  Nav,
   NavItem,
   NavLink,
+  UncontrolledDropdown,
 } from 'reactstrap';
 import styled from 'styled-components';
 import history from '@/services/history';
@@ -34,13 +38,22 @@ const RoutesContainer = props => (
           <NavItem>
             <NavLink tag={Link} to="/about">About</NavLink>
           </NavItem>
-          <NavItem>
-            {props.auth.isLoggedIn ? (
-              <NavLink onClick={props.auth.logout} href="#">Logout</NavLink>
-            ) : (
+          {props.auth.isLoggedIn ? (
+            <UncontrolledDropdown nav>
+              <DropdownToggle nav caret>
+                {props.auth.email}
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>
+                  <NavLink onClick={props.auth.logout} href="#">Logout</NavLink>
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          ) : (
+            <NavItem>
               <NavLink onClick={props.auth.login} href="#">Login</NavLink>
-            )}
-          </NavItem>
+            </NavItem>
+          )}
         </Nav>
       </Navbar>
       <Route exact path="/" component={Home} />
@@ -52,6 +65,7 @@ const RoutesContainer = props => (
 RoutesContainer.defaultProps = {
   auth: {
     isLoggedIn: false,
+    email: 'example@example.com',
     login: () => null,
     logout: () => null,
   },
@@ -60,6 +74,7 @@ RoutesContainer.defaultProps = {
 RoutesContainer.propTypes = {
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,
+    email: PropTypes.string,
     login: PropTypes.func,
     logout: PropTypes.func,
   }),

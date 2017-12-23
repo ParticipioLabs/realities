@@ -8,7 +8,7 @@ const auth0 = new Auth0.WebAuth({
   audience: process.env.REACT_APP_AUTH0_AUDIENCE,
   redirectUri: process.env.REACT_APP_AUTH0_CALLBACK_URL,
   responseType: 'token id_token',
-  scope: 'openid email profile',
+  scope: 'openid email',
 });
 
 let handlers = [];
@@ -24,9 +24,12 @@ export default {
   handleAuthentication: () => {
     auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
+        console.log(authResult);
         store.set('auth', {
           accessToken: authResult.accessToken,
           idToken: authResult.idToken,
+          expiresIn: authResult.expiresIn,
+          email: authResult.idTokenPayload && authResult.idTokenPayload.email,
         });
         fireHandlers();
         history.replace('/');
@@ -43,6 +46,10 @@ export default {
   getAccessToken: () => {
     const storedAuth = store.get('auth') || {};
     return storedAuth.accessToken;
+  },
+  getEmail: () => {
+    const storedAuth = store.get('auth') || {};
+    return storedAuth.email;
   },
   subscribe: (fn) => {
     handlers.push(fn);

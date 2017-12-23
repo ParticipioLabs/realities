@@ -7,6 +7,7 @@ export default (WrappedComponent) => {
       login: auth.login,
       logout: auth.logout,
       isLoggedIn: auth.isLoggedIn(),
+      email: auth.getEmail(),
     };
   }
 
