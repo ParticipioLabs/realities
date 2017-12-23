@@ -5,6 +5,8 @@ import express from 'express';
 import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
+import jwt from 'express-jwt';
+import jwksRsa from 'jwks-rsa';
 import neo4jDriver from './db/neo4jDriver';
 
 const typeDefs = `
@@ -57,13 +59,13 @@ type Mutation {
 
 let driver;
 
-const context = (headers) => {
+const context = (user) => {
   if (!driver) {
     driver = neo4jDriver;
   }
   return {
     driver,
-    headers,
+    user,
   };
 };
 
@@ -113,8 +115,30 @@ const app = express();
 if (!NODE_ENV || NODE_ENV.includes('dev')) {
   app.use(cors());
 }
+
 app.use(express.static(path.resolve(__dirname, '../../ui/build'))); // Frontend files
-app.use('/graphql', bodyParser.json(), graphqlExpress(request => ({ schema, context: context(request.headers, process.env) })));
+
+app.use(jwt({
+  credentialsRequired: false,
+  // Dynamically provide a signing key based on the kid in the header
+  // and the singing keys provided by the JWKS endpoint
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: 'https://theborderland.eu.auth0.com/.well-known/jwks.json',
+  }),
+}));
+
+app.use(
+  '/graphql',
+  bodyParser.json(),
+  graphqlExpress(req => ({
+    schema,
+    context: context(req.user),
+  })),
+);
+
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 app.listen(API_PORT, () => {
