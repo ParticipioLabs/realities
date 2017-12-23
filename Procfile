@@ -1,1 +1,1 @@
-web: npm run serve --prefix api
+web: npm run serve
