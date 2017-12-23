@@ -9,16 +9,14 @@ import {
   Col,
   Form,
   Input,
-  InputGroup,
-  InputGroupButton,
   Button,
 } from 'reactstrap';
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
 
-import NeedsList from "./components/NeedsList";
-import ResponsibilitiesList from "./components/ResponsibilitiesList";
-import DetailView from "./components/DetailView";
+import NeedsList from './components/NeedsList';
+import ResponsibilitiesList from './components/ResponsibilitiesList';
+import DetailView from './components/DetailView';
 
 const SearchForm = styled(Form)`
   margin-bottom: 1em;
@@ -44,17 +42,22 @@ class Home extends React.Component {
   }
 
   onSelectDependency(dependency) {
-    const needs = this.props.data.needs;
+    const { needs } = this.props.data.needs;
+    console.log(this.props.data.needs);
+    console.log(needs);
     if (dependency.__typename === 'Responsibility') {
       try {
+        console.log('RESP');
         const need = _.find(needs, o => o.nodeId === dependency.fulfills.nodeId);
         const responsibility = _.find(need.fulfilledBy, o => o.nodeId === dependency.nodeId);
         this.onSelectNeed(need);
         this.onSelectResponsibility(responsibility);
       } catch (err) {
-        alert('Unfilfilled dependency?', err);
+        console.log(err);
+        // alert('Something went wrong', err);
       }
     } else {
+      console.log('NEED');
       const need = _.find(needs, o => o.nodeId === dependency.nodeId);
       this.onSelectNeed(need);
     }
@@ -63,7 +66,6 @@ class Home extends React.Component {
   render() {
     const { newNeed } = this.state;
     const { needs } = this.props.data;
-    const { responsibilities } = this.props.data;
     return (
       <Container fluid>
         <Row>
@@ -114,14 +116,14 @@ class Home extends React.Component {
 
 Home.defaultProps = {
   data: {
-    needs: []
-  }
+    needs: [],
+  },
 };
 
 Home.propTypes = {
   data: PropTypes.shape({
-    needs: PropTypes.array
-  })
+    needs: PropTypes.array,
+  }),
 };
 
 export default graphql(gql`

@@ -6,23 +6,24 @@ import _ from 'lodash';
 
 const RealitiesBadge = styled(Badge)`
   margin-right: .5em;
-  background-color: ${ props => props.dependency.__typename === 'Need' ? '#00cf19' : '#843cfd' };
-`
+  background-color: ${
+  props => (props.dependency.__typename === 'Need' ? '#00cf19' : '#843cfd')
+};`;
 
-const DependencyList = function ({
+const DependencyList = ({
   dependsOnNeeds,
   dependsOnResponsibilities,
   onSelectDependency,
   selectedDependency,
-}) {
+}) => {
   const dependencies = _.concat(dependsOnResponsibilities, dependsOnNeeds);
   return (
     <div>
       <ListGroup>
-        {dependencies && dependencies.map((dependency, i) => (
+        {dependencies && dependencies.map(dependency => (
 
           <ListGroupItem
-            key={i}
+            key={dependency.nodeId}
             tag="a"
             href="#"
             action
@@ -31,7 +32,7 @@ const DependencyList = function ({
           >
             <RealitiesBadge dependency={dependency}>{dependency.__typename[0]}</RealitiesBadge>
             {dependency.title}
-            {/*}This also works, see the custom scss file.
+            {/* This also works, see the custom scss file.
             <Badge color={
               dependency.__typename === 'Need' ? 'need' : 'responsibility'
             }>{dependency.__typename[0]}</Badge>{dependency.title} */}
@@ -45,12 +46,14 @@ const DependencyList = function ({
 DependencyList.defaultProps = {
   dependsOnNeeds: [],
   dependsOnResponsibilities: [],
+  selectedDependency: {},
 };
 
 DependencyList.propTypes = {
-  dependsOnNeeds: PropTypes.array,
-  dependsOnResponsibilities: PropTypes.array,
-  onSelectDependency: PropTypes.func.isRequired
+  dependsOnNeeds: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  dependsOnResponsibilities: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  onSelectDependency: PropTypes.func.isRequired,
+  selectedDependency: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
 
 export default DependencyList;

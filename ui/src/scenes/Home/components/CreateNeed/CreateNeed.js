@@ -10,8 +10,6 @@ import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 
 class CreateNeed extends Component {
-  state = { title: undefined }
-
   createNeedMutation = async () => {
     await this.props.createNeedMutation({
       variables: {
@@ -48,7 +46,13 @@ const CREATE_TEXT_MUTATION = gql`
 `;
 
 CreateNeed.propTypes = {
-  newNeed: PropTypes.boolean,
+  newNeed: PropTypes.bool,
+  createNeedMutation: PropTypes.func,
+};
+
+CreateNeed.defaultProps = {
+  newNeed: false,
+  createNeedMutation: PropTypes.func.isRequired,
 };
 
 export default graphql(CREATE_TEXT_MUTATION, { name: 'createNeedMutation' })(CreateNeed);

@@ -5,9 +5,7 @@ import { RIEInput, RIETextArea } from 'riek';
 import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
 
-import { Badge, Card, CardImg, CardText, CardBody, CardBlock,
-  CardTitle, CardSubtitle, Form, FormGroup, Label, Input, FormText, Row, Col, Button } from 'reactstrap';
-
+import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap';
 import DependencyList from '../DependencyList';
 
 import LocalGraph from '../LocalGraph';
@@ -28,12 +26,6 @@ const BadgeLabel = styled.span`
   display: inline-block;
   color: white;
   float: right;
-`;
-
-const RealitiesInput = styled(Input)`
-    padding-bottom: 0;
-    border: none;
-    border-bottom: 1px dotted #85bcf7;
 `;
 
 const Underlined = styled.div`
@@ -74,7 +66,7 @@ class DetailView extends Component {
             <Title>
               <RIEInput
                 value={data.title}
-                change={data => this.setState({ data: { title: data.title } })}
+                change={() => this.setState({ data: { title: data.title } })}
                 propName="title"
                 validate={this.isStringAcceptable}
               />
@@ -83,7 +75,7 @@ class DetailView extends Component {
               <Underlined>
                 {data.guide ? <RIEInput
                   value={data.guide.name}
-                  change={data => this.setState({ data: { guideName: data.guide.name } })}
+                  change={() => this.setState({ data: { guideName: data.guide.name } })}
                   propName="guideName"
                   validate={this.isStringAcceptable}
                 /> : <div /> }
@@ -94,7 +86,7 @@ class DetailView extends Component {
               <Underlined>
                 {data.realizer ? <RIEInput
                   value={data.realizer.name}
-                  change={data => this.setState({ data: { realizerName: data.realizer.name } })}
+                  change={() => this.setState({ data: { realizerName: data.realizer.name } })}
                   propName="realizerName"
                   validate={this.isStringAcceptable}
                 /> : <div /> }
@@ -105,7 +97,7 @@ class DetailView extends Component {
               <div><LabelSpan>Description:</LabelSpan></div>
               {data.description ? <RIETextArea
                 value={data.description}
-                change={data => this.setState({ data: { description: data.description } })}
+                change={() => this.setState({ data: { description: data.description } })}
                 propName="description"
                 classEditing="form-control"
                 validate={_.isString}
@@ -117,7 +109,7 @@ class DetailView extends Component {
               <Underlined>
                 {data.deliberationion ? <RIEInput
                   value={data.deliberation.url}
-                  change={data => this.setState({ data: { deliberationUrl: data.deliberation.url } })}
+                  change={() => this.setState({ data: { deliberationUrl: data.deliberation.url } })}
                   propName="deliberationUrl"
                   validate={this.isStringAcceptable}
                 /> : <div /> }
@@ -148,7 +140,7 @@ class DetailView extends Component {
                   <Row>
                     <Col>
                       <div style={{ height: '20em' }}>
-                        <LocalGraph 
+                        <LocalGraph
                           graph={graphUtils.getSubGraph(data)}
                         />
                       </div>
@@ -169,6 +161,7 @@ class DetailView extends Component {
 
 DetailView.defaultProps = {
   data: { title: '', description: '' },
+  onSelectDependency: PropTypes.func.isRequired,
 };
 
 DetailView.propTypes = {
@@ -176,6 +169,7 @@ DetailView.propTypes = {
     title: PropTypes.string,
     description: PropTypes.string,
   }),
+  onSelectDependency: PropTypes.func,
 };
 
 export default DetailView;

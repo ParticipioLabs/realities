@@ -22,11 +22,11 @@ const RealitiesListGroupItem = styled(ListGroupItem)`
 
 const renderListItems = (responsibilities, onSelectResponsibility, selectedResp) => {
   if (responsibilities) {
-    return responsibilities.map((responsibility, i) => {
+    return responsibilities.map((responsibility) => {
       const selected = responsibility === selectedResp;
       return (
         <RealitiesListGroupItem
-          key={i}
+          key={responsibility.nodeId}
           tag="a"
           href="#"
           action
