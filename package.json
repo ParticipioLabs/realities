@@ -21,6 +21,7 @@
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
+    "babel-eslint": "^8.0.3",
     "concurrently": "^3.5.1"
   }
 }

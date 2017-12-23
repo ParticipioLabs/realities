@@ -35,11 +35,11 @@ const RealitiesListGroupItem = styled(ListGroupItem)`
 
 const renderListItems = (needs, onSelectNeed, selectedNeed) => {
   if (needs) {
-    return needs.map((need, i) => {
+    return needs.map((need) => {
       const selected = need === selectedNeed;
       return (
         <RealitiesListGroupItem
-          key={i}
+          key={need.nodeId}
           tag="a"
           href="#"
           action
