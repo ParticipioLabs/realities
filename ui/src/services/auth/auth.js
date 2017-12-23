@@ -24,7 +24,6 @@ export default {
   handleAuthentication: () => {
     auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
-        console.log(authResult);
         store.set('auth', {
           accessToken: authResult.accessToken,
           idToken: authResult.idToken,
