@@ -4,12 +4,9 @@ import { ApolloLink, concat } from 'apollo-link';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import auth from '@/services/auth';
 
-const options = {};
-if (!process.env.NODE_ENV || process.env.NODE_ENV.includes('dev')) {
-  options.uri = 'http://localhost:3100/graphql';
-}
-
-const httpLink = new HttpLink(options);
+const httpLink = new HttpLink({
+  uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+});
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   const accessToken = auth.getAccessToken();
