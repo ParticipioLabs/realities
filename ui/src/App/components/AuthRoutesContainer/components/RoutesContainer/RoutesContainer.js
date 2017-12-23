@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Router,
   Route,
@@ -13,10 +14,9 @@ import {
 } from 'reactstrap';
 import styled from 'styled-components';
 import history from '@/services/history';
-import auth from '@/services/auth';
 import Home from '@/scenes/Home';
 import About from '@/scenes/About';
-import AuthCallback from '@/scenes/AuthCallback';
+import withAuth from '@/components/withAuth';
 
 const RealitiesNavbarBrand = styled(NavbarBrand)`
   text-shadow: 0px 1px #fff, 0px -1px #666;
@@ -25,7 +25,7 @@ const RealitiesNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
 `;
 
-const RoutesContainer = () => (
+const RoutesContainer = props => (
   <Router history={history}>
     <div>
       <Navbar color="faded" light expand="md">
@@ -35,18 +35,34 @@ const RoutesContainer = () => (
             <NavLink tag={Link} to="/about">About</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink onClick={auth.login} href="#">Login</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink onClick={auth.logout} href="#">Logout</NavLink>
+            {props.auth.isLoggedIn ? (
+              <NavLink onClick={props.auth.logout} href="#">Logout</NavLink>
+            ) : (
+              <NavLink onClick={props.auth.login} href="#">Login</NavLink>
+            )}
           </NavItem>
         </Nav>
       </Navbar>
       <Route exact path="/" component={Home} />
       <Route path="/about" component={About} />
-      <Route path="/auth-callback" component={AuthCallback} />
     </div>
   </Router>
 );
 
-export default RoutesContainer;
+RoutesContainer.defaultProps = {
+  auth: {
+    isLoggedIn: false,
+    login: () => null,
+    logout: () => null,
+  },
+};
+
+RoutesContainer.propTypes = {
+  auth: PropTypes.shape({
+    isLoggedIn: PropTypes.bool,
+    login: PropTypes.func,
+    logout: PropTypes.func,
+  }),
+};
+
+export default withAuth(RoutesContainer);

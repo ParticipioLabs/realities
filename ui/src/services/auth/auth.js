@@ -11,6 +11,12 @@ const auth0 = new Auth0.WebAuth({
   scope: 'openid email profile',
 });
 
+let handlers = [];
+
+function fireHandlers() {
+  handlers.forEach(fn => fn());
+}
+
 export default {
   login: () => {
     auth0.authorize({ dict_title: 'Realities' });
@@ -22,18 +28,26 @@ export default {
           accessToken: authResult.accessToken,
           idToken: authResult.idToken,
         });
+        fireHandlers();
         history.replace('/');
       } else if (err) {
         // Handle authentication error, for example by displaying a notification to the user
       }
     });
   },
+  logout: () => {
+    store.remove('auth');
+    fireHandlers();
+  },
+  isLoggedIn: () => !!store.get('auth'),
   getAccessToken: () => {
     const storedAuth = store.get('auth') || {};
     return storedAuth.accessToken;
   },
-  logout: () => {
-    store.remove('auth');
-    // Update redux or something to change the state of the app to unauthed
+  subscribe: (fn) => {
+    handlers.push(fn);
+  },
+  unsubscribe: (fn) => {
+    handlers = handlers.filter(item => item !== fn);
   },
 };
