@@ -78,14 +78,6 @@
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3",
-    // Added some dev dependencies to production temporarily
-    "babel-eslint": "^8.0.3",
-    "css-loader": "^0.28.7",
-    "file-loader": "^1.1.5",
-    "node-sass": "^4.7.2",
-    "riek": "^1.1.0",
-    "sass-loader": "^6.0.6",
-    "style-loader": "^0.19.0",
     "webpack": "^3.8.1"
   },
   "jest": {
