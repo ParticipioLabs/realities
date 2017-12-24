@@ -16,7 +16,7 @@ function pushNode(graph, originNode, node, nodeLabel, relation, direction) {
     });
     return graph;
   }
-  const trimmedLabel = ((node[nodeLabel].length < 12) ? node[nodeLabel] : `${node[nodeLabel].substring(0, 12)} , ...`);
+  const trimmedLabel = ((node[nodeLabel].length < 12) ? node[nodeLabel] : `${node[nodeLabel].substring(0, 12)}...`);
   if (!_.find(graph.nodes, { id: node.nodeId })) {
     graph.nodes.push({
       id: node.nodeId,
@@ -45,7 +45,7 @@ function pushNode(graph, originNode, node, nodeLabel, relation, direction) {
 }
 
 function getSubGraph(originNode) {
-  const trimmedLabel = ((originNode.title.length < 12) ? originNode.title : `${originNode.title.substring(0, 12)} , ...`);
+  const trimmedLabel = ((originNode.title.length < 12) ? originNode.title : `${originNode.title.substring(0, 12)}...`);
   const graph = {
     nodes: [
       {
