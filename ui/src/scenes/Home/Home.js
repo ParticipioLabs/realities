@@ -42,25 +42,28 @@ class Home extends React.Component {
   }
 
   onSelectDependency(dependency) {
-    const { needs } = this.props.data.needs;
-    console.log(this.props.data.needs);
-    console.log(needs);
-    if (dependency.__typename === 'Responsibility') {
-      try {
-        console.log('RESP');
-        const need = _.find(needs, o => o.nodeId === dependency.fulfills.nodeId);
-        const responsibility = _.find(need.fulfilledBy, o => o.nodeId === dependency.nodeId);
-        this.onSelectNeed(need);
-        this.onSelectResponsibility(responsibility);
-      } catch (err) {
-        console.log(err);
-        // alert('Something went wrong', err);
-      }
-    } else {
-      console.log('NEED');
-      const need = _.find(needs, o => o.nodeId === dependency.nodeId);
-      this.onSelectNeed(need);
-    }
+    const needsPromise = new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
+      resolve(this.props.data.needs);
+    });
+    needsPromise
+      .then((needs) => {
+        if (dependency.__typename === 'Responsibility') {
+          try {
+            console.log('RESP');
+            const need = _.find(needs, o => o.nodeId === dependency.fulfills.nodeId);
+            const responsibility = _.find(need.fulfilledBy, o => o.nodeId === dependency.nodeId);
+            this.onSelectNeed(need);
+            this.onSelectResponsibility(responsibility);
+          } catch (err) {
+            console.log(err);
+            // alert('Something went wrong', err);
+          }
+        } else {
+          console.log('NEED');
+          const need = _.find(needs, o => o.nodeId === dependency.nodeId);
+          this.onSelectNeed(need);
+        }
+      });
   }
 
   render() {
