@@ -6,7 +6,7 @@
     "npm": "5.5.1",
     "node": "8.9.1"
   },
-  "homepage": ".",
+  "homepage": "",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "better-npm-run build",
