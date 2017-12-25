@@ -116,8 +116,6 @@ if (!NODE_ENV || NODE_ENV.includes('dev')) {
   app.use(cors());
 }
 
-app.use(express.static(path.resolve(__dirname, '../../ui/build'))); // Frontend files
-
 app.use(jwt({
   credentialsRequired: false,
   // Dynamically provide a signing key based on the kid in the header
@@ -140,6 +138,12 @@ app.use(
 );
 
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+
+// Serve static frontend files.
+// NOTE: Temporary solution. Remove this once we deploy static files to its own place
+// to decrease coupling between backend and frontend code.
+app.use(express.static(path.resolve(__dirname, '../../ui/build')));
+app.use((req, res) => res.sendFile(path.resolve(__dirname, '../../ui/build/index.html')));
 
 app.listen(API_PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
