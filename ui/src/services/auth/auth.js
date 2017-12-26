@@ -27,7 +27,7 @@ export default {
         store.set('auth', {
           accessToken: authResult.accessToken,
           idToken: authResult.idToken,
-          expiresIn: authResult.expiresIn,
+          expiresAt: (authResult.expiresIn * 1000) + new Date().getTime(),
           email: authResult.idTokenPayload && authResult.idTokenPayload.email,
         });
         fireHandlers();
@@ -44,6 +44,12 @@ export default {
   isLoggedIn: () => !!store.get('auth'),
   getAccessToken: () => {
     const storedAuth = store.get('auth') || {};
+    const tokenExpired = storedAuth.expiresAt < new Date().getTime();
+    if (tokenExpired) {
+      store.remove('auth');
+      fireHandlers();
+      return null;
+    }
     return storedAuth.accessToken;
   },
   getEmail: () => {
