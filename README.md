@@ -12,7 +12,7 @@ If you want to chat to other members of the community and collaborate in real-ti
 
 ## Install and run locally
 
-Make sure you're running node 8.9.x or later, then...
+Make sure you're running the versions of node and npm specified in the api and ui package.json files (node 8.9.x and npm 5.5.x), then...
 
 ```bash
 $ npm install

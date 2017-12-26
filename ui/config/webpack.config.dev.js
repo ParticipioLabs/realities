@@ -9,10 +9,9 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
-
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -48,10 +47,8 @@ module.exports = {
     // require.resolve('webpack-dev-server/client') + '?/',
     // require.resolve('webpack/hot/dev-server'),
     require.resolve('react-dev-utils/webpackHotDevClient'),
-    // Path to bootstrap SCSS configuration overrides file.
-    //paths.appMainScss,
     // Finally, this is your app's code:
-    paths.appIndexJs
+    paths.appIndexJs,
     // We include the app code last so that if there is a runtime error during
     // initialization, it doesn't blow up the WebpackDevServer client, and
     // changing JS code would still trigger a refresh.
@@ -86,17 +83,11 @@ module.exports = {
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
-
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
-
       // Allow imports like @/components/..., @/services..., etc.
       '@': paths.appSrc,
-
-
-      //'bootstrap-sass$': 'bootstrap-sass/assets/stylesheets/bootstrap',
-       
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -160,6 +151,9 @@ module.exports = {
               cacheDirectory: true,
             },
           },
+          // Compile SCSS (and CSS) to include customised Bootstrap
+          // styles to the project according to this example project:
+          // https://github.com/larkintuckerllc/hello-reactstrap
           {
             test: /\.(scss|css)$/,
             exclude: /(?:node_modules\/.*\.(scss|css))|(?:custom_bootstrap\.scss)/,
@@ -208,43 +202,6 @@ module.exports = {
               fallback: 'style-loader',
             }),
           },
-          // "postcss" loader applies autoprefixer to our CSS.
-          // "css" loader resolves paths in CSS and adds assets as dependencies.
-          // "style" loader turns CSS into JS modules that inject <style> tags.
-          // In production, we use a plugin to extract that CSS to a file, but
-          // in development "style" loader enables hot editing of CSS.
-          // {
-          //   test: /\.css$/,
-          //   use: [
-          //     require.resolve('style-loader'),
-          //     {
-          //       loader: require.resolve('css-loader'),
-          //       options: {
-          //         importLoaders: 1,
-          //       },
-          //     },
-          //     {
-          //       loader: require.resolve('postcss-loader'),
-          //       options: {
-          //         // Necessary for external CSS imports to work
-          //         // https://github.com/facebookincubator/create-react-app/issues/2677
-          //         ident: 'postcss',
-          //         plugins: () => [
-          //           require('postcss-flexbugs-fixes'), // eslint-disable-line global-require
-          //           autoprefixer({
-          //             browsers: [
-          //               '>1%',
-          //               'last 4 versions',
-          //               'Firefox ESR',
-          //               'not ie < 9', // React doesn't support IE8 anyway
-          //             ],
-          //             flexbox: 'no-2009',
-          //           }),
-          //         ],
-          //       },
-          //     },
-          //   ],
-          // },
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
           // In production, they would get copied to the `build` folder.
@@ -268,7 +225,10 @@ module.exports = {
     ],
   },
   plugins: [
-    new ExtractTextPlugin('styles.[contenthash].css'),
+    // Extract all CSS (including SCSS) and put it in a separate file.
+    new ExtractTextPlugin({
+      filename: 'static/css/[name].[contenthash:8].css',
+    }),
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">

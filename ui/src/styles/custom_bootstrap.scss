@@ -1,0 +1,27 @@
+// Information on theming Bootstrap:
+// https://getbootstrap.com/docs/4.0/getting-started/theming/
+
+@import './_colors.scss';
+
+$brand-primary: $primary-color;
+$brand-danger: $error_color;
+$body-bg: $background-color;
+
+$enable-shadows: true;
+$enable-gradients: true;
+$enable-shadows: true;
+$navbar-light-active-color: #aaa;
+
+$need-color: #00cf19;
+$responsibility-color: #843cfd;
+
+.badge-need {
+  color: #fff;
+  background-color: $need-color;
+}
+.badge-responsibility {
+  color: #fff;
+  background-color: $responsibility-color;
+}
+
+@import '~bootstrap/scss/bootstrap.scss';

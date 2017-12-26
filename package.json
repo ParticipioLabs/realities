@@ -12,7 +12,8 @@
   },
   "homepage": "https://github.com/theborderland/realities#readme",
   "engines": {
-    "npm": "5.5.1"
+    "npm": "5.5.1",
+    "node": "8.9.1"
   },
   "scripts": {
     "start": "concurrently --kill-others \"npm start --prefix api\" \"npm start --prefix ui\"",
