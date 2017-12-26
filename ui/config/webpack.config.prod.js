@@ -154,62 +154,56 @@ module.exports = {
               compact: true,
             },
           },
-          // The notation here is somewhat confusing.
-          // "postcss" loader applies autoprefixer to our CSS.
-          // "css" loader resolves paths in CSS and adds assets as dependencies.
-          // "style" loader normally turns CSS into JS modules injecting <style>,
-          // but unlike in development configuration, we do something different.
-          // `ExtractTextPlugin` first applies the "postcss" and "css" loaders
-          // (second argument), then grabs the result CSS and puts it into a
-          // separate file in our build process. This way we actually ship
-          // a single CSS file in production instead of JS code injecting <style>
-          // tags. If you use code splitting, however, any async bundles will still
-          // use the "style" loader inside the async code so CSS from them won't be
-          // in the main CSS file.
+          // Compile SCSS (and CSS) to include customised Bootstrap
+          // styles to the project according to this example project:
+          // https://github.com/larkintuckerllc/hello-reactstrap
           {
-            test: /\.css$/,
-            loader: ExtractTextPlugin.extract(Object.assign(
-              {
-                fallback: {
-                  loader: require.resolve('style-loader'),
+            test: /\.(scss|css)$/,
+            exclude: /(?:node_modules\/.*\.(scss|css))|(?:custom_bootstrap\.scss)/,
+            use: ExtractTextPlugin.extract({
+              use: [
+                {
+                  loader: 'css-loader',
                   options: {
-                    hmr: false,
+                    modules: true,
+                    importLoaders: 2,
+                    sourceMap: shouldUseSourceMap,
                   },
                 },
-                use: [
-                  {
-                    loader: require.resolve('css-loader'),
-                    options: {
-                      importLoaders: 1,
-                      minimize: true,
-                      sourceMap: shouldUseSourceMap,
-                    },
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: shouldUseSourceMap,
                   },
-                  {
-                    loader: require.resolve('postcss-loader'),
-                    options: {
-                      // Necessary for external CSS imports to work
-                      // https://github.com/facebookincubator/create-react-app/issues/2677
-                      ident: 'postcss',
-                      plugins: () => [
-                        require('postcss-flexbugs-fixes'), // eslint-disable-line global-require
-                        autoprefixer({
-                          browsers: [
-                            '>1%',
-                            'last 4 versions',
-                            'Firefox ESR',
-                            'not ie < 9', // React doesn't support IE8 anyway
-                          ],
-                          flexbox: 'no-2009',
-                        }),
-                      ],
-                    },
+                },
+                {
+                  loader: 'postcss-loader',
+                },
+              ],
+              fallback: 'style-loader',
+            }),
+          },
+          {
+            test: /(?:node_modules\/.*\.(scss|css))|(?:custom_bootstrap\.scss)$/,
+            use: ExtractTextPlugin.extract({
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: {
+                    modules: false,
+                    importLoaders: 1,
+                    sourceMap: shouldUseSourceMap,
                   },
-                ],
-              },
-              extractTextPluginOptions,
-            )),
-            // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+                },
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: shouldUseSourceMap,
+                  },
+                },
+              ],
+              fallback: 'style-loader',
+            }),
           },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
