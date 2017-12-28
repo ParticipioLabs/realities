@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem, Card } from 'reactstrap';
 import styled from 'styled-components';
+import MdAddCircleOutline from 'react-icons/lib/md/add-circle-outline';
 
 // const ListDiv = styled.div`
 //   .list-heading {
@@ -16,10 +17,36 @@ import styled from 'styled-components';
 //   color: red;
 // `;
 
+// Grabbed a "skew" 2D transfrom recipe from
+// https://github.com/IanLunn/Hover/ 
+const RealitiesCircleOutline = styled(MdAddCircleOutline)`
+     display: inline-block;
+     font-size: 1.5em;
+     color: rgba(255, 255, 255, 0.50);
+     vertical-align: middle;
+     -webkit-transform: perspective(1px) translateZ(0);
+     transform: perspective(1px) translateZ(0);
+     box-shadow: 0 0 1px transparent;
+     -webkit-transition-duration: 0.3s;
+     transition-duration: 0.3s;
+     -webkit-transition-property: transform;
+     transition-property: transform;
+     &:hover, &:focus {
+         color: #fff;
+     }
+     &:active {
+         color: #fff;
+         -webkit-transform: skew(-10deg);
+         transform: skew(-10deg);
+     }
+}
+`
+
 const RealitiesListHeader = styled(Card)`
       font-size: 1.5em;
-      padding: .5em 0 .5em 0;
-      text-align:center;
+      padding: 0.5em 0.5em 0.5em 0.5em;
+      flex-direction: row;
+      justify-content: space-between;
       color: #fff;
       background-color: #00cf19;
       margin-bottom: 0.5em;
@@ -54,15 +81,18 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
   return null;
 };
 
-const NeedsList = ({ needs, onSelectNeed, selectedNeed }) => (
+const NeedsList = ({ needs, onSelectNeed, selectedNeed, createNewNeed }) => (
   <div>
-    <RealitiesListHeader>Needs</RealitiesListHeader>
+    <RealitiesListHeader><span>Needs</span>
+    <a href="#" onClick={() => createNewNeed()}>
+    <RealitiesCircleOutline></RealitiesCircleOutline>
+    </a>
+    </RealitiesListHeader>
     <ListGroup>
       {renderListItems(needs, onSelectNeed, selectedNeed)}
     </ListGroup>
   </div>
 );
-
 
 NeedsList.defaultProps = {
   needs: [],
@@ -72,6 +102,7 @@ NeedsList.defaultProps = {
 NeedsList.propTypes = {
   needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectNeed: PropTypes.func.isRequired,
+  createNewNeed: PropTypes.func.isRequired,
   selectedNeed: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
 

@@ -29,8 +29,18 @@ class Home extends React.Component {
 
     this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
     this.onSelectNeed = this.onSelectNeed.bind(this);
+    this.createNewNeed = this.createNewNeed.bind(this);
+    this.createNewResponsibility = this.createNewResponsibility.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
+  }
+
+  createNewResponsibility() {
+    this.setState({ newResponsibility: true });
+  }
+
+  createNewNeed() {
+    this.setState({ newNeed: true });
   }
 
   onSelectNeed(need) {
@@ -87,7 +97,6 @@ class Home extends React.Component {
                   selectedNeed={this.state.selectedNeed}
                   createNewNeed={this.createNewNeed}
                 />
-                <Button onClick={() => this.setState({ newNeed: true })}>New Need</Button>
               </Col>
               <Col sm={6}>
                 <ResponsibilitiesList
@@ -97,6 +106,7 @@ class Home extends React.Component {
                   }
                   onSelectResponsibility={this.onSelectResponsibility}
                   selectedResp={this.state.selectedResponsibility}
+                  createNewResponsibility={this.createNewResponsibility}
                 />
               </Col>
             </Row>
