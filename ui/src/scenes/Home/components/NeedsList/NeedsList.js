@@ -18,7 +18,7 @@ import MdAddCircleOutline from 'react-icons/lib/md/add-circle-outline';
 // `;
 
 // Grabbed a "skew" 2D transfrom recipe from
-// https://github.com/IanLunn/Hover/ 
+// https://github.com/IanLunn/Hover/
 const RealitiesCircleOutline = styled(MdAddCircleOutline)`
      display: inline-block;
      font-size: 1.5em;
@@ -40,7 +40,7 @@ const RealitiesCircleOutline = styled(MdAddCircleOutline)`
          transform: skew(-10deg);
      }
 }
-`
+`;
 
 const RealitiesListHeader = styled(Card)`
       font-size: 1.5em;
@@ -81,12 +81,14 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
   return null;
 };
 
-const NeedsList = ({ needs, onSelectNeed, selectedNeed, createNewNeed }) => (
+const NeedsList = ({
+  needs, onSelectNeed, selectedNeed, createNewNeed,
+}) => (
   <div>
     <RealitiesListHeader><span>Needs</span>
-    <a href="#" onClick={() => createNewNeed()}>
-    <RealitiesCircleOutline></RealitiesCircleOutline>
-    </a>
+      <a href="#" onClick={() => createNewNeed()}>
+        <RealitiesCircleOutline />
+      </a>
     </RealitiesListHeader>
     <ListGroup>
       {renderListItems(needs, onSelectNeed, selectedNeed)}

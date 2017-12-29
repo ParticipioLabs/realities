@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import MdAddCircleOutline from 'react-icons/lib/md/add-circle-outline';
 
 // Grabbed a "skew" 2D transfrom recipe from
-// https://github.com/IanLunn/Hover/ 
+// https://github.com/IanLunn/Hover/
 const RealitiesCircleOutline = styled(MdAddCircleOutline)`
      display: inline-block;
      font-size: 1.5em;
@@ -27,7 +27,7 @@ const RealitiesCircleOutline = styled(MdAddCircleOutline)`
          transform: skew(-10deg);
      }
 }
-`
+`;
 const RealitiesListHeader = styled(Card)`
       font-size: 1.5em;
       padding: 0.5em 0.5em 0.5em 0.5em;
@@ -76,14 +76,19 @@ const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility }) => (
         <RealitiesListGroupItem key={i} onClick={() => onSelectResponsibility(responsibility)}>
 */
 
-const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility, selectedResp, createNewResponsibility }) => (
+const ResponsibilitiesList = ({
+  responsibilities, onSelectResponsibility, selectedResp, createNewResponsibility,
+}) => (
   <div>
     <RealitiesListHeader><span>Responsibilities</span>
-    <a href="#" style={{display: (responsibilities ? 'inherit' : 'none')}} onClick={() => createNewResponsibility()}>
-      <RealitiesCircleOutline></RealitiesCircleOutline>
-    </a>
+      <a
+        href="#"
+        style={{ display: (responsibilities ? 'inherit' : 'none') }}
+        onClick={() => createNewResponsibility()}
+      >
+        <RealitiesCircleOutline />
+      </a>
     </RealitiesListHeader>
-
     <ListGroup>
       {renderListItems(responsibilities, onSelectResponsibility, selectedResp)}
     </ListGroup>
@@ -101,6 +106,5 @@ ResponsibilitiesList.propTypes = {
   createNewResponsibility: PropTypes.func.isRequired,
   selectedResp: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
-
 
 export default ResponsibilitiesList;

@@ -9,7 +9,6 @@ import {
   Col,
   Form,
   Input,
-  Button,
 } from 'reactstrap';
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
@@ -30,17 +29,9 @@ class Home extends React.Component {
     this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.createNewNeed = this.createNewNeed.bind(this);
-    this.createNewResponsibility = this.createNewResponsibility.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
-  }
-
-  createNewResponsibility() {
-    this.setState({ newResponsibility: true });
-  }
-
-  createNewNeed() {
-    this.setState({ newNeed: true });
+    this.createNewResponsibility = this.createNewResponsibility.bind(this);
   }
 
   onSelectNeed(need) {
@@ -74,6 +65,15 @@ class Home extends React.Component {
           this.onSelectNeed(need);
         }
       });
+  }
+
+  createNewNeed() {
+    this.setState({ newNeed: true });
+  }
+
+  createNewResponsibility() {
+    return this;
+    // this.setState({ newResponsibility: true });
   }
 
   render() {
