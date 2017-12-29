@@ -57,7 +57,6 @@ class Home extends React.Component {
             this.onSelectResponsibility(responsibility);
           } catch (err) {
             console.log(err);
-            // alert('Something went wrong', err);
           }
         } else {
           console.log('NEED');
@@ -72,7 +71,8 @@ class Home extends React.Component {
   }
 
   createNewResponsibility() {
-    return this;
+    this.setState({});
+
     // this.setState({ newResponsibility: true });
   }
 
