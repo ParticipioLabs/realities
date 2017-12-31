@@ -5,7 +5,7 @@ import { RIEInput, RIETextArea } from 'riek';
 import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
 
-import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap';
+import { Card, CardBody, CardTitle, Row, Col, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DependencyList from '../DependencyList';
 
 import LocalGraph from '../LocalGraph';
@@ -45,16 +45,39 @@ const DescriptionDiv = styled.div`
 `;
 
 class DetailView extends Component {
-  state = { data: undefined }
+  state = { data: undefined, selectedGraphNode: {} };
   componentWillReceiveProps(nextProps) {
     if (nextProps !== this.props && nextProps.data) {
       const { data } = nextProps;
-      this.setState({ data });
+      const selectedGraphNode = {};
+      const popoverOpen = false;
+      this.setState({ data, selectedGraphNode, popoverOpen });
     }
   }
 
-  // Validate length of strings for title, guide nane, realizer name
+  // Validate length of strings for title, guide name, realizer name
   isStringAcceptable = string => _.isString && string.length >= 1 && string.length <= 100;
+
+  graphEvents = {
+    select: (event) => {
+      console.log(event);
+      const { nodes } = event;
+      const node = _.toString(nodes[0]);
+      const graph = graphUtils.getSubGraph(this.state.data);
+      const graphNode = _.find(graph.nodes, { id: node });
+      if (graphNode) {
+        this.setState({ selectedGraphNode: graphNode, popoverOpen: true });
+      } else {
+        this.setState({ selectedGraphNode: {}, popoverOpen: false });
+      }
+    },
+  };
+
+  toggle = () => {
+    this.setState({
+      popoverOpen: true,
+    });
+  }
 
   render() {
     if (this.state.data) {
@@ -62,7 +85,11 @@ class DetailView extends Component {
       return (
         <Card>
           <CardBody>
-            <BadgeLabel color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>{data && data.__typename}</BadgeLabel>
+            <BadgeLabel
+              color={data && data.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}
+            >
+              {data && data.__typename}
+            </BadgeLabel>
             <Title>
               <RIEInput
                 value={data.title}
@@ -135,13 +162,14 @@ class DetailView extends Component {
 
             <InputDiv>
               <LabelSpan>Graph:</LabelSpan>
-              <Card>
+              <Card id="graphCard">
                 <CardBody>
                   <Row>
                     <Col>
                       <div style={{ height: '20em' }}>
                         <LocalGraph
                           graph={graphUtils.getSubGraph(data)}
+                          events={this.graphEvents}
                         />
                       </div>
                     </Col>
@@ -150,9 +178,16 @@ class DetailView extends Component {
               </Card>
             </InputDiv>
 
+            <InputDiv>
+              <Popover placement="left-start" isOpen={this.state.popoverOpen} target="graphCard" toggle={this.toggle}>
+                <PopoverHeader>{this.state.selectedGraphNode.title}</PopoverHeader>
+                <PopoverBody>
+                  {this.state.selectedGraphNode.description}
+                </PopoverBody>
+              </Popover>
+            </InputDiv>
           </CardBody>
         </Card>
-
       );
     }
     return <div />;
@@ -171,5 +206,6 @@ DetailView.propTypes = {
   }),
   onSelectDependency: PropTypes.func,
 };
+
 
 export default DetailView;

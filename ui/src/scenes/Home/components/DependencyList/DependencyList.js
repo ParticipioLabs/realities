@@ -6,9 +6,8 @@ import _ from 'lodash';
 
 const RealitiesBadge = styled(Badge)`
   margin-right: .5em;
-  background-color: ${
-  props => (props.dependency.__typename === 'Need' ? '#00cf19' : '#843cfd')
-};`;
+  background-color: ${props => (props.dependency.__typename === 'Need' ? '#00cf19' : '#843cfd')};
+`;
 
 const DependencyList = ({
   dependsOnNeeds,
@@ -24,7 +23,7 @@ const DependencyList = ({
 
           <ListGroupItem
             key={dependency.nodeId}
-            tag="a"
+            tag="button"
             href="#"
             action
             active={dependency === selectedDependency}
@@ -33,11 +32,11 @@ const DependencyList = ({
             <RealitiesBadge dependency={dependency}>{dependency.__typename[0]}</RealitiesBadge>
             {dependency.title}
             {/* This also works, see the custom scss file.
-            <Badge color={
-              dependency.__typename === 'Need' ? 'need' : 'responsibility'
-            }>{dependency.__typename[0]}</Badge>{dependency.title} */}
+             <Badge color={
+             dependency.__typename === 'Need' ? 'need' : 'responsibility'
+             }>{dependency.__typename[0]}</Badge>{dependency.title} */}
           </ListGroupItem>
-      ))}
+        ))}
       </ListGroup>
     </div>
   );

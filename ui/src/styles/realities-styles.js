@@ -35,8 +35,6 @@ const RealitiesCircleOutline = styled(MdAddCircleOutline)`
 }
 `;
 
-// Using styled(Card) causes problems when passing props, so here is
-// the bootstrap/reactstrap css for Card type, /plus/ our customization.
 const RealitiesListHeader = styled(Card)`
   font-size: 1.5em;
   padding: 0.5em 0.5em 0.5em 0.5em;

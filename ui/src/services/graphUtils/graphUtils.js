@@ -16,13 +16,15 @@ function pushNode(graph, originNode, node, nodeLabel, relation, direction) {
     });
     return graph;
   }
-  const trimmedLabel = ((node[nodeLabel].length < 12) ? node[nodeLabel] : `${node[nodeLabel].substring(0, 12)}...`);
+
+  const trimmedLabel = _.truncate(node[nodeLabel], { length: 12, separator: ',.?! ' });
   if (!_.find(graph.nodes, { id: node.nodeId })) {
     graph.nodes.push({
       id: node.nodeId,
       label: trimmedLabel,
       color: colorCollection[node.__typename],
       title: node[nodeLabel],
+      description: node.description,
     });
   }
   if (direction === 'IN') {
@@ -45,7 +47,7 @@ function pushNode(graph, originNode, node, nodeLabel, relation, direction) {
 }
 
 function getSubGraph(originNode) {
-  const trimmedLabel = ((originNode.title.length < 12) ? originNode.title : `${originNode.title.substring(0, 12)}...`);
+  const trimmedLabel = _.truncate(originNode.title, { length: 12, separator: ',.?! ' });
   const graph = {
     nodes: [
       {
@@ -54,6 +56,7 @@ function getSubGraph(originNode) {
         color: colorCollection[originNode.__typename],
         title: originNode.title,
         shape: 'ellipse',
+        description: originNode.description,
       },
     ],
     edges: [],
