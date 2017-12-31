@@ -5,7 +5,7 @@ import {
   CircleButton,
   NeedsListHeader,
   NeedsListGroupItem,
-  RealitiesCircleOutline } from '../../../../styles/realities-styles';
+  RealitiesCircleOutline } from '@/styles/realities-styles';
 
 const renderListItems = (needs, onSelectNeed, selectedNeed) => {
   if (needs) {

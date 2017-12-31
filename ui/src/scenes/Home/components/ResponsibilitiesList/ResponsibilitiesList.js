@@ -5,7 +5,7 @@ import {
   CircleButton,
   ResponsibilitiesListHeader,
   ResponsibilitiesListGroupItem,
-  RealitiesCircleOutline } from '../../../../styles/realities-styles';
+  RealitiesCircleOutline } from '@/styles/realities-styles';
 
 const renderListItems = (responsibilities, onSelectResponsibility, selectedResp) => {
   if (responsibilities) {
