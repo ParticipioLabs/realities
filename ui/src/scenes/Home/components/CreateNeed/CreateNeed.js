@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import {
   Input,
-  Col,
   InputGroup,
   InputGroupButton,
 } from 'reactstrap';
+import { CreateNeedInput } from '@/styles/realities-styles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
@@ -20,12 +20,12 @@ class CreateNeed extends Component {
 
   renderField() {
     return (
-      <Col>
+      <CreateNeedInput>
         <InputGroup>
           <Input placeholder="Title" />
           <InputGroupButton onClick={() => this.createNeedMutation()} color="secondary">Create</InputGroupButton>
         </InputGroup>
-      </Col>
+      </CreateNeedInput>
     );
   }
 

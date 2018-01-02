@@ -90,6 +90,14 @@ class Home extends React.Component {
               />
             </SearchForm>
             <Row>
+              <Col>
+                <CreateNeed
+                  newNeed={newNeed}
+                  onSelectDependency={this.onSelectDependency}
+                />
+              </Col>
+            </Row>
+            <Row>
               <Col sm={6}>
                 <NeedsList
                   needs={needs}
@@ -117,10 +125,6 @@ class Home extends React.Component {
               onSelectDependency={this.onSelectDependency}
             />
           </Col>
-          <CreateNeed
-            newNeed={newNeed}
-            onSelectDependency={this.onSelectDependency}
-          />
         </Row>
       </Container>
     );

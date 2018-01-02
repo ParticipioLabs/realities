@@ -35,6 +35,10 @@ const RealitiesCircleOutline = styled(MdAddCircleOutline)`
 }
 `;
 
+const CreateNeedInput = styled(Card)`
+  margin-bottom: 1em;
+`;
+
 const RealitiesListHeader = styled(Card)`
   font-size: 1.5em;
   padding: 0.5em 0.5em 0.5em 0.5em;
@@ -81,6 +85,7 @@ const ResponsibilitiesListGroupItem = RealitiesListGroupItem.extend`
 
 export {
   CircleButton,
+  CreateNeedInput,
   NeedsListHeader,
   NeedsListGroupItem,
   ResponsibilitiesListHeader,
