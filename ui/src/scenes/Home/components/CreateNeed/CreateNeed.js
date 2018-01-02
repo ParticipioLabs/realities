@@ -10,10 +10,22 @@ import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 
 class CreateNeed extends Component {
+  constructor() {
+    super();
+    this.state = {
+      title: '',
+      placeholder: 'Title',
+    };
+  }
+
+  handleNameChange = (event) => {
+    this.setState({ title: event.target.value });
+  };
+
   createNeedMutation = async () => {
     await this.props.createNeedMutation({
       variables: {
-        title: 'It works!!',
+        title: this.state.title,
       },
     });
   }
@@ -22,7 +34,7 @@ class CreateNeed extends Component {
     return (
       <CreateNeedInput>
         <InputGroup>
-          <Input placeholder="Title" />
+          <Input placeholder={this.state.placeholder} onChange={this.handleNameChange} />
           <InputGroupButton onClick={() => this.createNeedMutation()} color="secondary">Create</InputGroupButton>
         </InputGroup>
       </CreateNeedInput>

@@ -60,7 +60,6 @@ class DetailView extends Component {
 
   graphEvents = {
     select: (event) => {
-      console.log(event);
       const { nodes } = event;
       const node = _.toString(nodes[0]);
       const graph = graphUtils.getSubGraph(this.state.data);

@@ -50,7 +50,6 @@ class Home extends React.Component {
       .then((needs) => {
         if (dependency.__typename === 'Responsibility') {
           try {
-            console.log('RESP');
             const need = _.find(needs, o => o.nodeId === dependency.fulfills.nodeId);
             const responsibility = _.find(need.fulfilledBy, o => o.nodeId === dependency.nodeId);
             this.onSelectNeed(need);
@@ -59,7 +58,6 @@ class Home extends React.Component {
             console.log(err);
           }
         } else {
-          console.log('NEED');
           const need = _.find(needs, o => o.nodeId === dependency.nodeId);
           this.onSelectNeed(need);
         }
@@ -93,7 +91,6 @@ class Home extends React.Component {
               <Col>
                 <CreateNeed
                   newNeed={newNeed}
-                  onSelectDependency={this.onSelectDependency}
                 />
               </Col>
             </Row>
