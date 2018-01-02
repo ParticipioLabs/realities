@@ -10,3 +10,4 @@ node_modules/
 
 # Misc
 *.log
+*.DS_Store
