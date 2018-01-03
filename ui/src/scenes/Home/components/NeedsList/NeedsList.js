@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroup } from 'reactstrap';
+import withAuth from '@/components/withAuth';
 import {
   CircleButton,
   NeedsListHeader,
@@ -30,13 +31,15 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
 };
 
 const NeedsList = ({
-  needs, onSelectNeed, selectedNeed, createNewNeed,
+  needs, onSelectNeed, selectedNeed, createNewNeed, auth,
 }) => (
   <div>
     <NeedsListHeader><span>Needs</span>
+      { auth.isLoggedIn &&
       <CircleButton onClick={() => createNewNeed()}>
         <RealitiesCircleOutline />
       </CircleButton>
+      }
     </NeedsListHeader>
     <ListGroup>
       {renderListItems(needs, onSelectNeed, selectedNeed)}
@@ -47,6 +50,12 @@ const NeedsList = ({
 NeedsList.defaultProps = {
   needs: [],
   selectedNeed: {},
+  auth: {
+    email: 'example@example.com',
+    login: () => null,
+    logout: () => null,
+    isLoggedIn: false,
+  },
 };
 
 NeedsList.propTypes = {
@@ -54,6 +63,12 @@ NeedsList.propTypes = {
   onSelectNeed: PropTypes.func.isRequired,
   createNewNeed: PropTypes.func.isRequired,
   selectedNeed: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  auth: PropTypes.shape({
+    isLoggedIn: PropTypes.bool,
+    email: PropTypes.string,
+    login: PropTypes.func,
+    logout: PropTypes.func,
+  }),
 };
 
-export default NeedsList;
+export default withAuth(NeedsList);

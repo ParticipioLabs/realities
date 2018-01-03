@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroup } from 'reactstrap';
+import withAuth from '@/components/withAuth';
 import {
   CircleButton,
   ResponsibilitiesListHeader,
@@ -39,16 +40,17 @@ const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility }) => (
 */
 
 const ResponsibilitiesList = ({
-  responsibilities, onSelectResponsibility, selectedResp, createNewResponsibility,
+  responsibilities, onSelectResponsibility, selectedResp, createNewResponsibility, auth,
 }) => (
   <div>
     <ResponsibilitiesListHeader><span>Responsibilities</span>
+      { auth.isLoggedIn && responsibilities &&
       <CircleButton
-        style={{ display: (responsibilities ? 'inherit' : 'none') }}
         onClick={() => createNewResponsibility()}
       >
         <RealitiesCircleOutline />
       </CircleButton>
+      }
     </ResponsibilitiesListHeader>
     <ListGroup>
       {renderListItems(responsibilities, onSelectResponsibility, selectedResp)}
@@ -59,6 +61,12 @@ const ResponsibilitiesList = ({
 ResponsibilitiesList.defaultProps = {
   responsibilities: [],
   selectedResp: {},
+  auth: {
+    email: 'example@example.com',
+    login: () => null,
+    logout: () => null,
+    isLoggedIn: false,
+  },
 };
 
 ResponsibilitiesList.propTypes = {
@@ -66,6 +74,12 @@ ResponsibilitiesList.propTypes = {
   onSelectResponsibility: PropTypes.func.isRequired,
   createNewResponsibility: PropTypes.func.isRequired,
   selectedResp: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  auth: PropTypes.shape({
+    isLoggedIn: PropTypes.bool,
+    email: PropTypes.string,
+    login: PropTypes.func,
+    logout: PropTypes.func,
+  }),
 };
 
-export default ResponsibilitiesList;
+export default withAuth(ResponsibilitiesList);
