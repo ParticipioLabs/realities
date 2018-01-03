@@ -22,6 +22,13 @@ const SearchForm = styled(Form)`
   font-size: large;
 `;
 
+const Footer = styled.footer`
+  margin-top: 1em;
+  font-size: small;
+  text-align: center;
+  border-top: solid 1px #eee;
+`;
+
 class Home extends React.Component {
   constructor() {
     super();
@@ -80,7 +87,7 @@ class Home extends React.Component {
     return (
       <Container fluid>
         <Row>
-          <Col sm={6}>
+          <Col lg={6} xs={12}>
             <SearchForm>
               <Input
                 bsSize="lg"
@@ -95,7 +102,7 @@ class Home extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col sm={6}>
+              <Col lg={6} xs={12}>
                 <NeedsList
                   needs={needs}
                   onSelectNeed={this.onSelectNeed}
@@ -103,7 +110,7 @@ class Home extends React.Component {
                   createNewNeed={this.createNewNeed}
                 />
               </Col>
-              <Col sm={6}>
+              <Col lg={6} xs={12}>
                 <ResponsibilitiesList
                   responsibilities={
                     this.state.selectedNeed &&
@@ -118,11 +125,17 @@ class Home extends React.Component {
           </Col>
           <Col>
             <DetailView
+              sm={12}
               data={this.state.selectedResponsibility || this.state.selectedNeed}
               onSelectDependency={this.onSelectDependency}
             />
           </Col>
         </Row>
+        <Footer className="text-muted">
+          <Col>
+           A tool for tribal decentralised organisations.
+          </Col>
+        </Footer>
       </Container>
     );
   }

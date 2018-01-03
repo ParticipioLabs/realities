@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ListGroup } from 'reactstrap';
 import withAuth from '@/components/withAuth';
 import {
   CircleButton,
   ResponsibilitiesListHeader,
   ResponsibilitiesListGroupItem,
-  RealitiesCircleOutline } from '@/styles/realities-styles';
+  RealitiesCircleOutline,
+  RealitiesListGroup } from '@/styles/realities-styles';
 
 const renderListItems = (responsibilities, onSelectResponsibility, selectedResp) => {
   if (responsibilities) {
@@ -52,9 +52,9 @@ const ResponsibilitiesList = ({
       </CircleButton>
       }
     </ResponsibilitiesListHeader>
-    <ListGroup>
+    <RealitiesListGroup>
       {renderListItems(responsibilities, onSelectResponsibility, selectedResp)}
-    </ListGroup>
+    </RealitiesListGroup>
   </div>
 );
 

@@ -4,8 +4,14 @@ import styled from 'styled-components';
 import { RIEInput, RIETextArea } from 'riek';
 import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
-
-import { Card, CardBody, CardTitle, Row, Col, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Card,
+  CardBody,
+  CardTitle,
+  Row,
+  Col,
+  Popover,
+  PopoverHeader,
+  PopoverBody } from 'reactstrap';
 import DependencyList from '../DependencyList';
 
 import LocalGraph from '../LocalGraph';
@@ -58,6 +64,9 @@ class DetailView extends Component {
   // Validate length of strings for title, guide name, realizer name
   isStringAcceptable = string => _.isString && string.length >= 1 && string.length <= 100;
 
+  // Handle the select event on the graph.
+  // Repeating the call to graphUtils.getSubGraph() seems wasteful,
+  // since it has already been called, and won't have changed.
   graphEvents = {
     select: (event) => {
       const { nodes } = event;
@@ -76,7 +85,7 @@ class DetailView extends Component {
     this.setState({
       popoverOpen: true,
     });
-  }
+  };
 
   render() {
     if (this.state.data) {
@@ -178,10 +187,18 @@ class DetailView extends Component {
             </InputDiv>
 
             <InputDiv>
-              <Popover placement="left-start" isOpen={this.state.popoverOpen} target="graphCard" toggle={this.toggle}>
+              <Popover
+                placement="left-start"
+                isOpen={this.state.popoverOpen}
+                target="graphCard"
+                toggle={this.toggle}
+              >
                 <PopoverHeader>{this.state.selectedGraphNode.title}</PopoverHeader>
                 <PopoverBody>
-                  {this.state.selectedGraphNode.description}
+                  {_.truncate(
+                    this.state.selectedGraphNode.description,
+                    { length: 512, separator: ',.?! ' },
+                  ) }
                 </PopoverBody>
               </Popover>
             </InputDiv>
@@ -189,6 +206,7 @@ class DetailView extends Component {
         </Card>
       );
     }
+
     return <div />;
   }
 }
@@ -205,6 +223,5 @@ DetailView.propTypes = {
   }),
   onSelectDependency: PropTypes.func,
 };
-
 
 export default DetailView;

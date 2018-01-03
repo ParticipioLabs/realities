@@ -6,12 +6,14 @@ import {
   Link,
 } from 'react-router-dom';
 import {
+  Collapse,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
   Nav,
   Navbar,
   NavbarBrand,
+  NavbarToggler,
   NavItem,
   NavLink,
   UncontrolledDropdown,
@@ -25,42 +27,64 @@ import withAuth from '@/components/withAuth';
 const RealitiesNavbarBrand = styled(NavbarBrand)`
   text-shadow: 0px 1px #fff, 0px -1px #666;
   text-transform: uppercase;
-  font-size: 2.75em;
+  font-size: 2.5em;
   font-weight: bold;
 `;
 
-const RoutesContainer = props => (
-  <Router history={history}>
-    <div>
-      <Navbar color="faded" light expand="md">
-        <RealitiesNavbarBrand tag={Link} to="/">Realities Platform</RealitiesNavbarBrand>
-        <Nav className="ml-auto" navbar>
-          <NavItem>
-            <NavLink tag={Link} to="/about">About</NavLink>
-          </NavItem>
-          {props.auth.isLoggedIn ? (
-            <UncontrolledDropdown nav>
-              <DropdownToggle nav caret>
-                {props.auth.email}
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem>
-                  <NavLink onClick={props.auth.logout} href="#">Logout</NavLink>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          ) : (
-            <NavItem>
-              <NavLink onClick={props.auth.login} href="#">Login</NavLink>
-            </NavItem>
-          )}
-        </Nav>
-      </Navbar>
-      <Route exact path="/" component={Home} />
-      <Route path="/about" component={About} />
-    </div>
-  </Router>
-);
+class RoutesContainer extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.state = {
+      isOpen: false,
+    };
+  }
+
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen,
+    });
+  }
+
+  render() {
+    return (
+      <Router history={history}>
+        <div>
+          <Navbar color="faded" light expand="md">
+            <RealitiesNavbarBrand tag={Link} to="/">Realities</RealitiesNavbarBrand>
+            <NavbarToggler onClick={this.toggle} />
+            <Collapse isOpen={this.state.isOpen} navbar>
+              <Nav className="ml-auto" navbar>
+                <NavItem>
+                  <NavLink tag={Link} to="/about">About</NavLink>
+                </NavItem>
+                {this.props.auth.isLoggedIn ? (
+                  <UncontrolledDropdown nav>
+                    <DropdownToggle nav caret>
+                      {this.props.auth.email}
+                    </DropdownToggle>
+                    <DropdownMenu right>
+                      <DropdownItem>
+                        <NavLink onClick={this.props.auth.logout} href="#">Logout</NavLink>
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                ) : (
+                  <NavItem>
+                    <NavLink onClick={this.props.auth.login} href="#">Login</NavLink>
+                  </NavItem>
+                )}
+              </Nav>
+            </Collapse>
+          </Navbar>
+          <Route exact path="/" component={Home} />
+          <Route path="/about" component={About} />
+        </div>
+      </Router>
+    );
+  }
+}
 
 RoutesContainer.defaultProps = {
   auth: {

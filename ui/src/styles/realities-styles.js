@@ -1,4 +1,4 @@
-import { ListGroupItem, Card } from 'reactstrap';
+import { ListGroup, ListGroupItem, Card } from 'reactstrap';
 import styled from 'styled-components';
 import MdAddCircleOutline from 'react-icons/lib/md/add-circle-outline';
 
@@ -49,6 +49,10 @@ const RealitiesListHeader = styled(Card)`
   margin-bottom: 0.5em;
 `;
 
+const RealitiesListGroup = styled(ListGroup)`
+    margin-bottom: 1em;
+`;
+
 const RealitiesListGroupItem = styled(ListGroupItem)`
     outline: none;
 `;
@@ -91,4 +95,5 @@ export {
   ResponsibilitiesListHeader,
   ResponsibilitiesListGroupItem,
   RealitiesCircleOutline,
+  RealitiesListGroup,
 };
