@@ -6,3 +6,6 @@ build/
 
 # Logs
 npm-debug.log
+
+# API env
+.env

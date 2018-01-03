@@ -1,7 +1,15 @@
 import { v1 as neo4j } from 'neo4j-driver';
+import dotenv from 'dotenv';
 
-const driver = neo4j.driver('bolt://hobby-nfdmkjnckhclgbkeifnhbial.dbs.graphenedb.com:24786', neo4j.auth.basic('realities-dev', 'b.JOosRDbMCr7h.O4fBS2qPIbARuhRo'));
-// const driver = neo4j.driver('bolt://127.0.0.1:7687');
+dotenv.config({ silent: true });
+
+const driver = neo4j.driver(
+  process.env.GRAPHENEDB_URL,
+  neo4j.auth.basic(
+    process.env.GRAPHENEDB_NAME,
+    process.env.GRAPHENEDB_KEY,
+  ),
+);
 
 // TODO: Run driver.close() when node app exits.
 
