@@ -12,7 +12,6 @@ import {
 } from 'reactstrap';
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
-
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
@@ -26,9 +25,11 @@ class Home extends React.Component {
   constructor() {
     super();
 
+    console.log(this);
+
     this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
     this.onSelectNeed = this.onSelectNeed.bind(this);
-    this.createNewNeed = this.createNewNeed.bind(this);
+    this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
     this.createNewResponsibility = this.createNewResponsibility.bind(this);
@@ -64,8 +65,8 @@ class Home extends React.Component {
       });
   }
 
-  createNewNeed() {
-    this.setState({ newNeed: true });
+  toggleCreateNewNeed() {
+    this.setState({ newNeed: !this.state.newNeed });
   }
 
   createNewResponsibility() {
@@ -91,6 +92,7 @@ class Home extends React.Component {
               <Col>
                 <CreateNeed
                   newNeed={newNeed}
+                  toggleCreateNewNeed={this.toggleCreateNewNeed}
                 />
               </Col>
             </Row>
@@ -100,7 +102,7 @@ class Home extends React.Component {
                   needs={needs}
                   onSelectNeed={this.onSelectNeed}
                   selectedNeed={this.state.selectedNeed}
-                  createNewNeed={this.createNewNeed}
+                  toggleCreateNewNeed={this.toggleCreateNewNeed}
                 />
               </Col>
               <Col sm={6}>
@@ -140,8 +142,8 @@ Home.propTypes = {
   }),
 };
 
-export default graphql(gql`
-  query {
+const NESTED_DATA_QUERY = gql`
+  query Data {
     needs {
       nodeId
       title
@@ -294,4 +296,11 @@ export default graphql(gql`
       }
     }
   }
-`)(Home);
+`;
+
+export default graphql(
+  NESTED_DATA_QUERY,
+  {
+    name: 'data',
+  },
+)(Home);

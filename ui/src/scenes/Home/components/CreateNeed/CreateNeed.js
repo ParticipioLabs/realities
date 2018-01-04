@@ -28,6 +28,7 @@ class CreateNeed extends Component {
         title: this.state.title,
       },
     });
+    this.props.toggleCreateNewNeed();
   }
 
   renderField() {
@@ -60,11 +61,23 @@ const CREATE_TEXT_MUTATION = gql`
 CreateNeed.propTypes = {
   newNeed: PropTypes.bool,
   createNeedMutation: PropTypes.func,
+  toggleCreateNewNeed: PropTypes.func,
 };
 
 CreateNeed.defaultProps = {
   newNeed: false,
   createNeedMutation: PropTypes.func.isRequired,
+  toggleCreateNewNeed: PropTypes.func.isRequired,
 };
 
-export default graphql(CREATE_TEXT_MUTATION, { name: 'createNeedMutation' })(CreateNeed);
+export default graphql(
+  CREATE_TEXT_MUTATION,
+  {
+    name: 'createNeedMutation',
+    options: {
+      refetchQueries: [
+        'Data',
+      ],
+    },
+  },
+)(CreateNeed);

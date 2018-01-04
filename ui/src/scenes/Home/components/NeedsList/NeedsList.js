@@ -31,12 +31,12 @@ const renderListItems = (needs, onSelectNeed, selectedNeed) => {
 };
 
 const NeedsList = ({
-  needs, onSelectNeed, selectedNeed, createNewNeed, auth,
+  needs, onSelectNeed, selectedNeed, toggleCreateNewNeed, auth,
 }) => (
   <div>
     <NeedsListHeader><span>Needs</span>
       { auth.isLoggedIn &&
-      <CircleButton onClick={() => createNewNeed()}>
+      <CircleButton onClick={() => toggleCreateNewNeed()}>
         <RealitiesCircleOutline />
       </CircleButton>
       }
@@ -61,7 +61,7 @@ NeedsList.defaultProps = {
 NeedsList.propTypes = {
   needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectNeed: PropTypes.func.isRequired,
-  createNewNeed: PropTypes.func.isRequired,
+  toggleCreateNewNeed: PropTypes.func.isRequired,
   selectedNeed: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,
