@@ -12,6 +12,16 @@ If you want to chat to other members of the community and collaborate in real-ti
 
 ## Install and run locally
 
+Realities uses Neo4j as database. You need to run Neo4j on your machine or connect to a remote database (for example a free 1000 node sandbox at http://graphenedb.com). Running a local Neo4j database is very easy, just go to https://neo4j.com/download/ and follow the instructions.
+
+Set up your connection variables to Neo4j in /api/.env. With Neo4j running locally, these variables should work for default  setups:
+
+```
+GRAPHENEDB_URL=bolt://127.0.0.1:7687
+GRAPHENEDB_NAME=''
+GRAPHENEDB_KEY=''
+```
+
 Make sure you're running the versions of node and npm specified in the api and ui package.json files (node 8.9.x and npm 5.5.x), then...
 
 ```bash
