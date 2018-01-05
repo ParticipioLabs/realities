@@ -12,7 +12,7 @@ import { Card,
   Popover,
   PopoverHeader,
   PopoverBody } from 'reactstrap';
-import DependencyList from '../DependencyList';
+import DependencyList from './DependencyList';
 
 import LocalGraph from '../LocalGraph';
 

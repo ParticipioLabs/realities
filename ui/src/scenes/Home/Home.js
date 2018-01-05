@@ -31,9 +31,6 @@ const Footer = styled.footer`
 class Home extends React.Component {
   constructor() {
     super();
-
-    console.log(this);
-
     this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
@@ -72,7 +69,20 @@ class Home extends React.Component {
       });
   }
 
-  toggleCreateNewNeed() {
+  toggleCreateNewNeed(newNeed) {
+    if (newNeed) {
+      const { nodeId } = newNeed;
+      const awaitNewNeeds = async () => {
+        try {
+          await this.props.data.refetch();
+          const need = this.props.data.needs.find(n => n.nodeId === nodeId);
+          this.onSelectNeed(need);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      awaitNewNeeds();
+    }
     this.setState({ newNeed: !this.state.newNeed });
   }
 
@@ -98,7 +108,9 @@ class Home extends React.Component {
             <Row>
               <Col>
                 <CreateNeed
+                  needs={needs}
                   newNeed={newNeed}
+                  onSelectNeed={this.onSelectNeed}
                   toggleCreateNewNeed={this.toggleCreateNewNeed}
                 />
               </Col>
@@ -152,6 +164,7 @@ Home.defaultProps = {
 Home.propTypes = {
   data: PropTypes.shape({
     needs: PropTypes.array,
+    refetch: PropTypes.func,
   }),
 };
 
