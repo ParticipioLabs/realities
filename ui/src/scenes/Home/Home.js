@@ -32,6 +32,7 @@ class Home extends React.Component {
   constructor() {
     super();
     this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
+    this.refetchData = this.refetchData.bind(this);
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
@@ -69,12 +70,26 @@ class Home extends React.Component {
       });
   }
 
+  async refetchData() {
+    // If node has changed this must go to state, reselecting after refetch
+    const { selectedNeed, selectedResponsibility } = this.state;
+    await this.props.data.refetch();
+    const { needs } = this.props.data;
+    const need = (selectedNeed
+      ? _.find(needs, o => o.nodeId === selectedNeed.nodeId)
+      : selectedNeed);
+    const resp = (selectedResponsibility
+      ? _.find(need.fulfilledBy, o => o.nodeId === selectedResponsibility.nodeId)
+      : selectedResponsibility);
+    this.setState({ selectedNeed: need, selectedResponsibility: resp });
+  }
+
   toggleCreateNewNeed(newNeed) {
     if (newNeed) {
       const { nodeId } = newNeed;
       const awaitNewNeeds = async () => {
         try {
-          await this.props.data.refetch();
+          await this.refetchData();
           const need = this.props.data.needs.find(n => n.nodeId === nodeId);
           this.onSelectNeed(need);
         } catch (err) {
@@ -142,6 +157,7 @@ class Home extends React.Component {
               sm={12}
               data={this.state.selectedResponsibility || this.state.selectedNeed}
               onSelectDependency={this.onSelectDependency}
+              refetchData={this.refetchData}
             />
           </Col>
         </Row>

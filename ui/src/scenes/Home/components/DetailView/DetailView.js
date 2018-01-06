@@ -6,14 +6,13 @@ import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
 import { Card,
   CardBody,
-  CardTitle,
   Row,
   Col,
   Popover,
   PopoverHeader,
   PopoverBody } from 'reactstrap';
 import DependencyList from './DependencyList';
-
+import TitleField from './TitleField';
 import LocalGraph from '../LocalGraph';
 
 const InputDiv = styled.div`
@@ -35,11 +34,6 @@ const BadgeLabel = styled.span`
 `;
 
 const Underlined = styled.div`
-  border-bottom: 1px dotted;
-  display: inline-block;
-`;
-
-const Title = styled(CardTitle)`
   border-bottom: 1px dotted;
   display: inline-block;
 `;
@@ -98,14 +92,13 @@ class DetailView extends Component {
             >
               {data && data.__typename}
             </BadgeLabel>
-            <Title>
-              <RIEInput
-                value={data.title}
-                change={() => this.setState({ data: { title: data.title } })}
-                propName="title"
-                validate={this.isStringAcceptable}
-              />
-            </Title>
+
+            <TitleField
+              refetchData={this.props.refetchData}
+              data={{ title: data.title }}
+              nodeId={data.nodeId}
+            />
+
             <InputDiv><LabelSpan>Guide:</LabelSpan>
               <Underlined>
                 {data.guide ? <RIEInput
@@ -214,6 +207,7 @@ class DetailView extends Component {
 DetailView.defaultProps = {
   data: { title: '', description: '' },
   onSelectDependency: PropTypes.func.isRequired,
+  refetchData: PropTypes.func.isRequired,
 };
 
 DetailView.propTypes = {
@@ -222,6 +216,7 @@ DetailView.propTypes = {
     description: PropTypes.string,
   }),
   onSelectDependency: PropTypes.func,
+  refetchData: PropTypes.func,
 };
 
 export default DetailView;
