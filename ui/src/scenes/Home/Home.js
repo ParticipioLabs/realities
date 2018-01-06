@@ -15,18 +15,14 @@ import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
+import Search from './components/Search';
 
-const SearchForm = styled(Form)`
-  margin-bottom: 1em;
-  font-size: large;
-`;
+// const SearchForm = styled(Search)`
+//  margin-bottom: 1em;
+//  font-size: large;
+// `;
 
-const Footer = styled.footer`
-  margin-top: 1em;
-  font-size: small;
-  text-align: center;
-  border-top: solid 1px #eee;
-`;
+
 
 class Home extends React.Component {
   constructor() {
@@ -34,7 +30,12 @@ class Home extends React.Component {
 
     console.log(this);
 
-    this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
+    this.state = {
+      selectedNeed: null,
+      selectedResponsibility: null,
+      newNeed: false,
+      searchMenuIsOpen: false,
+    };
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
@@ -82,19 +83,70 @@ class Home extends React.Component {
     // this.setState({ newResponsibility: true });
   }
 
+  //handleChange = (selectedItem) => {
+  //  console.log('Got change', selectedItem);
+  //  if (selectedItem.__typename === 'Need') {
+  //    this.onSelectNeed(selectedItem);
+  //  } else if (selectedItem.__typename === 'Responsibility') {
+  //    this.onSelectResponsibility(selectedItem);
+  //  }
+  //}
+  //
+  //handleStateChange = (changes, downshiftState) => {
+  //  if (changes.hasOwnProperty('isOpen')) {
+  //    // downshift is saying that isOpen should change, so let's change it...
+  //    this.setState(({ isOpen, itemsToShow }) => {
+  //      // if it's changing because the user's clicking outside of the downshift
+  //      // component, then we actually don't want to change the isOpen state
+  //      isOpen =
+  //        changes.type === Downshift.stateChangeTypes.mouseUp
+  //          ? isOpen
+  //          : changes.isOpen;
+  //      if (isOpen) {
+  //        // if the menu is going to be open, then we should limit the results
+  //        // by what the user has typed in, otherwise, we'll leave them as they
+  //        // were last...
+  //        itemsToShow = this.getItemsToShow(downshiftState.inputValue);
+  //      }
+  //
+  //      return { isOpen, itemsToShow };
+  //    });
+  //  } else if (changes.hasOwnProperty('inputValue')) {
+  //    // downshift is saying that the inputValue is changing. Since we don't
+  //    // control that, we'll just use that information to update the items
+  //    // that we should show.
+  //    this.setState({
+  //      itemsToShow: this.getItemsToShow(downshiftState.inputValue),
+  //    });
+  //  }
+  //};
+
   render() {
     const { newNeed } = this.state;
-    const { needs } = this.props.data;
+    var { needs } = this.props.data;
+    console.log('home props', this.props);
+    console.log('home needs', needs);
+
+    const sortedNeeds = needs && needs.slice().sort((a, b) =>  {
+      console.log(a, b);
+      var nameA = a.title.toLowerCase();
+      var nameB = b.title.toLowerCase();
+      if (nameA < nameB)
+        return -1;
+      if (nameA > nameB)
+        return 1;
+      return 0;
+    });
+
     return (
       <Container fluid>
         <Row>
           <Col lg={6} xs={12}>
-            <SearchForm>
-              <Input
-                bsSize="lg"
-                placeholder="Search for Need or Responsibility"
-              />
-            </SearchForm>
+            <Search
+              items={ _.concat(needs) }
+              onSelectNeed={this.onSelectNeed}
+              onSelectResponsibility={this.onSelectResponsibility}
+            />
             <Row>
               <Col>
                 <CreateNeed
@@ -133,11 +185,6 @@ class Home extends React.Component {
             />
           </Col>
         </Row>
-        <Footer className="text-muted">
-          <Col>
-           A tool for tribal decentralised organisations.
-          </Col>
-        </Footer>
       </Container>
     );
   }
