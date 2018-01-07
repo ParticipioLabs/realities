@@ -2,13 +2,10 @@ import React from 'react';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import styled from 'styled-components';
 import {
   Container,
   Row,
   Col,
-  Form,
-  Input,
 } from 'reactstrap';
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
@@ -17,29 +14,21 @@ import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
 import Search from './components/Search';
 
-// const SearchForm = styled(Search)`
-//  margin-bottom: 1em;
-//  font-size: large;
-// `;
-
-
-
 class Home extends React.Component {
   constructor() {
     super();
-
-    console.log(this);
 
     this.state = {
       selectedNeed: null,
       selectedResponsibility: null,
       newNeed: false,
-      searchMenuIsOpen: false,
     };
+    this.refetchData = this.refetchData.bind(this);
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
+    this.getResponsibilities = this.getResponsibilities.bind(this);
     this.createNewResponsibility = this.createNewResponsibility.bind(this);
   }
 
@@ -49,6 +38,10 @@ class Home extends React.Component {
 
   onSelectResponsibility(responsibility) {
     this.setState({ selectedResponsibility: responsibility });
+
+    // If only the Responsibility is selected, should we fill in
+    // the Need if it's not currently selected?
+    // this.setState({ selectedNeed: responsibility.fulfills });
   }
 
   onSelectDependency(dependency) {
@@ -73,7 +66,39 @@ class Home extends React.Component {
       });
   }
 
-  toggleCreateNewNeed() {
+  getResponsibilities() {
+    const { needs } = this.props.data;
+    return needs ? _.flatten(needs.map(need => need.fulfilledBy)) : [];
+  }
+
+  async refetchData() {
+    // If node has changed this must go to state, reselecting after refetch
+    const { selectedNeed, selectedResponsibility } = this.state;
+    await this.props.data.refetch();
+    const { needs } = this.props.data;
+    const need = (selectedNeed
+      ? _.find(needs, o => o.nodeId === selectedNeed.nodeId)
+      : selectedNeed);
+    const resp = (selectedResponsibility
+      ? _.find(need.fulfilledBy, o => o.nodeId === selectedResponsibility.nodeId)
+      : selectedResponsibility);
+    this.setState({ selectedNeed: need, selectedResponsibility: resp });
+  }
+
+  toggleCreateNewNeed(newNeed) {
+    if (newNeed) {
+      const { nodeId } = newNeed;
+      const awaitNewNeeds = async () => {
+        try {
+          await this.refetchData();
+          const need = this.props.data.needs.find(n => n.nodeId === nodeId);
+          this.onSelectNeed(need);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      awaitNewNeeds();
+    }
     this.setState({ newNeed: !this.state.newNeed });
   }
 
@@ -83,74 +108,28 @@ class Home extends React.Component {
     // this.setState({ newResponsibility: true });
   }
 
-  //handleChange = (selectedItem) => {
-  //  console.log('Got change', selectedItem);
-  //  if (selectedItem.__typename === 'Need') {
-  //    this.onSelectNeed(selectedItem);
-  //  } else if (selectedItem.__typename === 'Responsibility') {
-  //    this.onSelectResponsibility(selectedItem);
-  //  }
-  //}
-  //
-  //handleStateChange = (changes, downshiftState) => {
-  //  if (changes.hasOwnProperty('isOpen')) {
-  //    // downshift is saying that isOpen should change, so let's change it...
-  //    this.setState(({ isOpen, itemsToShow }) => {
-  //      // if it's changing because the user's clicking outside of the downshift
-  //      // component, then we actually don't want to change the isOpen state
-  //      isOpen =
-  //        changes.type === Downshift.stateChangeTypes.mouseUp
-  //          ? isOpen
-  //          : changes.isOpen;
-  //      if (isOpen) {
-  //        // if the menu is going to be open, then we should limit the results
-  //        // by what the user has typed in, otherwise, we'll leave them as they
-  //        // were last...
-  //        itemsToShow = this.getItemsToShow(downshiftState.inputValue);
-  //      }
-  //
-  //      return { isOpen, itemsToShow };
-  //    });
-  //  } else if (changes.hasOwnProperty('inputValue')) {
-  //    // downshift is saying that the inputValue is changing. Since we don't
-  //    // control that, we'll just use that information to update the items
-  //    // that we should show.
-  //    this.setState({
-  //      itemsToShow: this.getItemsToShow(downshiftState.inputValue),
-  //    });
-  //  }
-  //};
-
   render() {
     const { newNeed } = this.state;
-    var { needs } = this.props.data;
-    console.log('home props', this.props);
-    console.log('home needs', needs);
-
-    const sortedNeeds = needs && needs.slice().sort((a, b) =>  {
-      console.log(a, b);
-      var nameA = a.title.toLowerCase();
-      var nameB = b.title.toLowerCase();
-      if (nameA < nameB)
-        return -1;
-      if (nameA > nameB)
-        return 1;
-      return 0;
-    });
+    const { needs } = this.props.data;
+    const responsibilities = this.getResponsibilities();
+    console.log('responsibilities', responsibilities);
+    const searchItems = _.concat(needs, responsibilities);
 
     return (
       <Container fluid>
         <Row>
           <Col lg={6} xs={12}>
             <Search
-              items={ _.concat(needs) }
+              items={searchItems}
               onSelectNeed={this.onSelectNeed}
               onSelectResponsibility={this.onSelectResponsibility}
             />
             <Row>
               <Col>
                 <CreateNeed
+                  needs={needs}
                   newNeed={newNeed}
+                  onSelectNeed={this.onSelectNeed}
                   toggleCreateNewNeed={this.toggleCreateNewNeed}
                 />
               </Col>
@@ -182,6 +161,7 @@ class Home extends React.Component {
               sm={12}
               data={this.state.selectedResponsibility || this.state.selectedNeed}
               onSelectDependency={this.onSelectDependency}
+              refetchData={this.refetchData}
             />
           </Col>
         </Row>
@@ -199,6 +179,7 @@ Home.defaultProps = {
 Home.propTypes = {
   data: PropTypes.shape({
     needs: PropTypes.array,
+    refetch: PropTypes.func,
   }),
 };
 

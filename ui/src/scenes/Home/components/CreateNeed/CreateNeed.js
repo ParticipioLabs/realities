@@ -23,14 +23,13 @@ class CreateNeed extends Component {
   };
 
   createNeedMutation = async () => {
-    await this.props.createNeedMutation({
+    const createdNeed = await this.props.createNeedMutation({
       variables: {
         title: this.state.title,
       },
     });
-    this.props.toggleCreateNewNeed();
+    this.props.toggleCreateNewNeed(createdNeed.data.createNeed);
   }
-
   renderField() {
     return (
       <CreateNeedInput>
@@ -53,7 +52,8 @@ const CREATE_TEXT_MUTATION = gql`
     createNeed(
       title: $title
     ) {
-      title
+      title,
+      nodeId
     }
   }
 `;
@@ -74,10 +74,6 @@ export default graphql(
   CREATE_TEXT_MUTATION,
   {
     name: 'createNeedMutation',
-    options: {
-      refetchQueries: [
-        'Data',
-      ],
-    },
   },
 )(CreateNeed);
+

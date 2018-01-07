@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { RIEInput, RIETextArea } from 'riek';
+import { RIEInput } from 'riek';
 import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
 import { Card,
   CardBody,
-  CardTitle,
   Row,
   Col,
   Popover,
   PopoverHeader,
   PopoverBody } from 'reactstrap';
-import DependencyList from '../DependencyList';
-
+import DependencyList from './DependencyList';
+import TitleField from './TitleField';
+import DescriptionField from './DescriptionField';
 import LocalGraph from '../LocalGraph';
 
 const InputDiv = styled.div`
@@ -37,17 +37,6 @@ const BadgeLabel = styled.span`
 const Underlined = styled.div`
   border-bottom: 1px dotted;
   display: inline-block;
-`;
-
-const Title = styled(CardTitle)`
-  border-bottom: 1px dotted;
-  display: inline-block;
-`;
-
-const DescriptionDiv = styled.div`
-  border: none;
-  padding-left: 0;
-  margin-bottom: 1em;
 `;
 
 class DetailView extends Component {
@@ -98,14 +87,13 @@ class DetailView extends Component {
             >
               {data && data.__typename}
             </BadgeLabel>
-            <Title>
-              <RIEInput
-                value={data.title}
-                change={() => this.setState({ data: { title: data.title } })}
-                propName="title"
-                validate={this.isStringAcceptable}
-              />
-            </Title>
+
+            <TitleField
+              refetchData={this.props.refetchData}
+              data={{ title: data.title }}
+              nodeId={data.nodeId}
+            />
+
             <InputDiv><LabelSpan>Guide:</LabelSpan>
               <Underlined>
                 {data.guide ? <RIEInput
@@ -128,16 +116,11 @@ class DetailView extends Component {
               </Underlined>
             </InputDiv>
 
-            <DescriptionDiv>
-              <div><LabelSpan>Description:</LabelSpan></div>
-              {data.description ? <RIETextArea
-                value={data.description}
-                change={() => this.setState({ data: { description: data.description } })}
-                propName="description"
-                classEditing="form-control"
-                validate={_.isString}
-              /> : <div /> }
-            </DescriptionDiv>
+            <DescriptionField
+              refetchData={this.props.refetchData}
+              data={{ description: data.description }}
+              nodeId={data.nodeId}
+            />
 
             <InputDiv>
               <LabelSpan>Deliberation:</LabelSpan>
@@ -214,6 +197,7 @@ class DetailView extends Component {
 DetailView.defaultProps = {
   data: { title: '', description: '' },
   onSelectDependency: PropTypes.func.isRequired,
+  refetchData: PropTypes.func.isRequired,
 };
 
 DetailView.propTypes = {
@@ -222,6 +206,7 @@ DetailView.propTypes = {
     description: PropTypes.string,
   }),
   onSelectDependency: PropTypes.func,
+  refetchData: PropTypes.func,
 };
 
 export default DetailView;

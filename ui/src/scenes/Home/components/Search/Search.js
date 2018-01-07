@@ -1,9 +1,8 @@
 import React from 'react';
 import Downshift from 'downshift';
 import PropTypes from 'prop-types';
-import { ListGroup, ListGroupItem, Form, Input, Badge } from 'reactstrap';
+import { ListGroup, ListGroupItem, Input, Badge } from 'reactstrap';
 import styled from 'styled-components';
-import _ from 'lodash';
 
 import MdCancelIcon from 'react-icons/lib/md/cancel';
 
@@ -48,11 +47,9 @@ class Search extends React.Component {
     isOpen: false,
   };
 
-  changeHandler = selectedNodeItem =>
-  {
-    console.log('changeHandler', selectedNodeItem)
+  changeHandler = (selectedNodeItem) => {
+    console.log('changeHandler', selectedNodeItem);
     const nodeTitle = selectedNodeItem ? selectedNodeItem.title : '';
-    const inputValue = selectedNodeItem ? selectedNodeItem.title : '';
     this.setState({
       selectedNodeTitle: nodeTitle,
       inputValue: nodeTitle,
@@ -63,104 +60,84 @@ class Search extends React.Component {
       this.props.onSelectNeed(selectedNodeItem);
     } else if (selectedNodeItem.__typename === 'Responsibility') {
       this.props.onSelectResponsibility(selectedNodeItem);
+      // this.props.onSelectNeed(selectedNodeItem.fulfills);
     }
-  }
+  };
 
-  stateChangeHandler = changes =>
-  {
+  stateChangeHandler = (changes) => {
     console.log('stateChangeHandler', changes);
-    let {
+    const {
       selectedItem = this.state.selectedNodeTitle,
       isOpen = this.state.isOpen,
       inputValue = this.state.inputValue,
-      type,
-      } = changes;
-    //isOpen =
+      // type,
+    } = changes;
+
+    // isOpen =
     //  type === Downshift.stateChangeTypes.mouseUp ? this.state.isOpen : isOpen;
+
     this.setState({
       selectedNodeTitle: selectedItem,
       isOpen,
       inputValue,
-    })
-  }
+    });
+  };
 
-  handleInputChange = event =>
-  {
+  handleInputChange = (event) => {
     console.log('handleInputChange', event);
-    const {value} = event.target
-    const nextState = {inputValue: value}
+    const { value } = event.target;
+    const nextState = { inputValue: value };
     console.log('nextState', nextState);
-    console.log('items', this.props.items)
+    console.log('items', this.props.items);
     if (this.props.items.includes(value)) {
-      nextState.selectedNodeTitle = value
+      nextState.selectedNodeTitle = value;
     }
-    this.setState(nextState)
-  }
 
-  clearSelection = () =>
-  {
-    console.log('clearSelection')
-    console.log('inputValue', this.state.inputValue)
-    this.setState({inputValue: '', selectedNodeTitle: null, isOpen: false, })
-  }
+    this.setState(nextState);
+  };
 
-  toggleMenu = () =>
-  {
-    this.setState(({isOpen}) => ({isOpen: !isOpen}))
-  }
+  clearSelection = () => {
+    console.log('clearSelection');
+    console.log('inputValue', this.state.inputValue);
+    this.setState({ inputValue: '', selectedNodeTitle: null, isOpen: false });
+  };
 
-  //constructor(props)
-  //{
-  //  super(props);
-  //
-  //  console.log(this);
-  //
-  //  this.state = {
-  //    inputValue: '',
-  //  };
-  //  this.handleChange = this.handleChange.bind(this);
-  //  this.itemToString = this.itemToString.bind(this);
-  //}
+  toggleMenu = () => {
+    this.setState(({ isOpen }) => ({ isOpen: !isOpen }));
+  };
 
-  //handleChange = (item) =>
-  //{
-  //  console.log('Got change', item);
-  //  this.setState({selectedItem: item});
-  //  try {
-  //    this.setState({inputValue: item.title});
-  //  } catch (err) {
-  //    this.setState({inputValue: ''});
-  //    return;
-  //  }
-  //
-  //  if (item.__typename === 'Need') {
-  //    this.props.onSelectNeed(item);
-  //  } else if (item.__typename === 'Responsibility') {
-  //    this.props.onSelectResponsibility(item);
-  //  }
-  //};
-
-  itemToString = (item) =>
-  {
-    console.log('Convert to string:', item)
+  itemToString = (item) => {
+    console.log('Convert to string:', item);
     return item ? item.name : '';
   };
 
-  render()
-  {
-    //console.log('this.props.items', items)
-    //console.log('this.selectedItem', this.state.selectedItem);
-    //let selectedItem=this.state.selectedNodeTitle
-    //let isOpen=this.state.isOpen
-    //let inputValue=this.state.inputValue
-    //let onChange= this.changeHandler
-    //let onStateChange= this.stateChangeHandler
-    //let onInputChange=this.handleInputChange
-    //let items=this.props.items
+  sortItems = (items) => {
+    try {
+      return items.sort((a, b) => {
+        const nameA = a.title.toLowerCase();
+        const nameB = b.title.toLowerCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        return 0;
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
+    return items;
+  };
+
+  render() {
     return (
       <ControlledAutocomplete
         selectedItem={this.state.selectedNodeTitle}
-        items={this.props.items.sort()}
+        items={this.sortItems(this.props.items)}
         isOpen={this.state.isOpen}
         inputValue={this.state.inputValue}
         onChange={this.changeHandler}
@@ -173,12 +150,14 @@ class Search extends React.Component {
   }
 }
 
-function ControlledAutocomplete({ onInputChange, onClearSelection, items, ...rest }) {
+function ControlledAutocomplete({
+  onInputChange, onClearSelection, items, ...rest
+}) {
   return (
     <div>
       <Downshift
-        { ...rest }
-        render = {({
+        {...rest}
+        render={({
           getInputProps,
           getItemProps,
           isOpen,
@@ -186,55 +165,115 @@ function ControlledAutocomplete({ onInputChange, onClearSelection, items, ...res
           selectedItem,
           highlightedIndex,
           }) => (
-          <div style={{ position: 'relative' }}>
-            <div>
-              <SearchInput {...getInputProps({ placeholder: 'Search', onChange: onInputChange })} />
-              { selectedItem || inputValue ? (
-                <CancelButton onClick={onClearSelection}>
-                <MdCancelIcon size={24} />
-                </CancelButton>
+            <div style={{ position: 'relative' }}>
+              <div>
+                <SearchInput {...getInputProps({ placeholder: 'Search', onChange: onInputChange })} />
+                { selectedItem || inputValue ? (
+                  <CancelButton onClick={onClearSelection}>
+                    <MdCancelIcon size={24} />
+                  </CancelButton>
                 ) : null }
-            </div>
+              </div>
 
-            { isOpen && (
-              <ListGroupPulldown>
-                { items && items
-                  .filter(
-                    i =>
-                  !inputValue ||
-                  i.title.toLowerCase().includes(inputValue.toLowerCase())
-                )
-                  .map((item, index) => (
-                    <ListGroupItem
-                      key={item.nodeId}
-                      {...getItemProps({
-                        item,
-                        index,
-                        active: highlightedIndex === index,
-                        action: selectedItem === item,
-                      })
-                        }
-                    >
-                      <RealitiesBadge node={item}>{ item.__typename[0] }</RealitiesBadge> { item.title }
-                    </ListGroupItem>
-                  )) }
-              </ListGroupPulldown>)
+              { isOpen && (
+                <ListGroupPulldown>
+                  { items && items
+                    .filter(i =>
+                    !inputValue ||
+                    i.title.toLowerCase().includes(inputValue.toLowerCase()))
+                    .map((item, index) => (
+                      <ListGroupItem
+                        key={item.nodeId}
+                        {...getItemProps({
+                          item,
+                          index,
+                          active: highlightedIndex === index,
+                          action: selectedItem === item,
+                        })
+                          }
+                      >
+                        <RealitiesBadge
+                          node={item}
+                        >{ item.__typename[0] }
+                        </RealitiesBadge> { item.title }
+                      </ListGroupItem>
+                    )) }
+                </ListGroupPulldown>)
               }
-          </div>
+            </div>
         )}
       />
     </div>
   );
 }
 
+/*******************************************************************************
+const ControlledAutocomplete = (onInputChange, onClearSelection, items, ...rest) => (
+  <div>
+    <Downshift
+      {...rest}
+      render={({
+        getInputProps,
+        getItemProps,
+        isOpen,
+        inputValue,
+        selectedItem,
+        highlightedIndex,
+        }) => (
+          <div style={{ position: 'relative' }}>
+            <div>
+              <SearchInput {...getInputProps({ placeholder: 'Search', onChange: onInputChange })} />
+              { selectedItem || inputValue ? (
+                <CancelButton onClick={onClearSelection}>
+                  <MdCancelIcon size={24} />
+                </CancelButton>
+                ) : null }
+            </div>
+
+            { isOpen && (
+            <ListGroupPulldown>
+              { items && items
+                .filter(i =>
+                !inputValue ||
+                i.title.toLowerCase().includes(inputValue.toLowerCase()))
+                .map((item, index) => (
+                  <ListGroupItem
+                    key={item.nodeId}
+                    {...getItemProps({
+                      item,
+                      index,
+                      active: highlightedIndex === index,
+                      action: selectedItem === item,
+                    })
+                      }
+                  >
+                    <RealitiesBadge
+                      node={item}
+                    >{ item.__typename[0] }
+                    </RealitiesBadge> { item.title }
+                  </ListGroupItem>
+                )) }
+            </ListGroupPulldown>)
+            }
+          </div>
+      )}
+    />
+  </div>
+);
+*************************************************/
+
 Search.defaultProps = {
   items: [],
+  // onInputChange: null,
+  // onClearSelection: null,
 };
 
 Search.propTypes = {
   items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectNeed: PropTypes.func.isRequired,
   onSelectResponsibility: PropTypes.func.isRequired,
+  // onInputChange: PropTypes.func.isRequired,
+  // onClearSelection: PropTypes.func.isRequired,
 };
 
 export default Search;
