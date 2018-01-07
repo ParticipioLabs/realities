@@ -29,6 +29,7 @@ class Home extends React.Component {
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
     this.getResponsibilities = this.getResponsibilities.bind(this);
+    this.getPeople = this.getPeople.bind(this);
     this.createNewResponsibility = this.createNewResponsibility.bind(this);
   }
 
@@ -69,6 +70,15 @@ class Home extends React.Component {
   getResponsibilities() {
     const { needs } = this.props.data;
     return needs ? _.flatten(needs.map(need => need.fulfilledBy)) : [];
+  }
+
+  getPeople() {
+    // This returns duplicates due to differing values for each Person object.
+    const { needs } = this.props.data;
+    return needs ? new Set(_.concat(
+      _.flatten(needs.map(need => need.guide)),
+      _.flatten(needs.map(need => need.realizer)),
+    ).filter(item => item)) : [];
   }
 
   async refetchData() {
@@ -112,7 +122,8 @@ class Home extends React.Component {
     const { newNeed } = this.state;
     const { needs } = this.props.data;
     const responsibilities = this.getResponsibilities();
-    console.log('responsibilities', responsibilities);
+    const people = this.getPeople();
+    console.log('people', people);
     const searchItems = _.concat(needs, responsibilities);
 
     return (

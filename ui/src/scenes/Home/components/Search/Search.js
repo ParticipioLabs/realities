@@ -207,7 +207,7 @@ function ControlledAutocomplete({
   );
 }
 
-/*******************************************************************************
+/**
 const ControlledAutocomplete = (onInputChange, onClearSelection, items, ...rest) => (
   <div>
     <Downshift
@@ -260,7 +260,7 @@ const ControlledAutocomplete = (onInputChange, onClearSelection, items, ...rest)
     />
   </div>
 );
-*************************************************/
+ */
 
 Search.defaultProps = {
   items: [],
