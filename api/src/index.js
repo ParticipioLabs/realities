@@ -66,6 +66,10 @@ type Mutation {
     nodeId: ID!
     title: String!
   ): NeedResp
+  updateDescription(
+    nodeId: ID!
+    description: String!
+  ): NeedResp
 }
 
 `;
@@ -81,6 +85,17 @@ const context = (user) => {
     user,
   };
 };
+
+const runQuery = (session, query, queryParams) =>
+  session.run(query, queryParams)
+    .then((result) => {
+      session.close();
+      const singleRecord = result.records[0];
+      const record = singleRecord.get(0);
+      return record.properties;
+    }).catch((error) => {
+      console.log(error);
+    });
 
 const resolvers = {
   // root entry point to GraphQL service
@@ -102,16 +117,7 @@ const resolvers = {
         WITH (need)
         SET need.nodeId = ID(need)
         RETURN need`;
-
-      return session.run(query, params)
-        .then((result) => {
-          session.close();
-          const singleRecord = result.records[0];
-          const need = singleRecord.get(0);
-          return need.properties;
-        }).catch((error) => {
-          console.log(error);
-        });
+      runQuery(session, query, params);
     },
     updateTitle(_, params) {
       const queryParams = params;
@@ -121,15 +127,17 @@ const resolvers = {
         SET n.title = {title}
         RETURN n`;
 
-      return session.run(query, queryParams)
-        .then((result) => {
-          session.close();
-          const singleRecord = result.records[0];
-          const record = singleRecord.get(0);
-          return record.properties;
-        }).catch((error) => {
-          console.log(error);
-        });
+      runQuery(session, query, queryParams);
+    },
+    updateDescription(_, params) {
+      const queryParams = params;
+      queryParams.nodeId = Number(queryParams.nodeId);
+      const session = driver.session();
+      const query = `MATCH (n {nodeId: {nodeId}} )
+        SET n.description = {description}
+        RETURN n`;
+
+      runQuery(session, query, queryParams);
     },
   },
 };

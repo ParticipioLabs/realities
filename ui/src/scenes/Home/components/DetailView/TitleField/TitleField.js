@@ -17,9 +17,9 @@ class TitleField extends Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.updateTitleMutation = this.updateTitleMutation.bind(this);
+    this.state = { data: this.props.data };
   }
 
-  state = { data: this.props.data };
   componentWillReceiveProps(nextProps) {
     if (nextProps !== this.props && nextProps.data) {
       const { data } = nextProps;

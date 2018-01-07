@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { RIEInput, RIETextArea } from 'riek';
+import { RIEInput } from 'riek';
 import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
 import { Card,
@@ -13,6 +13,7 @@ import { Card,
   PopoverBody } from 'reactstrap';
 import DependencyList from './DependencyList';
 import TitleField from './TitleField';
+import DescriptionField from './DescriptionField';
 import LocalGraph from '../LocalGraph';
 
 const InputDiv = styled.div`
@@ -36,12 +37,6 @@ const BadgeLabel = styled.span`
 const Underlined = styled.div`
   border-bottom: 1px dotted;
   display: inline-block;
-`;
-
-const DescriptionDiv = styled.div`
-  border: none;
-  padding-left: 0;
-  margin-bottom: 1em;
 `;
 
 class DetailView extends Component {
@@ -121,16 +116,11 @@ class DetailView extends Component {
               </Underlined>
             </InputDiv>
 
-            <DescriptionDiv>
-              <div><LabelSpan>Description:</LabelSpan></div>
-              {data.description ? <RIETextArea
-                value={data.description}
-                change={() => this.setState({ data: { description: data.description } })}
-                propName="description"
-                classEditing="form-control"
-                validate={_.isString}
-              /> : <div /> }
-            </DescriptionDiv>
+            <DescriptionField
+              refetchData={this.props.refetchData}
+              data={{ description: data.description }}
+              nodeId={data.nodeId}
+            />
 
             <InputDiv>
               <LabelSpan>Deliberation:</LabelSpan>
