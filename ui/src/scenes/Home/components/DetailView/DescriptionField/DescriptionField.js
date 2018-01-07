@@ -22,7 +22,7 @@ class DescriptionField extends Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.updateDescriptionMutation = this.updateDescriptionMutation.bind(this);
-    this.state = this.isStringAcceptable(this.props.data.description)
+    this.state = this.props.data.description && this.isStringAcceptable(this.props.data.description)
       ? this.props
       : { data: { description: 'No description yet ...' } };
   }

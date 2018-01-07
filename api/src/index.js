@@ -112,12 +112,13 @@ const resolvers = {
   },
   Mutation: {
     createNeed(_, params) {
+      const queryParams = params;
       const session = driver.session();
       const query = `MERGE (need:Need {title:{title}} )
         WITH (need)
         SET need.nodeId = ID(need)
         RETURN need`;
-      runQuery(session, query, params);
+      return runQuery(session, query, queryParams);
     },
     updateTitle(_, params) {
       const queryParams = params;
@@ -126,8 +127,7 @@ const resolvers = {
       const query = `MATCH (n {nodeId: {nodeId}} )
         SET n.title = {title}
         RETURN n`;
-
-      runQuery(session, query, queryParams);
+      return runQuery(session, query, queryParams);
     },
     updateDescription(_, params) {
       const queryParams = params;
@@ -136,8 +136,7 @@ const resolvers = {
       const query = `MATCH (n {nodeId: {nodeId}} )
         SET n.description = {description}
         RETURN n`;
-
-      runQuery(session, query, queryParams);
+      return runQuery(session, query, queryParams);
     },
   },
 };
