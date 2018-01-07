@@ -55,13 +55,7 @@ class Search extends React.Component {
       inputValue: nodeTitle,
       isOpen: false,
     });
-
-    if (selectedNodeItem.__typename === 'Need') {
-      this.props.onSelectNeed(selectedNodeItem);
-    } else if (selectedNodeItem.__typename === 'Responsibility') {
-      this.props.onSelectResponsibility(selectedNodeItem);
-      // this.props.onSelectNeed(selectedNodeItem.fulfills);
-    }
+    this.props.onSelectDependency(selectedNodeItem);
   };
 
   stateChangeHandler = (changes) => {
@@ -270,8 +264,7 @@ Search.defaultProps = {
 
 Search.propTypes = {
   items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  onSelectNeed: PropTypes.func.isRequired,
-  onSelectResponsibility: PropTypes.func.isRequired,
+  onSelectDependency: PropTypes.func.isRequired,
   // onInputChange: PropTypes.func.isRequired,
   // onClearSelection: PropTypes.func.isRequired,
 };

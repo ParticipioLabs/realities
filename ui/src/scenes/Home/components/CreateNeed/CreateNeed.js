@@ -19,6 +19,12 @@ class CreateNeed extends Component {
   }
 
   handleNameChange = (event) => {
+    // NOTE: there probably needs to be a check for XSS attacks for any information
+    // that the user enters.
+    if (event.target.value === '') {
+      return;
+    }
+
     this.setState({ title: event.target.value });
   };
 

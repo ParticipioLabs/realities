@@ -39,10 +39,6 @@ class Home extends React.Component {
 
   onSelectResponsibility(responsibility) {
     this.setState({ selectedResponsibility: responsibility });
-
-    // If only the Responsibility is selected, should we fill in
-    // the Need if it's not currently selected?
-    // this.setState({ selectedNeed: responsibility.fulfills });
   }
 
   onSelectDependency(dependency) {
@@ -132,8 +128,7 @@ class Home extends React.Component {
           <Col lg={6} xs={12}>
             <Search
               items={searchItems}
-              onSelectNeed={this.onSelectNeed}
-              onSelectResponsibility={this.onSelectResponsibility}
+              onSelectDependency={this.onSelectDependency}
             />
             <Row>
               <Col>
