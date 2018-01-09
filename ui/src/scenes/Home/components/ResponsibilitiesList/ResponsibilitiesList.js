@@ -38,16 +38,13 @@ const ResponsibilitiesList = ({ responsibilities, onSelectResponsibility }) => (
         // eslint-disable-next-line react/no-array-index-key
         <RealitiesListGroupItem key={i} onClick={() => onSelectResponsibility(responsibility)}>
 */
-
 const ResponsibilitiesList = ({
-  responsibilities, onSelectResponsibility, selectedResp, createNewResponsibility, auth,
+  responsibilities, onSelectResponsibility, selectedResp, toggleCreateNewResponsibility, auth,
 }) => (
   <div>
     <ResponsibilitiesListHeader><span>Responsibilities</span>
-      { auth.isLoggedIn && responsibilities &&
-      <CircleButton
-        onClick={() => createNewResponsibility()}
-      >
+      { true && responsibilities &&
+      <CircleButton onClick={() => toggleCreateNewResponsibility()}>
         <RealitiesCircleOutline />
       </CircleButton>
       }
@@ -72,7 +69,7 @@ ResponsibilitiesList.defaultProps = {
 ResponsibilitiesList.propTypes = {
   responsibilities: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectResponsibility: PropTypes.func.isRequired,
-  createNewResponsibility: PropTypes.func.isRequired,
+  toggleCreateNewResponsibility: PropTypes.func.isRequired,
   selectedResp: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,

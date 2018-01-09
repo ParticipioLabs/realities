@@ -9,6 +9,7 @@ import {
 } from 'reactstrap';
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
+import CreateResponsibility from './components/CreateResponsibility';
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
@@ -22,15 +23,16 @@ class Home extends React.Component {
       selectedNeed: null,
       selectedResponsibility: null,
       newNeed: false,
+      newResponsibility: false,
     };
     this.refetchData = this.refetchData.bind(this);
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
+    this.toggleCreateNewResponsibility = this.toggleCreateNewResponsibility.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
     this.getResponsibilities = this.getResponsibilities.bind(this);
     this.getPeople = this.getPeople.bind(this);
-    this.createNewResponsibility = this.createNewResponsibility.bind(this);
   }
 
   onSelectNeed(need) {
@@ -92,6 +94,7 @@ class Home extends React.Component {
   }
 
   toggleCreateNewNeed(newNeed) {
+    this.setState({ newResponsibility: false });
     if (newNeed) {
       const { nodeId } = newNeed;
       const awaitNewNeeds = async () => {
@@ -108,14 +111,27 @@ class Home extends React.Component {
     this.setState({ newNeed: !this.state.newNeed });
   }
 
-  createNewResponsibility() {
-    this.setState({});
-
-    // this.setState({ newResponsibility: true });
+  toggleCreateNewResponsibility(newResponsibility) {
+    this.setState({ newNeed: false });
+    if (newResponsibility) {
+      const { nodeId } = newResponsibility;
+      const awaitNewNeeds = async () => {
+        try {
+          await this.refetchData();
+          const resp = this.getResponsibilities().find(n => n.nodeId === nodeId);
+          this.onSelectResponsibility(resp);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      awaitNewNeeds();
+    }
+    this.setState({ newResponsibility: !this.state.newResponsibility });
   }
 
   render() {
     const { newNeed } = this.state;
+    const { newResponsibility } = this.state;
     const { needs } = this.props.data;
     const responsibilities = this.getResponsibilities();
     const people = this.getPeople();
@@ -141,6 +157,17 @@ class Home extends React.Component {
               </Col>
             </Row>
             <Row>
+              <Col>
+                <CreateResponsibility
+                  needs={needs}
+                  selectedNeed={this.state.selectedNeed}
+                  newResponsibility={newResponsibility}
+                  onSelectResponsibility={this.onSelectResponsibility}
+                  toggleCreateNewResponsibility={this.toggleCreateNewResponsibility}
+                />
+              </Col>
+            </Row>
+            <Row>
               <Col lg={6} xs={12}>
                 <NeedsList
                   needs={needs}
@@ -157,7 +184,7 @@ class Home extends React.Component {
                   }
                   onSelectResponsibility={this.onSelectResponsibility}
                   selectedResp={this.state.selectedResponsibility}
-                  createNewResponsibility={this.createNewResponsibility}
+                  toggleCreateNewResponsibility={this.toggleCreateNewResponsibility}
                 />
               </Col>
             </Row>
