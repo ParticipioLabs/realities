@@ -1,22 +1,12 @@
 import React, { Component } from 'react';
 import {
   Input,
-  InputGroup,
   InputGroupButton,
-  Badge,
 } from 'reactstrap';
 import { CreateNeedInput } from '@/styles/realities-styles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
-
-const RealitiesBadge = styled(Badge)`
-  padding-top: 1em;
-  padding-left: 1em;
-  padding-right: 1em; 
-  background-color: #00cf19;
-`;
 
 class CreateNeed extends Component {
   constructor() {
@@ -45,14 +35,15 @@ class CreateNeed extends Component {
     });
     this.props.toggleCreateNewNeed(createdNeed.data.createNeed);
   }
+
   renderField() {
     return (
       <CreateNeedInput>
-        <InputGroup>
-          <RealitiesBadge> {'N'} </RealitiesBadge>
-          <Input placeholder={this.state.placeholder} onChange={this.handleNameChange} />
-          <InputGroupButton onClick={() => this.createNeedMutation()} color="secondary">Create</InputGroupButton>
-        </InputGroup>
+        <div className="input-group-prepend">
+          <span className="input-group-text"> {'N'} </span>
+        </div>
+        <Input placeholder={this.state.placeholder} onChange={this.handleNameChange} />
+        <InputGroupButton onClick={() => this.createNeedMutation()} color="secondary">Create</InputGroupButton>
       </CreateNeedInput>
     );
   }

@@ -1,27 +1,18 @@
 import React, { Component } from 'react';
 import {
   Input,
-  InputGroup,
   InputGroupButton,
   Badge,
 } from 'reactstrap';
-import { CreateNeedInput } from '@/styles/realities-styles';
+import { CreateResponsibilityInput } from '@/styles/realities-styles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const ResponsibilityBadge = styled(Badge)`
-  padding-top: 1em;
-  padding-left: 1em;
-  padding-right: 1em; 
-  background-color: #843cfd;
-`;
-
 const NeedBadge = styled(Badge)`
-  padding-top: 1em;
-  padding-left: 1em;
-  padding-right: 1em; 
+  padding: .5em;
+  margin-bottom: .5em;
   background-color: #00cf19;
 `;
 
@@ -55,14 +46,16 @@ class CreateResponsibility extends Component {
   }
   renderField() {
     return (
-      <CreateNeedInput>
-        <InputGroup>
-          <NeedBadge> {this.props.selectedNeed.title} </NeedBadge>
-          <ResponsibilityBadge> {'R'} </ResponsibilityBadge>
+      <div>
+        <NeedBadge> {this.props.selectedNeed.title} </NeedBadge>
+        <CreateResponsibilityInput>
+          <div className="input-group-prepend">
+            <span className="input-group-text"> {'R'} </span>
+          </div>
           <Input placeholder={this.state.placeholder} onChange={this.handleNameChange} />
           <InputGroupButton onClick={() => this.createResponsibilityMutation()} color="secondary">Create</InputGroupButton>
-        </InputGroup>
-      </CreateNeedInput>
+        </CreateResponsibilityInput>
+      </div>
     );
   }
 
