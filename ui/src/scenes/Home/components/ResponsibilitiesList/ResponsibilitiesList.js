@@ -43,7 +43,7 @@ const ResponsibilitiesList = ({
 }) => (
   <div>
     <ResponsibilitiesListHeader><span>Responsibilities</span>
-      { true && responsibilities &&
+      { auth.isLoggedIn && responsibilities &&
       <CircleButton onClick={() => toggleCreateNewResponsibility()}>
         <RealitiesCircleOutline />
       </CircleButton>

@@ -3,6 +3,7 @@ import Downshift from 'downshift';
 import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem, Input, Badge } from 'reactstrap';
 import styled from 'styled-components';
+
 import MdCancelIcon from 'react-icons/lib/md/cancel';
 
 const CancelButton = styled.button`
@@ -144,7 +145,7 @@ class Search extends React.Component {
 }
 
 function ControlledAutocomplete({
-  onInputChange, onClearSelection, items, ...rest
+  onInputChange, onClearSelection, items, ...rest // eslint-disable-line react/prop-types
 }) {
   return (
     <div>
@@ -262,8 +263,8 @@ Search.defaultProps = {
 Search.propTypes = {
   items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   onSelectDependency: PropTypes.func.isRequired,
-  onInputChange: PropTypes.func.isRequired,
-  onClearSelection: PropTypes.func.isRequired,
+  // onInputChange: PropTypes.func.isRequired,
+  // onClearSelection: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
 };
 
 export default Search;

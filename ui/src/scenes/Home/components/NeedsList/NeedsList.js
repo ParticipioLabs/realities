@@ -35,7 +35,7 @@ const NeedsList = ({
 }) => (
   <div>
     <NeedsListHeader><span>Needs</span>
-      { true &&
+      { auth.isLoggedIn &&
       <CircleButton onClick={() => toggleCreateNewNeed()}>
         <RealitiesCircleOutline />
       </CircleButton>
