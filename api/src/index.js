@@ -62,6 +62,10 @@ type Query {
 
 type Mutation {
   createNeed(title: String!): Need 
+  createResponsibility(
+    title: String!,
+    needId: String!
+  ): Responsibility 
   updateTitle(
     nodeId: ID!
     title: String!
@@ -118,6 +122,19 @@ const resolvers = {
         WITH (need)
         SET need.nodeId = ID(need)
         RETURN need`;
+      return runQuery(session, query, queryParams);
+    },
+    createResponsibility(_, params) {
+      const queryParams = params;
+      const session = driver.session();
+      const query = `
+        MATCH (need:Need {nodeId: toInteger({needId})} )
+        WITH need
+        MERGE (resp:Responsibility {title:{title}} )-[r:FULFILLS]->(need)
+        WITH resp
+        SET resp.nodeId = ID(resp)
+        RETURN resp
+        `;
       return runQuery(session, query, queryParams);
     },
     updateTitle(_, params) {

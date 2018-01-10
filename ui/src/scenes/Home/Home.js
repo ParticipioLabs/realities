@@ -2,42 +2,37 @@ import React from 'react';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import styled from 'styled-components';
 import {
   Container,
   Row,
   Col,
-  Form,
-  Input,
 } from 'reactstrap';
 import _ from 'lodash';
 import CreateNeed from './components/CreateNeed';
+import CreateResponsibility from './components/CreateResponsibility';
 import NeedsList from './components/NeedsList';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 import DetailView from './components/DetailView';
-
-const SearchForm = styled(Form)`
-  margin-bottom: 1em;
-  font-size: large;
-`;
-
-const Footer = styled.footer`
-  margin-top: 1em;
-  font-size: small;
-  text-align: center;
-  border-top: solid 1px #eee;
-`;
+import Search from './components/Search';
 
 class Home extends React.Component {
   constructor() {
     super();
-    this.state = { selectedNeed: null, selectedResponsibility: null, newNeed: false };
+
+    this.state = {
+      selectedNeed: null,
+      selectedResponsibility: null,
+      newNeed: false,
+      newResponsibility: false,
+    };
     this.refetchData = this.refetchData.bind(this);
     this.onSelectNeed = this.onSelectNeed.bind(this);
     this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
+    this.toggleCreateNewResponsibility = this.toggleCreateNewResponsibility.bind(this);
     this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
     this.onSelectDependency = this.onSelectDependency.bind(this);
-    this.createNewResponsibility = this.createNewResponsibility.bind(this);
+    this.getResponsibilities = this.getResponsibilities.bind(this);
+    this.getPeople = this.getPeople.bind(this);
   }
 
   onSelectNeed(need) {
@@ -70,6 +65,20 @@ class Home extends React.Component {
       });
   }
 
+  getResponsibilities() {
+    const { needs } = this.props.data;
+    return needs ? _.flatten(needs.map(need => need.fulfilledBy)) : [];
+  }
+
+  getPeople() {
+    // This returns duplicates due to differing values for each Person object.
+    const { needs } = this.props.data;
+    return needs ? new Set(_.concat(
+      _.flatten(needs.map(need => need.guide)),
+      _.flatten(needs.map(need => need.realizer)),
+    ).filter(item => item)) : [];
+  }
+
   async refetchData() {
     // If node has changed this must go to state, reselecting after refetch
     const { selectedNeed, selectedResponsibility } = this.state;
@@ -85,6 +94,7 @@ class Home extends React.Component {
   }
 
   toggleCreateNewNeed(newNeed) {
+    this.setState({ newResponsibility: false });
     if (newNeed) {
       const { nodeId } = newNeed;
       const awaitNewNeeds = async () => {
@@ -101,25 +111,41 @@ class Home extends React.Component {
     this.setState({ newNeed: !this.state.newNeed });
   }
 
-  createNewResponsibility() {
-    this.setState({});
-
-    // this.setState({ newResponsibility: true });
+  toggleCreateNewResponsibility(newResponsibility) {
+    this.setState({ newNeed: false });
+    if (newResponsibility) {
+      const { nodeId } = newResponsibility;
+      const awaitNewNeeds = async () => {
+        try {
+          await this.refetchData();
+          const resp = this.getResponsibilities().find(n => n.nodeId === nodeId);
+          this.onSelectResponsibility(resp);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      awaitNewNeeds();
+    }
+    this.setState({ newResponsibility: !this.state.newResponsibility });
   }
 
   render() {
     const { newNeed } = this.state;
+    const { newResponsibility } = this.state;
     const { needs } = this.props.data;
+    const responsibilities = this.getResponsibilities();
+    const people = this.getPeople();
+    console.log('people', people);
+    const searchItems = _.concat(needs, responsibilities);
+
     return (
       <Container fluid>
         <Row>
           <Col lg={6} xs={12}>
-            <SearchForm>
-              <Input
-                bsSize="lg"
-                placeholder="Search for Need or Responsibility"
-              />
-            </SearchForm>
+            <Search
+              items={searchItems}
+              onSelectDependency={this.onSelectDependency}
+            />
             <Row>
               <Col>
                 <CreateNeed
@@ -127,6 +153,17 @@ class Home extends React.Component {
                   newNeed={newNeed}
                   onSelectNeed={this.onSelectNeed}
                   toggleCreateNewNeed={this.toggleCreateNewNeed}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <CreateResponsibility
+                  needs={needs}
+                  selectedNeed={this.state.selectedNeed}
+                  newResponsibility={newResponsibility}
+                  onSelectResponsibility={this.onSelectResponsibility}
+                  toggleCreateNewResponsibility={this.toggleCreateNewResponsibility}
                 />
               </Col>
             </Row>
@@ -147,7 +184,7 @@ class Home extends React.Component {
                   }
                   onSelectResponsibility={this.onSelectResponsibility}
                   selectedResp={this.state.selectedResponsibility}
-                  createNewResponsibility={this.createNewResponsibility}
+                  toggleCreateNewResponsibility={this.toggleCreateNewResponsibility}
                 />
               </Col>
             </Row>
@@ -161,11 +198,6 @@ class Home extends React.Component {
             />
           </Col>
         </Row>
-        <Footer className="text-muted">
-          <Col>
-           A tool for tribal decentralised organisations.
-          </Col>
-        </Footer>
       </Container>
     );
   }

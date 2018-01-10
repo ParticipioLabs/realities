@@ -80,6 +80,9 @@ class RoutesContainer extends React.Component {
           </Navbar>
           <Route exact path="/" component={Home} />
           <Route path="/about" component={About} />
+          <footer className="text-muted">
+              A tool for tribal decentralised organisations.
+          </footer>
         </div>
       </Router>
     );
