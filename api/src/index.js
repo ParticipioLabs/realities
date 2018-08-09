@@ -101,6 +101,8 @@ const runQuery = (session, query, queryParams) =>
       console.log(error);
     });
 
+const getUserRole = user => user && user['https://realities.theborderland.se/role'];
+
 const resolvers = {
   // root entry point to GraphQL service
   Query: {
@@ -115,7 +117,11 @@ const resolvers = {
     },
   },
   Mutation: {
-    createNeed(_, params) {
+    createNeed(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
       const queryParams = params;
       const session = driver.session();
       const query = `MERGE (need:Need {title:{title}} )
@@ -124,7 +130,11 @@ const resolvers = {
         RETURN need`;
       return runQuery(session, query, queryParams);
     },
-    createResponsibility(_, params) {
+    createResponsibility(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
       const queryParams = params;
       const session = driver.session();
       const query = `
@@ -137,7 +147,11 @@ const resolvers = {
         `;
       return runQuery(session, query, queryParams);
     },
-    updateTitle(_, params) {
+    updateTitle(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
       const queryParams = params;
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
@@ -146,7 +160,11 @@ const resolvers = {
         RETURN n`;
       return runQuery(session, query, queryParams);
     },
-    updateDescription(_, params) {
+    updateDescription(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
       const queryParams = params;
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
