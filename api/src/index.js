@@ -12,7 +12,7 @@ import neo4jDriver from './db/neo4jDriver';
 const typeDefs = `
 type Person {
   nodeId: ID!
-  name: String!
+  name: String
   email: String!
   guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
   realizesNeed: [Need] @relation(name: "REALIZES", direction: "OUT")
