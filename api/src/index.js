@@ -102,6 +102,7 @@ const runQuery = (session, query, queryParams) =>
     });
 
 const getUserRole = user => user && user['https://realities.theborderland.se/role'];
+const getUserEmail = user => user && user['https://realities.theborderland.se/email'];
 
 const resolvers = {
   // root entry point to GraphQL service
@@ -122,13 +123,17 @@ const resolvers = {
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
-      const queryParams = params;
-      const session = driver.session();
-      const query = `MERGE (need:Need {title:{title}} )
-        WITH (need)
+      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const query = `
+        MERGE (person:Person {email:{email}})
+        SET person.nodeId = ID(person)
+        CREATE (need:Need {title:{title}})
         SET need.nodeId = ID(need)
-        RETURN need`;
-      return runQuery(session, query, queryParams);
+        CREATE (person)-[:GUIDES]->(need)
+        CREATE (person)-[:REALIZES]->(need)
+        RETURN need
+      `;
+      return runQuery(driver.session(), query, queryParams);
     },
     createResponsibility(_, params, ctx) {
       const userRole = getUserRole(ctx.user);

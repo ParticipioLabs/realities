@@ -96,19 +96,21 @@ class DetailView extends Component {
 
             <InputDiv><LabelSpan>Guide:</LabelSpan>
               <Underlined>
-                {data.guide ? <RIEInput
-                  value={data.guide.name}
-                  change={() => this.setState({ data: { guideName: data.guide.name } })}
-                  propName="guideName"
-                  validate={this.isStringAcceptable}
-                /> : <div /> }
+                {data.guide ? (
+                  <RIEInput
+                    value={data.guide.name || data.guide.email}
+                    change={() => this.setState({ data: { guideName: data.guide.name } })}
+                    propName="guideName"
+                    validate={this.isStringAcceptable}
+                  />
+                ) : (<div />)}
               </Underlined>
             </InputDiv>
 
             <InputDiv><LabelSpan>Realizer:</LabelSpan>
               <Underlined>
                 {data.realizer ? <RIEInput
-                  value={data.realizer.name}
+                  value={data.realizer.name || data.realizer.email}
                   change={() => this.setState({ data: { realizerName: data.realizer.name } })}
                   propName="realizerName"
                   validate={this.isStringAcceptable}

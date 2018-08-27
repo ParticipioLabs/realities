@@ -225,10 +225,12 @@ const NESTED_DATA_QUERY = gql`
       guide {
         nodeId
         name
+        email
       }
       realizer {
         nodeId
         name
+        email
       }
       dependsOnNeeds {
         nodeId
@@ -242,10 +244,12 @@ const NESTED_DATA_QUERY = gql`
         guide {
           nodeId
           name
+          email
         }
         realizer {
           nodeId
           name
+          email
         }
         fulfills {
           nodeId
@@ -259,10 +263,12 @@ const NESTED_DATA_QUERY = gql`
         guide {
           nodeId
           name
+          email
         }
         realizer {
           nodeId
           name
+          email
         }
       }
       responsibilitiesThatDependOnThis {
@@ -272,10 +278,12 @@ const NESTED_DATA_QUERY = gql`
         guide {
           nodeId
           name
+          email
         }
         realizer {
           nodeId
           name
+          email
         }
         fulfills {
           nodeId
@@ -289,10 +297,12 @@ const NESTED_DATA_QUERY = gql`
         guide {
           nodeId
           name
+          email
         }
         realizer {
           nodeId
           name
+          email
         }
         fulfills {
           nodeId
@@ -301,10 +311,12 @@ const NESTED_DATA_QUERY = gql`
           guide {
             nodeId
             name
+            email
           }
           realizer {
             nodeId
             name
+            email
           }
         }
         dependsOnNeeds {
@@ -314,10 +326,12 @@ const NESTED_DATA_QUERY = gql`
           guide {
             nodeId
             name
+            email
           }
           realizer {
             nodeId
             name
+            email
           }
         }
         dependsOnResponsibilites {
@@ -327,10 +341,12 @@ const NESTED_DATA_QUERY = gql`
           guide {
             nodeId
             name
+            email
           }
           realizer {
             nodeId
             name
+            email
           }
           fulfills {
             nodeId
@@ -344,10 +360,12 @@ const NESTED_DATA_QUERY = gql`
           guide {
             nodeId
             name
+            email
           }
           realizer {
             nodeId
             name
+            email
           }
         }
         responsibilitiesThatDependOnThis {
@@ -357,10 +375,12 @@ const NESTED_DATA_QUERY = gql`
           guide {
             nodeId
             name
+            email
           }
           realizer {
             nodeId
             name
+            email
           }
           fulfills {
             nodeId
