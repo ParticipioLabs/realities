@@ -140,15 +140,18 @@ const resolvers = {
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
-      const queryParams = params;
-      const session = driver.session();
+      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
       const query = `
-        MATCH (need:Need {nodeId: toInteger({needId})} )
-        MERGE (resp:Responsibility {title:{title}} )-[r:FULFILLS]->(need)
+        MATCH (need:Need {nodeId: toInteger({needId})})
+        WITH need
+        MERGE (person:Person {email:{email}})
+        SET person.nodeId = ID(person)
+        CREATE (resp:Responsibility {title:{title}})-[r:FULFILLS]->(need)
         SET resp.nodeId = ID(resp)
+        CREATE (person)-[:GUIDES]->(resp)
         RETURN resp
       `;
-      return runQuery(session, query, queryParams);
+      return runQuery(driver.session(), query, queryParams);
     },
     updateTitle(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
