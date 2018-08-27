@@ -159,7 +159,7 @@ const resolvers = {
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
       const query = `
-        MATCH (n {nodeId: {nodeId}} )
+        MATCH (n {nodeId: {nodeId}})
         SET n.title = {title}
         RETURN n
       `;
@@ -174,7 +174,7 @@ const resolvers = {
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
       const query = `
-        MATCH (n {nodeId: {nodeId}} )
+        MATCH (n {nodeId: {nodeId}})
         SET n.description = {description}
         RETURN n
       `;
