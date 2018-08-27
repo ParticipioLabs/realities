@@ -25,7 +25,7 @@ type NeedResp {
   title: String!
   description: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
-  realizer: Person @relation(name: "REALIZES", direction: "IN")  
+  realizer: Person @relation(name: "REALIZES", direction: "IN")
 }
 
 type Need {
@@ -144,12 +144,10 @@ const resolvers = {
       const session = driver.session();
       const query = `
         MATCH (need:Need {nodeId: toInteger({needId})} )
-        WITH need
         MERGE (resp:Responsibility {title:{title}} )-[r:FULFILLS]->(need)
-        WITH resp
         SET resp.nodeId = ID(resp)
         RETURN resp
-        `;
+      `;
       return runQuery(session, query, queryParams);
     },
     updateTitle(_, params, ctx) {
@@ -160,9 +158,11 @@ const resolvers = {
       const queryParams = params;
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
-      const query = `MATCH (n {nodeId: {nodeId}} )
+      const query = `
+        MATCH (n {nodeId: {nodeId}} )
         SET n.title = {title}
-        RETURN n`;
+        RETURN n
+      `;
       return runQuery(session, query, queryParams);
     },
     updateDescription(_, params, ctx) {
@@ -173,9 +173,11 @@ const resolvers = {
       const queryParams = params;
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
-      const query = `MATCH (n {nodeId: {nodeId}} )
+      const query = `
+        MATCH (n {nodeId: {nodeId}} )
         SET n.description = {description}
-        RETURN n`;
+        RETURN n
+      `;
       return runQuery(session, query, queryParams);
     },
   },
