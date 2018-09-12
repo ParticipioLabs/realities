@@ -12,7 +12,7 @@ import neo4jDriver from './db/neo4jDriver';
 const typeDefs = `
 type Person {
   nodeId: ID!
-  name: String!
+  name: String
   email: String!
   guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
   realizesNeed: [Need] @relation(name: "REALIZES", direction: "OUT")
@@ -25,7 +25,7 @@ type NeedResp {
   title: String!
   description: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
-  realizer: Person @relation(name: "REALIZES", direction: "IN")  
+  realizer: Person @relation(name: "REALIZES", direction: "IN")
 }
 
 type Need {
@@ -101,6 +101,9 @@ const runQuery = (session, query, queryParams) =>
       console.log(error);
     });
 
+const getUserRole = user => user && user['https://realities.theborderland.se/role'];
+const getUserEmail = user => user && user['https://realities.theborderland.se/email'];
+
 const resolvers = {
   // root entry point to GraphQL service
   Query: {
@@ -115,44 +118,69 @@ const resolvers = {
     },
   },
   Mutation: {
-    createNeed(_, params) {
-      const queryParams = params;
-      const session = driver.session();
-      const query = `MERGE (need:Need {title:{title}} )
-        WITH (need)
+    createNeed(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const query = `
+        MERGE (person:Person {email:{email}})
+        SET person.nodeId = ID(person)
+        CREATE (need:Need {title:{title}})
         SET need.nodeId = ID(need)
-        RETURN need`;
-      return runQuery(session, query, queryParams);
+        CREATE (person)-[:GUIDES]->(need)
+        CREATE (person)-[:REALIZES]->(need)
+        RETURN need
+      `;
+      return runQuery(driver.session(), query, queryParams);
     },
-    createResponsibility(_, params) {
+    createResponsibility(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const query = `
+        MATCH (need:Need {nodeId: toInteger({needId})})
+        WITH need
+        MERGE (person:Person {email:{email}})
+        SET person.nodeId = ID(person)
+        CREATE (resp:Responsibility {title:{title}})-[r:FULFILLS]->(need)
+        SET resp.nodeId = ID(resp)
+        CREATE (person)-[:GUIDES]->(resp)
+        RETURN resp
+      `;
+      return runQuery(driver.session(), query, queryParams);
+    },
+    updateTitle(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
       const queryParams = params;
+      queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
       const query = `
-        MATCH (need:Need {nodeId: toInteger({needId})} )
-        WITH need
-        MERGE (resp:Responsibility {title:{title}} )-[r:FULFILLS]->(need)
-        WITH resp
-        SET resp.nodeId = ID(resp)
-        RETURN resp
-        `;
-      return runQuery(session, query, queryParams);
-    },
-    updateTitle(_, params) {
-      const queryParams = params;
-      queryParams.nodeId = Number(queryParams.nodeId);
-      const session = driver.session();
-      const query = `MATCH (n {nodeId: {nodeId}} )
+        MATCH (n {nodeId: {nodeId}})
         SET n.title = {title}
-        RETURN n`;
+        RETURN n
+      `;
       return runQuery(session, query, queryParams);
     },
-    updateDescription(_, params) {
+    updateDescription(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
       const queryParams = params;
       queryParams.nodeId = Number(queryParams.nodeId);
       const session = driver.session();
-      const query = `MATCH (n {nodeId: {nodeId}} )
+      const query = `
+        MATCH (n {nodeId: {nodeId}})
         SET n.description = {description}
-        RETURN n`;
+        RETURN n
+      `;
       return runQuery(session, query, queryParams);
     },
   },
