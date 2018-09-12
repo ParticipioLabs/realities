@@ -21,7 +21,6 @@ class DescriptionField extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.updateDescriptionMutation = this.updateDescriptionMutation.bind(this);
     this.state = this.props.data.description && this.isStringAcceptable(this.props.data.description)
       ? this.props
       : { data: { description: 'No description yet ...' } };
@@ -37,12 +36,12 @@ class DescriptionField extends Component {
     }
   }
 
-  async handleChange(event) {
+  handleChange = async (event) => {
     const { description } = event;
     await this.setState({ data: { description } });
     await this.updateDescriptionMutation();
     this.props.refetchData();
-  }
+  };
 
   updateDescriptionMutation = async () => {
     const { description } = this.state.data;
@@ -52,7 +51,7 @@ class DescriptionField extends Component {
         nodeId: this.props.nodeId,
       },
     });
-  }
+  };
 
   isStringAcceptable = string => _.isString && string.length >= 1;
 

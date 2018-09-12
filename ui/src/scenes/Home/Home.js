@@ -25,25 +25,17 @@ class Home extends React.Component {
       newNeed: false,
       newResponsibility: false,
     };
-    this.refetchData = this.refetchData.bind(this);
-    this.onSelectNeed = this.onSelectNeed.bind(this);
-    this.toggleCreateNewNeed = this.toggleCreateNewNeed.bind(this);
-    this.toggleCreateNewResponsibility = this.toggleCreateNewResponsibility.bind(this);
-    this.onSelectResponsibility = this.onSelectResponsibility.bind(this);
-    this.onSelectDependency = this.onSelectDependency.bind(this);
-    this.getResponsibilities = this.getResponsibilities.bind(this);
-    this.getPeople = this.getPeople.bind(this);
   }
 
-  onSelectNeed(need) {
+  onSelectNeed = (need) => {
     this.setState({ selectedNeed: need, selectedResponsibility: null });
-  }
+  };
 
-  onSelectResponsibility(responsibility) {
+  onSelectResponsibility = (responsibility) => {
     this.setState({ selectedResponsibility: responsibility });
-  }
+  };
 
-  onSelectDependency(dependency) {
+  onSelectDependency = (dependency) => {
     const needsPromise = new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
       resolve(this.props.data.needs);
     });
@@ -63,23 +55,23 @@ class Home extends React.Component {
           this.onSelectNeed(need);
         }
       });
-  }
+  };
 
-  getResponsibilities() {
+  getResponsibilities = () => {
     const { needs } = this.props.data;
     return needs ? _.flatten(needs.map(need => need.fulfilledBy)) : [];
-  }
+  };
 
-  getPeople() {
+  getPeople = () => {
     // This returns duplicates due to differing values for each Person object.
     const { needs } = this.props.data;
     return needs ? new Set(_.concat(
       _.flatten(needs.map(need => need.guide)),
       _.flatten(needs.map(need => need.realizer)),
     ).filter(item => item)) : [];
-  }
+  };
 
-  async refetchData() {
+  refetchData = async () => {
     // If node has changed this must go to state, reselecting after refetch
     const { selectedNeed, selectedResponsibility } = this.state;
     await this.props.data.refetch();
@@ -91,9 +83,9 @@ class Home extends React.Component {
       ? _.find(need.fulfilledBy, o => o.nodeId === selectedResponsibility.nodeId)
       : selectedResponsibility);
     this.setState({ selectedNeed: need, selectedResponsibility: resp });
-  }
+  };
 
-  toggleCreateNewNeed(newNeed) {
+  toggleCreateNewNeed = (newNeed) => {
     this.setState({ newResponsibility: false });
     if (newNeed) {
       const { nodeId } = newNeed;
@@ -109,9 +101,9 @@ class Home extends React.Component {
       awaitNewNeeds();
     }
     this.setState({ newNeed: !this.state.newNeed });
-  }
+  };
 
-  toggleCreateNewResponsibility(newResponsibility) {
+  toggleCreateNewResponsibility = (newResponsibility) => {
     this.setState({ newNeed: false });
     if (newResponsibility) {
       const { nodeId } = newResponsibility;
@@ -127,7 +119,7 @@ class Home extends React.Component {
       awaitNewNeeds();
     }
     this.setState({ newResponsibility: !this.state.newResponsibility });
-  }
+  };
 
   render() {
     const { newNeed } = this.state;

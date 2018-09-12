@@ -15,8 +15,6 @@ const Title = styled(CardTitle)`
 class TitleField extends Component {
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.updateTitleMutation = this.updateTitleMutation.bind(this);
     this.state = { data: this.props.data };
   }
 
@@ -27,12 +25,12 @@ class TitleField extends Component {
     }
   }
 
-  async handleChange(event) {
+  handleChange = async (event) => {
     const { title } = event;
     await this.setState({ data: { title } });
     await this.updateTitleMutation();
     this.props.refetchData();
-  }
+  };
 
   updateTitleMutation = async () => {
     const { title } = this.state.data;
@@ -42,7 +40,7 @@ class TitleField extends Component {
         nodeId: this.props.nodeId,
       },
     });
-  }
+  };
 
   isStringAcceptable = string => _.isString && string.length >= 1 && string.length <= 100;
 
