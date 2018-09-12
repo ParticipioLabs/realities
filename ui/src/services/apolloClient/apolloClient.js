@@ -23,6 +23,6 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 export default new ApolloClient({
   link: concat(authMiddleware, httpLink),
   cache: new InMemoryCache({
-    dataIdFromObject: object => object.__typename + ':' + object.nodeId,
+    dataIdFromObject: object => `${object.__typename}:${object.nodeId}`,
   }),
 });
