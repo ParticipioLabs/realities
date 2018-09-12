@@ -11,10 +11,10 @@ import { Card,
   Popover,
   PopoverHeader,
   PopoverBody } from 'reactstrap';
-import DependencyList from './DependencyList';
-import TitleField from './TitleField';
-import DescriptionField from './DescriptionField';
-import LocalGraph from '../LocalGraph';
+import DependencyList from './components/DependencyList';
+import TitleField from './components/TitleField';
+import DescriptionField from './components/DescriptionField';
+import LocalGraph from './components/LocalGraph';
 
 const InputDiv = styled.div`
   margin: 1.0em 0 1.0em 0;
