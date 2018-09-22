@@ -44,7 +44,7 @@
     "mime": "^2.0.3",
     "mocha": "^4.0.1",
     "neo4j-driver": "^1.5.1",
-    "neo4j-graphql-js": "^0.1.6",
+    "neo4j-graphql-js": "^0.1.33",
     "nodemon": "^1.12.4",
     "path": "^0.12.7",
     "source-map-support": "^0.5.0",
