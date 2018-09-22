@@ -14,10 +14,10 @@ type Person {
   nodeId: ID!
   name: String
   email: String!
-  guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
-  realizesNeed: [Need] @relation(name: "REALIZES", direction: "OUT")
-  guidesResponsibility: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
-  realizesResponsibility: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
+  guidesNeeds: [Need] @relation(name: "GUIDES", direction: "OUT")
+  realizesNeeds: [Need] @relation(name: "REALIZES", direction: "OUT")
+  guidesResponsibilities: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
+  realizesResponsibilities: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
 }
 
 type NeedResp {
