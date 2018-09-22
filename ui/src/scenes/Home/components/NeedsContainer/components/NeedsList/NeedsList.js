@@ -1,74 +1,61 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withAuth from '@/components/withAuth';
+import { withRouter } from 'react-router-dom';
 import {
   CircleButton,
   NeedsListHeader,
   NeedsListGroupItem,
   RealitiesCircleOutline,
-  RealitiesListGroup } from '@/styles/realities-styles';
+  RealitiesListGroup,
+} from '@/styles/realities-styles';
 
-const renderListItems = (needs, onSelectNeed, selectedNeed) => {
-  if (needs) {
-    return needs.map((need) => {
-      const selected = need === selectedNeed;
-      return (
+const NeedsList = withRouter(withAuth(({
+  needs,
+  selectedNeedId,
+  history,
+  auth,
+}) => (
+  <div>
+    <NeedsListHeader>
+      <span>Needs</span>
+      { auth.isLoggedIn &&
+        <CircleButton onClick={() => null}>
+          <RealitiesCircleOutline />
+        </CircleButton>
+      }
+    </NeedsListHeader>
+    <RealitiesListGroup>
+      {needs.map(need => (
         <NeedsListGroupItem
           key={need.nodeId}
           tag="button"
           href="#"
           action
-          active={selected}
-          onClick={() => onSelectNeed(need)}
+          active={need.nodeId === selectedNeedId}
+          onClick={() => history.push(`/${need.nodeId}`)}
         >
           {need.title}
         </NeedsListGroupItem>
-      );
-    });
-  }
-
-  return null;
-};
-
-const NeedsList = ({
-  needs, onSelectNeed, selectedNeed, toggleCreateNewNeed, auth,
-}) => (
-  <div>
-    <NeedsListHeader><span>Needs</span>
-      { auth.isLoggedIn &&
-      <CircleButton onClick={() => toggleCreateNewNeed()}>
-        <RealitiesCircleOutline />
-      </CircleButton>
-      }
-    </NeedsListHeader>
-    <RealitiesListGroup>
-      {renderListItems(needs, onSelectNeed, selectedNeed)}
+      ))}
     </RealitiesListGroup>
   </div>
-);
+)));
+
+NeedsList.propTypes = {
+  needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  selectedNeedId: PropTypes.string,
+  auth: PropTypes.shape({
+    isLoggedIn: PropTypes.bool,
+  }),
+};
 
 NeedsList.defaultProps = {
   needs: [],
-  selectedNeed: {},
+  selectedNeedId: undefined,
   auth: {
-    email: 'example@example.com',
-    login: () => null,
-    logout: () => null,
     isLoggedIn: false,
   },
 };
 
-NeedsList.propTypes = {
-  needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  onSelectNeed: PropTypes.func.isRequired,
-  toggleCreateNewNeed: PropTypes.func.isRequired,
-  selectedNeed: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
-    email: PropTypes.string,
-    login: PropTypes.func,
-    logout: PropTypes.func,
-  }),
-};
-
-export default withAuth(NeedsList);
+export default NeedsList;

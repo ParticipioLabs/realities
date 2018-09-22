@@ -4,6 +4,7 @@ import {
   Router,
   Route,
   Link,
+  Switch,
 } from 'react-router-dom';
 import {
   Collapse,
@@ -77,8 +78,10 @@ class RoutesContainer extends React.Component {
               </Nav>
             </Collapse>
           </Navbar>
-          <Route exact path="/" component={Home} />
-          <Route path="/about" component={About} />
+          <Switch>
+            <Route exact path="/about" component={About} />
+            <Route path="/:needId?/:responsibilityId?" component={Home} />
+          </Switch>
           <footer className="text-muted">
               A tool for tribal decentralised organisations.
           </footer>

@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
 import {
   Container,
@@ -17,7 +19,7 @@ const GET_NEEDS = gql`
   }
 `;
 
-const NeedsContainer = () => (
+const NeedsContainer = withRouter(({ match }) => (
   <Query query={GET_NEEDS}>
     {({ loading, error, data }) => {
       if (loading) return 'Loading...';
@@ -27,7 +29,7 @@ const NeedsContainer = () => (
         <Container fluid>
           <Row>
             <Col lg={3} xs={12}>
-              <NeedsList needs={data.needs} />
+              <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />
             </Col>
             <Col lg={9} xs={12}>
               Responsibilities
@@ -37,6 +39,22 @@ const NeedsContainer = () => (
       );
     }}
   </Query>
-);
+));
+
+NeedsContainer.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      needId: PropTypes.string,
+    }),
+  }),
+};
+
+NeedsContainer.defaultProps = {
+  match: {
+    params: {
+      needId: undefined,
+    },
+  },
+};
 
 export default NeedsContainer;
