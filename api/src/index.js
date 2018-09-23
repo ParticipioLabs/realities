@@ -7,6 +7,7 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
+import uuidv4 from 'uuid/v4';
 import neo4jDriver from './db/neo4jDriver';
 
 const typeDefs = `
@@ -64,7 +65,7 @@ type Mutation {
   createNeed(title: String!): Need 
   createResponsibility(
     title: String!,
-    needId: String!
+    needId: ID!
   ): Responsibility 
   updateTitle(
     nodeId: ID!
@@ -123,12 +124,21 @@ const resolvers = {
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
-      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const queryParams = Object.assign(
+        {},
+        params,
+        {
+          email: getUserEmail(ctx.user),
+          personId: uuidv4(),
+          needId: uuidv4(),
+        },
+      );
+      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
       const query = `
         MERGE (person:Person {email:{email}})
-        SET person.nodeId = ID(person)
-        CREATE (need:Need {title:{title}})
-        SET need.nodeId = ID(need)
+        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+          SET person.nodeId = {personId})
+        CREATE (need:Need {title:{title}, nodeId:{needId}})
         CREATE (person)-[:GUIDES]->(need)
         CREATE (person)-[:REALIZES]->(need)
         RETURN need
@@ -140,14 +150,23 @@ const resolvers = {
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
-      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const queryParams = Object.assign(
+        {},
+        params,
+        {
+          email: getUserEmail(ctx.user),
+          personId: uuidv4(),
+          responsibilityId: uuidv4(),
+        },
+      );
+      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
       const query = `
-        MATCH (need:Need {nodeId: toInteger({needId})})
+        MATCH (need:Need {nodeId: {needId}})
         WITH need
         MERGE (person:Person {email:{email}})
-        SET person.nodeId = ID(person)
-        CREATE (resp:Responsibility {title:{title}})-[r:FULFILLS]->(need)
-        SET resp.nodeId = ID(resp)
+        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+          SET person.nodeId = {personId})
+        CREATE (resp:Responsibility {title:{title}, nodeId:{responsibilityId}})-[r:FULFILLS]->(need)
         CREATE (person)-[:GUIDES]->(resp)
         RETURN resp
       `;
