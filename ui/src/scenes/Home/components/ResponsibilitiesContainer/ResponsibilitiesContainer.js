@@ -8,6 +8,7 @@ import ResponsibilitiesList from './components/ResponsibilitiesList';
 const GET_RESPONSIBILITIES = gql`
   query Responsibilities($needId: ID!) {
     need(nodeId: $needId) {
+      nodeId
       fulfilledBy {
         nodeId
         title
