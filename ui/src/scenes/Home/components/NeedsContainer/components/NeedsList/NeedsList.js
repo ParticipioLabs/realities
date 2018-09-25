@@ -45,6 +45,9 @@ const NeedsList = withRouter(withAuth(({
 NeedsList.propTypes = {
   needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   selectedNeedId: PropTypes.string,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,
   }),
@@ -53,6 +56,9 @@ NeedsList.propTypes = {
 NeedsList.defaultProps = {
   needs: [],
   selectedNeedId: undefined,
+  history: {
+    push: () => null,
+  },
   auth: {
     isLoggedIn: false,
   },

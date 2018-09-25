@@ -9,6 +9,7 @@ import {
   Col,
 } from 'reactstrap';
 import NeedsList from './components/NeedsList';
+import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 
 const GET_NEEDS = gql`
   {
@@ -32,7 +33,7 @@ const NeedsContainer = withRouter(({ match }) => (
               <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />
             </Col>
             <Col lg={9} xs={12}>
-              Responsibilities
+              <ResponsibilitiesContainer />
             </Col>
           </Row>
         </Container>

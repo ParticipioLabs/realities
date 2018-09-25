@@ -11,16 +11,18 @@ import {
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
 const GET_RESPONSIBILITIES = gql`
-  {
-    responsibilities {
-      nodeId
-      title
+  query Responsibilities($needId: ID!) {
+    need(nodeId: $needId) {
+      fulfilledBy {
+        nodeId
+        title
+      }
     }
   }
 `;
 
 const ResponsibilitiesContainer = withRouter(({ match }) => (
-  <Query query={GET_RESPONSIBILITIES}>
+  <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
     {({ loading, error, data }) => {
       if (loading) return 'Loading...';
       if (error) return `Error! ${error.message}`;
@@ -28,9 +30,9 @@ const ResponsibilitiesContainer = withRouter(({ match }) => (
       return (
         <Container fluid>
           <Row>
-            <Col lg={3} xs={12}>
+            <Col lg={4} xs={12}>
               <ResponsibilitiesList
-                responsibilities={data.responsibilities}
+                responsibilities={data.need.fulfilledBy}
                 selectedResponsibilityId={match.params.responsibilityId}
               />
             </Col>
