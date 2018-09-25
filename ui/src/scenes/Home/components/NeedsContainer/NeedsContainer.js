@@ -3,13 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import {
-  Container,
-  Row,
-  Col,
-} from 'reactstrap';
 import NeedsList from './components/NeedsList';
-import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 
 const GET_NEEDS = gql`
   {
@@ -27,16 +21,7 @@ const NeedsContainer = withRouter(({ match }) => (
       if (error) return `Error! ${error.message}`;
 
       return (
-        <Container fluid>
-          <Row>
-            <Col lg={3} xs={12}>
-              <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />
-            </Col>
-            <Col lg={9} xs={12}>
-              <ResponsibilitiesContainer />
-            </Col>
-          </Row>
-        </Container>
+        <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />
       );
     }}
   </Query>
