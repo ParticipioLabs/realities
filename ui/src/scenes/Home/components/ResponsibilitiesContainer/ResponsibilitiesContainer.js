@@ -17,21 +17,27 @@ const GET_RESPONSIBILITIES = gql`
   }
 `;
 
-const ResponsibilitiesContainer = withRouter(({ match }) => (
-  <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
-    {({ loading, error, data }) => {
-      if (loading) return 'Loading...';
-      if (error) return `Error! ${error.message}`;
+const ResponsibilitiesContainer = withRouter(({ match }) => {
+  if (!match.params.needId) {
+    return null;
+  }
 
-      return (
-        <ResponsibilitiesList
-          responsibilities={data.need.fulfilledBy}
-          selectedResponsibilityId={match.params.responsibilityId}
-        />
-      );
-    }}
-  </Query>
-));
+  return (
+    <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
+      {({ loading, error, data }) => {
+        if (loading) return 'Loading...';
+        if (error) return `Error! ${error.message}`;
+
+        return (
+          <ResponsibilitiesList
+            responsibilities={data.need.fulfilledBy}
+            selectedResponsibilityId={match.params.responsibilityId}
+          />
+        );
+      }}
+    </Query>
+  );
+});
 
 ResponsibilitiesContainer.propTypes = {
   match: PropTypes.shape({
