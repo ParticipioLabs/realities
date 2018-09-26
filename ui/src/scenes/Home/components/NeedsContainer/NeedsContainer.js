@@ -6,7 +6,7 @@ import { Query } from 'react-apollo';
 import NeedsList from './components/NeedsList';
 
 const GET_NEEDS = gql`
-  {
+  query NeedsContainer_needs {
     needs {
       nodeId
       title

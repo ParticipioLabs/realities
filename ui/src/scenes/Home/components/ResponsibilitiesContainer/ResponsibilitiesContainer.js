@@ -6,7 +6,7 @@ import { Query } from 'react-apollo';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
 const GET_RESPONSIBILITIES = gql`
-  query Responsibilities($needId: ID!) {
+  query ResponsibilitiesContainer_need($needId: ID!) {
     need(nodeId: $needId) {
       nodeId
       fulfilledBy {
