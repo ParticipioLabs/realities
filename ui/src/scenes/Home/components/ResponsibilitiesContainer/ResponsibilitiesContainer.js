@@ -18,9 +18,7 @@ const GET_RESPONSIBILITIES = gql`
 `;
 
 const ResponsibilitiesContainer = withRouter(({ match }) => {
-  if (!match.params.needId) {
-    return null;
-  }
+  if (!match.params.needId) return null;
 
   return (
     <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
