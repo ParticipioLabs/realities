@@ -1,10 +1,10 @@
 # Realities Platform
 
-A tool for tribal decentralised organisations. Read more about the concept behind it [here](https://docs.google.com/document/d/1UcHQ1_thfNaUlEBcfz9PACd6_lXsj5F2lvV6RfG0oOA/edit?usp=sharing).
+A tool for tribal decentralised organisations. [Read more about the concept behind it here](https://edgeryders.eu/t/realities-project-white-paper/9064).
 
 ## Wanna talk about it?
 
-To discuss and learn more about the overall concepts behind the Realities Platform, head over to our [Loomio Group](https://www.loomio.org/g/cbghMtnL/borderland-realities).
+To discuss and learn more about the overall concepts behind the Realities Platform, [head over to the Edgeryders platform](https://edgeryders.eu/c/workspaces/participio), where Realities is being developed as part of the Particip.io project.
 
 To report a bug or suggest a specific improvement or feature, create an issue right here on GitHub.
 
