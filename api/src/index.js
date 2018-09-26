@@ -57,9 +57,10 @@ type Responsibility {
 
 type Query {
   persons: [Person]
-  responsibilities: [Responsibility]
   needs: [Need]
   need(nodeId: ID!): Need
+  responsibilities: [Responsibility]
+  responsibility(nodeId: ID!): Responsibility
 }
 
 type Mutation {
@@ -112,13 +113,16 @@ const resolvers = {
     persons(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
-    responsibilities(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
-    },
     needs(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
     need(object, params, ctx, resolveInfo) {
+      return neo4jgraphql(object, params, ctx, resolveInfo);
+    },
+    responsibilities(object, params, ctx, resolveInfo) {
+      return neo4jgraphql(object, params, ctx, resolveInfo);
+    },
+    responsibility(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
   },
