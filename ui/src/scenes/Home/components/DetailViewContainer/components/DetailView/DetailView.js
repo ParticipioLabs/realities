@@ -16,8 +16,6 @@ import {
   PopoverBody
 } from 'reactstrap';
 import DependencyList from './components/DependencyList';
-import TitleField from './components/TitleField';
-import DescriptionField from './components/DescriptionField';
 import LocalGraph from './components/LocalGraph';
 
 const DetailViewCardHeader = styled(CardHeader)`
@@ -43,11 +41,7 @@ const DetailView = ({ node }) => (
     
     <CardBody>
       <CardTitle>
-        <TitleField
-          title={node.title}
-          nodeId={node.nodeId}
-          nodeType={node.__typename}
-        />
+        {node.title}
       </CardTitle>
 
       <CardText>
@@ -76,11 +70,7 @@ const DetailView = ({ node }) => (
         <LabelSpan>
           Description:
         </LabelSpan>
-        <DescriptionField
-          description={node.description}
-          nodeId={node.nodeId}
-          nodeType={node.__typename}
-        />
+        {node.description}
       </CardText>
 
       <CardText>
