@@ -11,8 +11,8 @@ const GreenText = styled.p`
   color: green;
 `;
 const ListHeader = styled.p`
-      font-size: 1.5em;
-      padding: .5em 0 .5em 0;
+  font-size: 1.5em;
+  padding: .5em 0 .5em 0;
 `;
 
 const OurOwnButton = styled(Button)`
