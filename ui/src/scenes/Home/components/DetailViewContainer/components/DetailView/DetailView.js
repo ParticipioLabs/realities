@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';;
 import styled from 'styled-components';
-import { RIEInput } from 'riek';
 import _ from 'lodash';
 import graphUtils from '@/services/graphUtils';
 import {

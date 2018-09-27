@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { RIETextArea } from 'riek';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 

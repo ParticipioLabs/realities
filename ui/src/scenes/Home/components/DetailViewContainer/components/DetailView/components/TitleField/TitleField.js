@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import _ from 'lodash';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { RIEInput } from 'riek';
 
 const TitleField = ({ title, nodeId, nodeType }) => (
   <span>{title}</span>
