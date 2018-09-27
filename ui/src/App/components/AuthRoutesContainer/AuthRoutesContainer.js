@@ -9,7 +9,7 @@ import AuthCallback from './components/AuthCallback';
 import RoutesContainer from './components/RoutesContainer';
 
 
-export default () => (
+const AuthRoutesContainer = () => (
   <Router history={history}>
     <Switch>
       <Route exact path="/auth-callback" component={AuthCallback} />
@@ -17,3 +17,5 @@ export default () => (
     </Switch>
   </Router>
 );
+
+export default AuthRoutesContainer;
