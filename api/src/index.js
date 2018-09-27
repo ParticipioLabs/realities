@@ -33,6 +33,7 @@ type Need {
   nodeId: ID!
   title: String!
   description: String
+  deliberationLink: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
@@ -46,6 +47,7 @@ type Responsibility {
   nodeId: ID!
   title: String!
   description: String
+  deliberationLink: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
