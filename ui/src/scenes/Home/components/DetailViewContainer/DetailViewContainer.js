@@ -22,6 +22,17 @@ const GET_NEED = gql`
         email
         name
       }
+      dependsOnNeeds {
+        nodeId
+        title
+      }
+      dependsOnResponsibilities {
+        nodeId
+        title
+        fulfills {
+          nodeId
+        }
+      }
     }
   }
 `;
@@ -42,6 +53,17 @@ const GET_RESPONSIBILITY = gql`
         nodeId
         email
         name
+      }
+      dependsOnNeeds {
+        nodeId
+        title
+      }
+      dependsOnResponsibilities {
+        nodeId
+        title
+        fulfills {
+          nodeId
+        }
       }
     }
   }

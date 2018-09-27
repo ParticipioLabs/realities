@@ -2,57 +2,58 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
 import styled from 'styled-components';
-import _ from 'lodash';
+import { withRouter } from 'react-router-dom';
 
 const RealitiesBadge = styled(Badge)`
   margin-right: .5em;
-  background-color: ${props => (props.dependency.__typename === 'Need' ? '#00cf19' : '#843cfd')};
+  background-color: ${props => props.badgecolor};
 `;
 
-const DependencyList = ({
-  dependsOnNeeds,
-  dependsOnResponsibilities,
-  onSelectDependency,
-  selectedDependency,
-}) => {
-  const dependencies = _.concat(dependsOnResponsibilities, dependsOnNeeds);
-  return (
-    <div>
-      <ListGroup>
-        {dependencies && dependencies.map(dependency => (
+const DependencyList = withRouter(({ dependencies, history }) => (
+  <ListGroup>
+    {dependencies.map(({
+      __typename,
+      nodeId,
+      title,
+      fulfills,
+    }) => (
+      <ListGroupItem
+        key={nodeId}
+        tag="button"
+        href="#"
+        action
+        onClick={() => {
+          history.push(__typename === 'Need' ? `/${nodeId}` : `/${fulfills.nodeId}/${nodeId}`);
+        }}
+      >
+        <RealitiesBadge badgecolor={__typename === 'Need' ? '#00cf19' : '#843cfd'}>
+          {__typename[0]}
+        </RealitiesBadge>
+        {title}
+      </ListGroupItem>
+    ))}
+  </ListGroup>
+));
 
-          <ListGroupItem
-            key={dependency.nodeId}
-            tag="button"
-            href="#"
-            action
-            active={dependency === selectedDependency}
-            onClick={() => onSelectDependency(dependency)}
-          >
-            <RealitiesBadge dependency={dependency}>{dependency.__typename[0]}</RealitiesBadge>
-            {dependency.title}
-            {/* This also works, see the custom scss file.
-             <Badge color={
-             dependency.__typename === 'Need' ? 'need' : 'responsibility'
-             }>{dependency.__typename[0]}</Badge>{dependency.title} */}
-          </ListGroupItem>
-        ))}
-      </ListGroup>
-    </div>
-  );
+DependencyList.propTypes = {
+  dependencies: PropTypes.arrayOf(PropTypes.shape({
+    __typename: PropTypes.string,
+    nodeId: PropTypes.string,
+    title: PropTypes.string,
+    fulfills: PropTypes.shape({
+      nodeId: PropTypes.string,
+    }),
+  })),
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
 };
 
 DependencyList.defaultProps = {
-  dependsOnNeeds: [],
-  dependsOnResponsibilities: [],
-  selectedDependency: {},
-};
-
-DependencyList.propTypes = {
-  dependsOnNeeds: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  dependsOnResponsibilities: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  onSelectDependency: PropTypes.func.isRequired,
-  selectedDependency: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  dependencies: [],
+  history: {
+    push: () => null,
+  },
 };
 
 export default DependencyList;
