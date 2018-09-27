@@ -38,7 +38,7 @@ type Need {
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
-  dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
+  dependsOnResponsibilities: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
   needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
   responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
@@ -52,7 +52,7 @@ type Responsibility {
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
-  dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
+  dependsOnResponsibilities: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
   needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
   responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
