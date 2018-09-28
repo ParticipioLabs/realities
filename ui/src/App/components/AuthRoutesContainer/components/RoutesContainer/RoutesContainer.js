@@ -32,6 +32,10 @@ const RealitiesNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
 `;
 
+const RealitiesFooter = styled.footer`
+  margin-top: 2rem;
+`;
+
 class RoutesContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -82,9 +86,9 @@ class RoutesContainer extends React.Component {
             <Route exact path="/about" component={About} />
             <Route path="/:needId?/:responsibilityId?" component={Home} />
           </Switch>
-          <footer className="text-muted">
-              A tool for tribal decentralised organisations.
-          </footer>
+          <RealitiesFooter className="text-muted">
+            A tool for tribal decentralised organisations.
+          </RealitiesFooter>
         </div>
       </Router>
     );
