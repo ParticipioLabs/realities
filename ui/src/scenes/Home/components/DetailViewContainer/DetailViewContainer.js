@@ -5,9 +5,9 @@ import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
 import DetailView from './components/DetailView';
 
-const GET_NEED = gql`
-  query DetailViewContainer_need($nodeId: ID!) {
-    need(nodeId: $nodeId) {
+const createDetailViewQuery = nodeType => gql`
+  query DetailViewContainer_${nodeType}($nodeId: ID!) {
+    ${nodeType}(nodeId: $nodeId) {
       nodeId
       title
       description
@@ -37,37 +37,8 @@ const GET_NEED = gql`
   }
 `;
 
-const GET_RESPONSIBILITY = gql`
-  query DetailViewContainer_Responsibility($nodeId: ID!) {
-    responsibility(nodeId: $nodeId) {
-      nodeId
-      title
-      description
-      deliberationLink
-      guide {
-        nodeId
-        email
-        name
-      }
-      realizer {
-        nodeId
-        email
-        name
-      }
-      dependsOnNeeds {
-        nodeId
-        title
-      }
-      dependsOnResponsibilities {
-        nodeId
-        title
-        fulfills {
-          nodeId
-        }
-      }
-    }
-  }
-`;
+const GET_NEED = createDetailViewQuery('need');
+const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
 const DetailViewContainer = withRouter(({ match }) => {
   if (!match.params.needId && !match.params.responsibilityId) return null;
