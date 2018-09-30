@@ -20,17 +20,3 @@ $enable-shadows: true;
 $navbar-light-active-color: #aaa;
 
 @import '~bootstrap/scss/bootstrap.scss';
-
-footer {
-  height: 10vh;
-  margin-top:1 em;
-  padding-bottom: 1em;
-  padding-top: 1em;
-  font-size: small;
-  text-align: center;
-  border-top: solid 1px #eee;
-}
-#main {
-  display: flex;
-  min-height: calc(100vh - 20vh);
-}
