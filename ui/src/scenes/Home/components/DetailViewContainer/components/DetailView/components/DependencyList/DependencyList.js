@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
+import colors from '@/styles/colors';
 
 const RealitiesBadge = styled(Badge)`
   margin-right: .5em;
@@ -26,7 +27,7 @@ const DependencyList = withRouter(({ dependencies, history }) => (
           history.push(__typename === 'Need' ? `/${nodeId}` : `/${fulfills.nodeId}/${nodeId}`);
         }}
       >
-        <RealitiesBadge badgecolor={__typename === 'Need' ? '#00cf19' : '#843cfd'}>
+        <RealitiesBadge badgecolor={__typename === 'Need' ? colors.need : colors.responsibility}>
           {__typename[0]}
         </RealitiesBadge>
         {title}

@@ -8,6 +8,7 @@ import {
   CardText,
   CardTitle,
 } from 'reactstrap';
+import colors from '@/styles/colors';
 import DependencyList from './components/DependencyList';
 import LocalGraph from './components/LocalGraph';
 
@@ -27,7 +28,9 @@ const CardSection = styled.div`
 
 const DetailView = ({ node }) => (
   <Card>
-    <DetailViewCardHeader color={node.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>
+    <DetailViewCardHeader
+      color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
+    >
       {node.__typename}
     </DetailViewCardHeader>
 

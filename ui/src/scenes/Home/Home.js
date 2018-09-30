@@ -8,6 +8,7 @@ import {
 } from 'reactstrap';
 import styled from 'styled-components';
 import withAuth from '@/components/withAuth';
+import colors from '@/styles/colors';
 import NeedsContainer from './components/NeedsContainer';
 import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 import DetailViewContainer from './components/DetailViewContainer';
@@ -23,11 +24,11 @@ const RealitiesListHeader = styled(Card)`
 `;
 
 const NeedsListHeader = RealitiesListHeader.extend`
-  background-color: #00cf19;
+  background-color: ${colors.need};
 `;
 
 const ResponsibilitiesListHeader = RealitiesListHeader.extend`
-  background-color: #843cfd;
+  background-color: ${colors.responsibility};
 `;
 
 const Home = withAuth(({ auth }) => (

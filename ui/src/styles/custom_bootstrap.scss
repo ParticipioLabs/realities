@@ -1,7 +1,14 @@
 // Information on theming Bootstrap:
 // https://getbootstrap.com/docs/4.0/getting-started/theming/
 
-@import './_colors.scss';
+// Colors
+$primary-color: #673AB7;
+$primary-light-color: #9A67EA;
+$primary-dark-color: #320B86;
+$primary-text-color: #FFFFFF;
+$background-color: #FAFAFA;
+$cards-dialogs-color: #FFFFFF;
+$error-color: #D50000;
 
 $brand-primary: $primary-color;
 $brand-danger: $error_color;
@@ -12,56 +19,8 @@ $enable-gradients: true;
 $enable-shadows: true;
 $navbar-light-active-color: #aaa;
 
-$need-color: #00cf19;
-$responsibility-color: #843cfd;
-
-.badge-need {
-  color: #fff;
-  background-color: $need-color;
-}
-.badge-responsibility {
-  color: #fff;
-  background-color: $responsibility-color;
-}
-
-
-
 @import '~bootstrap/scss/bootstrap.scss';
 
-//body {
-//  height: 50vh;
-//  overflow: hidden;
-//}
-//.container {
-//  height: 100vh;
-//  overflow: hidden;
-//}
-
-//.col {
-//  max-height: 50vh;
-//  overflow: auto;
-//}
-//
-//.container-fluid {
-//  bottom: 0;
-//  position: fixed;
-//  left: 0;
-//  right: 0;
-//  top: 0;
-//}
-//
-//.container-fluid .col {
-//  height: 100%;
-//  overflow: auto;
-//}
-//body {
-//  height: 100%;
-//  width: 100%;
-//  position: absolute;
-//}
-//
-//.container-fluid,
-//.row-fluid { height: inherit; }
 nav {
   height: 10vh;
 }

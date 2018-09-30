@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
+import colors from '@/styles/colors';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
@@ -13,8 +14,8 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     outline: none;
   }
   &.active {
-    background-color: #00cf19;
-    border-color: #00cf19;
+    background-color: ${colors.need};
+    border-color: ${colors.need};
     color: white;
   }
 `;

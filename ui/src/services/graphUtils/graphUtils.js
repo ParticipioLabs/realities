@@ -1,9 +1,10 @@
 import _ from 'lodash';
+import colors from '@/styles/colors';
 
 const colorCollection = {
-  Need: '#00cf19',
-  Responsibility: '#843cfd',
-  Person: '#EF9322',
+  Need: colors.need,
+  Responsibility: colors.responsibility,
+  Person: colors.person,
 };
 
 function getNodeTitle(node) {
