@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import graphUtils from '@/services/graphUtils';
 import {
   Card,
   CardBody,
   CardHeader,
   CardText,
   CardTitle,
-  Popover,
-  PopoverHeader,
-  PopoverBody,
 } from 'reactstrap';
 import DependencyList from './components/DependencyList';
 import LocalGraph from './components/LocalGraph';
@@ -25,11 +21,16 @@ const LabelSpan = styled.span`
   margin-right: 0.5em;
 `;
 
+const CardSection = styled.div`
+  margin-bottom: 1rem;
+`;
+
 const DetailView = ({ node }) => (
   <Card>
     <DetailViewCardHeader color={node.__typename === 'Responsibility' ? '#843cfd' : '#00cf19'}>
       {node.__typename}
     </DetailViewCardHeader>
+
     <CardBody>
       <CardTitle>
         {node.title}
@@ -69,7 +70,7 @@ const DetailView = ({ node }) => (
         <a href={node.deliberationLink} target="_blank">{node.deliberationLink}</a>
       </CardText>
 
-      <CardText tag="div">
+      <CardSection>
         <LabelSpan>Depends on:</LabelSpan>
         <DependencyList
           dependencies={[
@@ -77,42 +78,14 @@ const DetailView = ({ node }) => (
             ...(node.dependsOnResponsibilities || []),
           ]}
         />
-      </CardText>
+      </CardSection>
 
-      {/*<CardText>
+      <CardSection>
         <LabelSpan>Graph:</LabelSpan>
-        <Card id="graphCard">
-          <CardBody>
-            <Row>
-              <Col>
-                <div style={{ height: '20em' }}>
-                  <LocalGraph
-                    graph={graphUtils.getSubGraph(data)}
-                    events={this.graphEvents}
-                  />
-                </div>
-              </Col>
-            </Row>
-          </CardBody>
+        <Card>
+          <LocalGraph nodeType={node.__typename} nodeId={node.nodeId} />
         </Card>
-      </CardText>*/}
-
-      {/*<CardText>
-        <Popover
-          placement="left-start"
-          isOpen={this.state.popoverOpen}
-          target="graphCard"
-          toggle={this.toggle}
-        >
-          <PopoverHeader>{this.state.selectedGraphNode.title}</PopoverHeader>
-          <PopoverBody>
-            {_.truncate(
-              this.state.selectedGraphNode.description,
-              { length: 512, separator: ',.?! ' },
-            ) }
-          </PopoverBody>
-        </Popover>
-      </CardText>*/}
+      </CardSection>
     </CardBody>
   </Card>
 );
