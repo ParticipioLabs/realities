@@ -1,31 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withAuth from '@/components/withAuth';
+import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import {
-  CircleButton,
-  NeedsListHeader,
-  NeedsListGroupItem,
-  RealitiesCircleOutline,
-  RealitiesListGroup,
-} from '@/styles/realities-styles';
+import { ListGroup, ListGroupItem } from 'reactstrap';
 
-const NeedsList = withRouter(withAuth(({
+const NeedsListGroup = styled(ListGroup)`
+  margin-bottom: 1rem;
+`;
+
+const NeedsListGroupItem = styled(ListGroupItem)`
+  &:focus {
+    outline: none;
+  }
+  &.active {
+    background-color: #00cf19;
+    border-color: #00cf19;
+    color: white;
+  }
+`;
+
+const NeedsList = withRouter(({
   needs,
   selectedNeedId,
   history,
-  auth,
 }) => (
   <div>
-    <NeedsListHeader>
-      <span>Needs</span>
-      { auth.isLoggedIn &&
-        <CircleButton onClick={() => null}>
-          <RealitiesCircleOutline />
-        </CircleButton>
-      }
-    </NeedsListHeader>
-    <RealitiesListGroup>
+    <NeedsListGroup>
       {needs.map(need => (
         <NeedsListGroupItem
           key={need.nodeId}
@@ -38,18 +38,15 @@ const NeedsList = withRouter(withAuth(({
           {need.title}
         </NeedsListGroupItem>
       ))}
-    </RealitiesListGroup>
+    </NeedsListGroup>
   </div>
-)));
+));
 
 NeedsList.propTypes = {
   needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   selectedNeedId: PropTypes.string,
   history: PropTypes.shape({
     push: PropTypes.func,
-  }),
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
   }),
 };
 
@@ -58,9 +55,6 @@ NeedsList.defaultProps = {
   selectedNeedId: undefined,
   history: {
     push: () => null,
-  },
-  auth: {
-    isLoggedIn: false,
   },
 };
 

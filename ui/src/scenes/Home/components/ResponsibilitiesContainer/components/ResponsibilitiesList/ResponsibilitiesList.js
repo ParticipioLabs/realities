@@ -1,31 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import withAuth from '@/components/withAuth';
-import {
-  CircleButton,
-  ResponsibilitiesListHeader,
-  ResponsibilitiesListGroupItem,
-  RealitiesCircleOutline,
-  RealitiesListGroup } from '@/styles/realities-styles';
+import { ListGroup, ListGroupItem } from 'reactstrap';
 
-const ResponsibilitiesList = withRouter(withAuth(({
+const ResponsibilitiesListGroup = styled(ListGroup)`
+  margin-bottom: 1rem;
+`;
+
+const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+  &:focus {
+    outline: none;
+  }
+  &.active {
+    background-color: #843cfd;
+    border-color: #843cfd;
+    color: white;
+  }
+`;
+
+const ResponsibilitiesList = withRouter(({
   responsibilities,
   selectedResponsibilityId,
   history,
   match,
-  auth,
 }) => (
   <div>
-    <ResponsibilitiesListHeader>
-      <span>Responsibilities</span>
-      { auth.isLoggedIn &&
-        <CircleButton onClick={() => null}>
-          <RealitiesCircleOutline />
-        </CircleButton>
-      }
-    </ResponsibilitiesListHeader>
-    <RealitiesListGroup>
+    <ResponsibilitiesListGroup>
       {responsibilities.map(responsibility => (
         <ResponsibilitiesListGroupItem
           key={responsibility.nodeId}
@@ -38,9 +39,9 @@ const ResponsibilitiesList = withRouter(withAuth(({
           {responsibility.title}
         </ResponsibilitiesListGroupItem>
       ))}
-    </RealitiesListGroup>
+    </ResponsibilitiesListGroup>
   </div>
-)));
+));
 
 ResponsibilitiesList.propTypes = {
   responsibilities: PropTypes.array, // eslint-disable-line react/forbid-prop-types
@@ -52,9 +53,6 @@ ResponsibilitiesList.propTypes = {
     params: PropTypes.shape({
       needId: PropTypes.string,
     }),
-  }),
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
   }),
 };
 
@@ -68,9 +66,6 @@ ResponsibilitiesList.defaultProps = {
     params: {
       needId: undefined,
     },
-  },
-  auth: {
-    isLoggedIn: false,
   },
 };
 
