@@ -25,6 +25,7 @@
     "apollo-client": "^2.4.2",
     "apollo-link": "^1.2.2",
     "apollo-link-http": "^1.5.4",
+    "apollo-link-state": "^0.4.2",
     "auth0-js": "^8.12.1",
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",

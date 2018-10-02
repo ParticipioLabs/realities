@@ -2,11 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
+import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
+import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
+
+const GET_CREATE_RESPONSIBILITY_STATE = gql`
+  query ResponsibilitiesContainer_showCreateResponsibility {
+    showCreateResponsibility @client
+  }
+`;
 
 const GET_RESPONSIBILITIES = gql`
   query ResponsibilitiesContainer_need($needId: ID!) {
@@ -24,27 +32,39 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
   if (!match.params.needId) return null;
 
   return (
-    <div>
-      <ListHeader
-        text="Responsibilities"
-        color={colors.responsibility}
-        showButton={auth.isLoggedIn && !!match.params.needId}
-        onButtonClick={() => console.log('show new resp form')}
-      />
-      <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
-        {({ loading, error, data }) => {
-          if (loading) return 'Loading...';
-          if (error) return `Error! ${error.message}`;
+    <Query query={GET_CREATE_RESPONSIBILITY_STATE}>
+      {({ data: localData, client }) => (
+        <div>
+          <ListHeader
+            text="Responsibilities"
+            color={colors.responsibility}
+            showButton={auth.isLoggedIn && !!match.params.needId}
+            onButtonClick={() => client.writeData({
+              data: {
+                showCreateResponsibility: !localData.showCreateResponsibility,
+                showCreateNeed: false,
+              },
+            })}
+          />
+          <Collapse isOpen={localData.showCreateResponsibility}>
+            <CreateResponsibility />
+          </Collapse>
+          <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
+            {({ loading, error, data }) => {
+              if (loading) return 'Loading...';
+              if (error) return `Error! ${error.message}`;
 
-          return (
-            <ResponsibilitiesList
-              responsibilities={data.need.fulfilledBy}
-              selectedResponsibilityId={match.params.responsibilityId}
-            />
-          );
-        }}
-      </Query>
-    </div>
+              return (
+                <ResponsibilitiesList
+                  responsibilities={data.need.fulfilledBy}
+                  selectedResponsibilityId={match.params.responsibilityId}
+                />
+              );
+            }}
+          </Query>
+        </div>
+      )}
+    </Query>
   );
 }));
 
