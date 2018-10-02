@@ -34,33 +34,23 @@ const ResponsibilitiesListHeader = RealitiesListHeader.extend`
 const Home = withAuth(({ auth }) => (
   <Container fluid>
     <Row>
-      <Col lg={6} xs={12}>
-        <Row>
-          <Col lg={6} xs={12}>
-            <NeedsListHeader>
-              <span>Needs</span>
-              { auth.isLoggedIn &&
-                'New need'
-              }
-            </NeedsListHeader>
-          </Col>
-          <Col lg={6} xs={12}>
-            <ResponsibilitiesListHeader>
-              <span>Responsibilities</span>
-              { auth.isLoggedIn &&
-                'New Resp'
-              }
-            </ResponsibilitiesListHeader>
-          </Col>
-        </Row>
-        <Row>
-          <Col lg={6} xs={12}>
-            <NeedsContainer />
-          </Col>
-          <Col lg={6} xs={12}>
-            <ResponsibilitiesContainer />
-          </Col>
-        </Row>
+      <Col lg={3} xs={12}>
+        <NeedsListHeader>
+          <span>Needs</span>
+          { auth.isLoggedIn &&
+            'New need'
+          }
+        </NeedsListHeader>
+        <NeedsContainer />
+      </Col>
+      <Col lg={3} xs={12}>
+        <ResponsibilitiesListHeader>
+          <span>Responsibilities</span>
+          { auth.isLoggedIn &&
+            'New Resp'
+          }
+        </ResponsibilitiesListHeader>
+        <ResponsibilitiesContainer />
       </Col>
       <Col lg={6} xs={12}>
         <DetailViewContainer />
