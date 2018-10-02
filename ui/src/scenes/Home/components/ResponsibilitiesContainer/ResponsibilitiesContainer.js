@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
+import withAuth from '@/components/withAuth';
+import ListHeader from '@/components/ListHeader';
+import colors from '@/styles/colors';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
 const GET_RESPONSIBILITIES = gql`
@@ -17,27 +20,38 @@ const GET_RESPONSIBILITIES = gql`
   }
 `;
 
-const ResponsibilitiesContainer = withRouter(({ match }) => {
+const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
   if (!match.params.needId) return null;
 
   return (
-    <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
-      {({ loading, error, data }) => {
-        if (loading) return 'Loading...';
-        if (error) return `Error! ${error.message}`;
+    <div>
+      <ListHeader
+        text="Responsibilities"
+        color={colors.responsibility}
+        showButton={auth.isLoggedIn && !!match.params.needId}
+        onButtonClick={() => console.log('show new resp form')}
+      />
+      <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
+        {({ loading, error, data }) => {
+          if (loading) return 'Loading...';
+          if (error) return `Error! ${error.message}`;
 
-        return (
-          <ResponsibilitiesList
-            responsibilities={data.need.fulfilledBy}
-            selectedResponsibilityId={match.params.responsibilityId}
-          />
-        );
-      }}
-    </Query>
+          return (
+            <ResponsibilitiesList
+              responsibilities={data.need.fulfilledBy}
+              selectedResponsibilityId={match.params.responsibilityId}
+            />
+          );
+        }}
+      </Query>
+    </div>
   );
-});
+}));
 
 ResponsibilitiesContainer.propTypes = {
+  auth: PropTypes.shape({
+    isLoggedIn: PropTypes.bool,
+  }),
   match: PropTypes.shape({
     params: PropTypes.shape({
       needId: PropTypes.string,
@@ -47,6 +61,9 @@ ResponsibilitiesContainer.propTypes = {
 };
 
 ResponsibilitiesContainer.defaultProps = {
+  auth: {
+    isLoggedIn: false,
+  },
   match: {
     params: {
       needId: undefined,
