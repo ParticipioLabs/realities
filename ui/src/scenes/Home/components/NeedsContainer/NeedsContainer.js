@@ -4,29 +4,21 @@ import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
+import { GET_NEEDS } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 
-const GET_CREATE_NEED_STATE = gql`
+const GET_SHOW_CREATE_NEED = gql`
   query NeedsContainer_showCreateNeed {
     showCreateNeed @client
   }
 `;
 
-const GET_NEEDS = gql`
-  query NeedsContainer_needs {
-    needs {
-      nodeId
-      title
-    }
-  }
-`;
-
 const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
-  <Query query={GET_CREATE_NEED_STATE}>
+  <Query query={GET_SHOW_CREATE_NEED}>
     {({ data: localData, client }) => (
       <div>
         <ListHeader

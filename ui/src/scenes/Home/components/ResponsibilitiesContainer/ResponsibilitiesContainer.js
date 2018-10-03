@@ -4,27 +4,16 @@ import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
+import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
-const GET_CREATE_RESPONSIBILITY_STATE = gql`
+const GET_SHOW_CREATE_RESPONSIBILITY = gql`
   query ResponsibilitiesContainer_showCreateResponsibility {
     showCreateResponsibility @client
-  }
-`;
-
-const GET_RESPONSIBILITIES = gql`
-  query ResponsibilitiesContainer_need($needId: ID!) {
-    need(nodeId: $needId) {
-      nodeId
-      fulfilledBy {
-        nodeId
-        title
-      }
-    }
   }
 `;
 
@@ -32,7 +21,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
   if (!match.params.needId) return null;
 
   return (
-    <Query query={GET_CREATE_RESPONSIBILITY_STATE}>
+    <Query query={GET_SHOW_CREATE_RESPONSIBILITY}>
       {({ data: localData, client }) => (
         <div>
           <ListHeader
@@ -49,7 +38,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
           <Collapse isOpen={localData.showCreateResponsibility}>
             <CreateResponsibility />
           </Collapse>
-          <Query query={GET_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
+          <Query query={GET_NEED_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
             {({ loading, error, data }) => {
               if (loading) return 'Loading...';
               if (error) return `Error! ${error.message}`;
