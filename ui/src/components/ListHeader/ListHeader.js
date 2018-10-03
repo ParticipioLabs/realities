@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/lib/fa';
+import IconButton from '@/components/IconButton';
 
 const StyledHeader = styled(Card)`
   background-color: ${props => props.color || '#999'};
@@ -18,20 +19,6 @@ const ListHeaderText = styled.span`
   line-height: 2.1rem;
 `;
 
-const ListHeaderButton = styled.button`
-  background-color: transparent;
-  border: none;
-  border-radius: 0.25rem;
-  color: white;
-  &:hover, &:focus {
-    outline: none;
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  &:active {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-`;
-
 const ListHeader = ({
   text,
   showButton,
@@ -43,9 +30,9 @@ const ListHeader = ({
       {text}
     </ListHeaderText>
     { showButton &&
-      <ListHeaderButton onClick={onButtonClick}>
+      <IconButton onClick={onButtonClick}>
         <FaPlus />
-      </ListHeaderButton>
+      </IconButton>
     }
   </StyledHeader>
 );

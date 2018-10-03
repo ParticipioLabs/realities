@@ -8,13 +8,28 @@ import {
   CardText,
   CardTitle,
 } from 'reactstrap';
+import { FaPencil } from 'react-icons/lib/fa';
 import colors from '@/styles/colors';
+import IconButton from '@/components/IconButton';
 import DependencyList from './components/DependencyList';
 import LocalGraph from './components/LocalGraph';
 
 const DetailViewCardHeader = styled(CardHeader)`
   background-color: ${props => props.color};
   color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.5rem 0.7rem 0.5rem 1.25rem;
+`;
+
+const HeaderText = styled.span`
+  line-height: 2.125rem;
+`;
+
+const HeaderButton = styled(IconButton)`
+  font-size: 1.25rem;
+  padding: 0 0.4rem 0.2rem 0.4rem;
 `;
 
 const LabelSpan = styled.span`
@@ -26,12 +41,17 @@ const CardSection = styled.div`
   margin-bottom: 1rem;
 `;
 
-const DetailView = ({ node }) => (
+const DetailView = ({ node, onClickEdit }) => (
   <Card>
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
     >
-      {node.__typename}
+      <HeaderText>
+        {node.__typename}
+      </HeaderText>
+      <HeaderButton onClick={onClickEdit}>
+        <FaPencil />
+      </HeaderButton>
     </DetailViewCardHeader>
 
     <CardBody>
@@ -124,6 +144,7 @@ DetailView.propTypes = {
       }),
     })),
   }),
+  onClickEdit: PropTypes.func,
 };
 
 DetailView.defaultProps = {
@@ -145,6 +166,7 @@ DetailView.defaultProps = {
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
+  onClickEdit: () => null,
 };
 
 export default DetailView;
