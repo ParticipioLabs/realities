@@ -8,6 +8,7 @@ import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
+import WrappedLoader from '@/components/WrappedLoader';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
@@ -40,9 +41,8 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
           </Collapse>
           <Query query={GET_NEED_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
             {({ loading, error, data }) => {
-              if (loading) return 'Loading...';
+              if (loading) return <WrappedLoader />;
               if (error) return `Error! ${error.message}`;
-
               return (
                 <ResponsibilitiesList
                   responsibilities={data.need.fulfilledBy}

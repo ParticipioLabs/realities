@@ -8,6 +8,7 @@ import { GET_NEEDS } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
+import WrappedLoader from '@/components/WrappedLoader';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 
@@ -37,12 +38,9 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
         </Collapse>
         <Query query={GET_NEEDS}>
           {({ loading, error, data }) => {
-            if (loading) return 'Loading...';
+            if (loading) return <WrappedLoader />;
             if (error) return `Error! ${error.message}`;
-
-            return (
-              <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />
-            );
+            return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
           }}
         </Query>
       </div>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
+import WrappedLoader from '@/components/WrappedLoader';
 import DetailView from './components/DetailView';
 
 const createDetailViewQuery = nodeType => gql`
@@ -58,7 +59,7 @@ const DetailViewContainer = withRouter(({ match }) => {
   return (
     <Query {...queryProps}>
       {({ loading, error, data }) => {
-        if (loading) return 'Loading...';
+        if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
         return <DetailView node={node} />;

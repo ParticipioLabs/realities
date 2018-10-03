@@ -10,6 +10,7 @@ import {
   PopoverHeader,
 } from 'reactstrap';
 import graphUtils from '@/services/graphUtils';
+import WrappedLoader from '@/components/WrappedLoader';
 
 const NEED_FRAGMENT = gql`
   fragment LocalGraphNeedFields on Need {
@@ -160,7 +161,7 @@ class LocalGraph extends Component {
         variables={{ nodeId }}
       >
         {({ loading, error, data }) => {
-          if (loading) return 'Loading...';
+          if (loading) return <WrappedLoader />;
           if (error) return `Error! ${error.message}`;
           const node = nodeType === 'Need' ? data.need : data.responsibility;
           const graphData = graphUtils.getSubGraph(node);
