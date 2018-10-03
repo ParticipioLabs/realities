@@ -55,7 +55,7 @@ function pushNode(graph, originNode, node, relation, direction) {
   return graph;
 }
 
-function getSubGraph(originNode) {
+function getSubGraph(originNode = {}) {
   const trimmedLabel = _.truncate(originNode.title, { length: 12, separator: ',.?! ' });
   const graph = {
     nodes: [

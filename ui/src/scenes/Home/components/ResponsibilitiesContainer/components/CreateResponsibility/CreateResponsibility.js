@@ -33,7 +33,9 @@ const CreateResponsibility = withRouter(({ match, history }) => (
           need: {
             __typename: 'Need',
             nodeId: match.params.needId,
-            fulfilledBy: [createResponsibility].concat(need.fulfilledBy),
+            fulfilledBy: need.fulfilledBy
+              ? [createResponsibility].concat(need.fulfilledBy)
+              : [createResponsibility],
           },
         },
       });
