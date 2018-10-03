@@ -1,18 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import gql from 'graphql-tag';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { Formik } from 'formik';
-import {
-  Button,
-  Form,
-  FormGroup,
-  Input,
-} from 'reactstrap';
 import { GET_NEEDS } from '@/services/queries';
+import ListForm from '@/components/ListForm';
 
 const CREATE_NEED = gql`
   mutation CreateNeed_createNeedMutation($title: String!) {
@@ -21,14 +15,6 @@ const CREATE_NEED = gql`
       title
     }
   }
-`;
-
-const Wrapper = styled.div`
-  margin-bottom: 1rem;
-`;
-
-const StyledFormGroup = styled(FormGroup)`
-  margin-bottom: 0.5rem;
 `;
 
 const CreateNeed = withRouter(({ history }) => (
@@ -63,36 +49,15 @@ const CreateNeed = withRouter(({ history }) => (
           handleSubmit,
           isSubmitting,
         }) => (
-          <Wrapper>
-            <Form onSubmit={handleSubmit}>
-              <StyledFormGroup>
-                <Input
-                  name="title"
-                  type="textarea"
-                  rows={3}
-                  placeholder="Enter a title for the new need..."
-                  value={values.title}
-                  disabled={isSubmitting}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onKeyPress={(e) => {
-                    // Submit form if user hits Enter
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleSubmit();
-                    }
-                  }}
-                />
-              </StyledFormGroup>
-              <Button
-                size="sm"
-                type="submit"
-                disabled={!values.title || isSubmitting}
-              >
-                Submit
-              </Button>
-            </Form>
-          </Wrapper>
+          <ListForm
+            inputName="title"
+            placeholder="Enter a title for the new need..."
+            value={values.title}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
         )}
       </Formik>
     )}
