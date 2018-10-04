@@ -54,7 +54,7 @@ const DetailView = ({
     </DetailViewCardHeader>
     {showEdit ? (
       <CardBody>
-        <EditDetailsContainer />
+        <EditDetailsContainer node={node} />
       </CardBody>
     ) : (
       <DetailViewBody node={node} />
