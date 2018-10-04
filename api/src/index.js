@@ -21,14 +21,6 @@ type Person {
   realizesResponsibilities: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
 }
 
-type NeedResp {
-  nodeId: ID!
-  title: String!
-  description: String
-  guide: Person @relation(name: "GUIDES", direction: "IN")
-  realizer: Person @relation(name: "REALIZES", direction: "IN")
-}
-
 type Need {
   nodeId: ID!
   title: String!
@@ -71,14 +63,18 @@ type Mutation {
     title: String!,
     needId: ID!
   ): Responsibility 
-  updateTitle(
+  updateNeed(
     nodeId: ID!
     title: String!
-  ): NeedResp
-  updateDescription(
+    description: String
+    deliberationLink: String
+  ): Need
+  updateResponsibility(
     nodeId: ID!
-    description: String!
-  ): NeedResp
+    title: String!
+    description: String
+    deliberationLink: String
+  ): Responsibility
 }
 
 `;
@@ -182,35 +178,41 @@ const resolvers = {
       `;
       return runQuery(driver.session(), query, queryParams);
     },
-    updateTitle(_, params, ctx) {
+    updateNeed(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
       if (!userRole) {
+        // Here we should check if the user has permission
+        // to edit this particular need
         throw new Error("User isn't authenticated");
       }
-      const queryParams = params;
-      queryParams.nodeId = Number(queryParams.nodeId);
-      const session = driver.session();
       const query = `
-        MATCH (n {nodeId: {nodeId}})
-        SET n.title = {title}
-        RETURN n
+        MATCH (need {nodeId: {nodeId}})
+        SET need += {
+          title: {title},
+          description: {description},
+          deliberationLink: {deliberationLink}
+        }
+        RETURN need
       `;
-      return runQuery(session, query, queryParams);
+      return runQuery(driver.session(), query, params);
     },
-    updateDescription(_, params, ctx) {
+    updateResponsibility(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
       if (!userRole) {
+        // Here we should check if the user has permission
+        // to edit this particular responsibility
         throw new Error("User isn't authenticated");
       }
-      const queryParams = params;
-      queryParams.nodeId = Number(queryParams.nodeId);
-      const session = driver.session();
       const query = `
-        MATCH (n {nodeId: {nodeId}})
-        SET n.description = {description}
-        RETURN n
+        MATCH (resp {nodeId: {nodeId}})
+        SET resp += {
+          title: {title},
+          description: {description},
+          deliberationLink: {deliberationLink}
+        }
+        RETURN resp
       `;
-      return runQuery(session, query, queryParams);
+      return runQuery(driver.session(), query, params);
     },
   },
 };
