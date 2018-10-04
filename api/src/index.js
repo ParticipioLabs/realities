@@ -7,6 +7,7 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
+import uuidv4 from 'uuid/v4';
 import neo4jDriver from './db/neo4jDriver';
 
 const typeDefs = `
@@ -14,29 +15,22 @@ type Person {
   nodeId: ID!
   name: String
   email: String!
-  guidesNeed: [Need] @relation(name: "GUIDES", direction: "OUT")
-  realizesNeed: [Need] @relation(name: "REALIZES", direction: "OUT")
-  guidesResponsibility: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
-  realizesResponsibility: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
-}
-
-type NeedResp {
-  nodeId: ID!
-  title: String!
-  description: String
-  guide: Person @relation(name: "GUIDES", direction: "IN")
-  realizer: Person @relation(name: "REALIZES", direction: "IN")
+  guidesNeeds: [Need] @relation(name: "GUIDES", direction: "OUT")
+  realizesNeeds: [Need] @relation(name: "REALIZES", direction: "OUT")
+  guidesResponsibilities: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
+  realizesResponsibilities: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
 }
 
 type Need {
   nodeId: ID!
   title: String!
   description: String
+  deliberationLink: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
-  dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
+  dependsOnResponsibilities: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
   needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
   responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
@@ -45,35 +39,42 @@ type Responsibility {
   nodeId: ID!
   title: String!
   description: String
+  deliberationLink: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
   dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
-  dependsOnResponsibilites: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
+  dependsOnResponsibilities: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
   needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
   responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
 
 type Query {
   persons: [Person]
-  responsibilities: [Responsibility]
   needs: [Need]
+  need(nodeId: ID!): Need
+  responsibilities: [Responsibility]
+  responsibility(nodeId: ID!): Responsibility
 }
 
 type Mutation {
   createNeed(title: String!): Need 
   createResponsibility(
     title: String!,
-    needId: String!
+    needId: ID!
   ): Responsibility 
-  updateTitle(
+  updateNeed(
     nodeId: ID!
     title: String!
-  ): NeedResp
-  updateDescription(
+    description: String
+    deliberationLink: String
+  ): Need
+  updateResponsibility(
     nodeId: ID!
-    description: String!
-  ): NeedResp
+    title: String!
+    description: String
+    deliberationLink: String
+  ): Responsibility
 }
 
 `;
@@ -110,10 +111,16 @@ const resolvers = {
     persons(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
+    needs(object, params, ctx, resolveInfo) {
+      return neo4jgraphql(object, params, ctx, resolveInfo);
+    },
+    need(object, params, ctx, resolveInfo) {
+      return neo4jgraphql(object, params, ctx, resolveInfo);
+    },
     responsibilities(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
-    needs(object, params, ctx, resolveInfo) {
+    responsibility(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
   },
@@ -123,12 +130,21 @@ const resolvers = {
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
-      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const queryParams = Object.assign(
+        {},
+        params,
+        {
+          email: getUserEmail(ctx.user),
+          personId: uuidv4(),
+          needId: uuidv4(),
+        },
+      );
+      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
       const query = `
         MERGE (person:Person {email:{email}})
-        SET person.nodeId = ID(person)
-        CREATE (need:Need {title:{title}})
-        SET need.nodeId = ID(need)
+        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+          SET person.nodeId = {personId})
+        CREATE (need:Need {title:{title}, nodeId:{needId}})
         CREATE (person)-[:GUIDES]->(need)
         CREATE (person)-[:REALIZES]->(need)
         RETURN need
@@ -140,48 +156,63 @@ const resolvers = {
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
-      const queryParams = Object.assign({}, params, { email: getUserEmail(ctx.user) });
+      const queryParams = Object.assign(
+        {},
+        params,
+        {
+          email: getUserEmail(ctx.user),
+          personId: uuidv4(),
+          responsibilityId: uuidv4(),
+        },
+      );
+      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
       const query = `
-        MATCH (need:Need {nodeId: toInteger({needId})})
+        MATCH (need:Need {nodeId: {needId}})
         WITH need
         MERGE (person:Person {email:{email}})
-        SET person.nodeId = ID(person)
-        CREATE (resp:Responsibility {title:{title}})-[r:FULFILLS]->(need)
-        SET resp.nodeId = ID(resp)
+        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+          SET person.nodeId = {personId})
+        CREATE (resp:Responsibility {title:{title}, nodeId:{responsibilityId}})-[r:FULFILLS]->(need)
         CREATE (person)-[:GUIDES]->(resp)
         RETURN resp
       `;
       return runQuery(driver.session(), query, queryParams);
     },
-    updateTitle(_, params, ctx) {
+    updateNeed(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
       if (!userRole) {
+        // Here we should check if the user has permission
+        // to edit this particular need
         throw new Error("User isn't authenticated");
       }
-      const queryParams = params;
-      queryParams.nodeId = Number(queryParams.nodeId);
-      const session = driver.session();
       const query = `
-        MATCH (n {nodeId: {nodeId}})
-        SET n.title = {title}
-        RETURN n
+        MATCH (need {nodeId: {nodeId}})
+        SET need += {
+          title: {title},
+          description: {description},
+          deliberationLink: {deliberationLink}
+        }
+        RETURN need
       `;
-      return runQuery(session, query, queryParams);
+      return runQuery(driver.session(), query, params);
     },
-    updateDescription(_, params, ctx) {
+    updateResponsibility(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
       if (!userRole) {
+        // Here we should check if the user has permission
+        // to edit this particular responsibility
         throw new Error("User isn't authenticated");
       }
-      const queryParams = params;
-      queryParams.nodeId = Number(queryParams.nodeId);
-      const session = driver.session();
       const query = `
-        MATCH (n {nodeId: {nodeId}})
-        SET n.description = {description}
-        RETURN n
+        MATCH (resp {nodeId: {nodeId}})
+        SET resp += {
+          title: {title},
+          description: {description},
+          deliberationLink: {deliberationLink}
+        }
+        RETURN resp
       `;
-      return runQuery(session, query, queryParams);
+      return runQuery(driver.session(), query, params);
     },
   },
 };

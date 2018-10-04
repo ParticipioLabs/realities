@@ -34,7 +34,7 @@ export default (WrappedComponent) => {
     }
 
     render() {
-      return <WrappedComponent auth={this.state.auth} {...this.props} />;
+      return <WrappedComponent {...this.props} auth={this.state.auth} />;
     }
   }
 
