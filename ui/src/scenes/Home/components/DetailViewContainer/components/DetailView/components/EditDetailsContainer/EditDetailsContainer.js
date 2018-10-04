@@ -51,7 +51,7 @@ const EditDetailsContainer = ({ node }) => (
             },
           }).then(() => {
             resetForm();
-            client.writeData({ data: { showDetailedEditView: false } })
+            client.writeData({ data: { showDetailedEditView: false } });
           });
         }}
       >
