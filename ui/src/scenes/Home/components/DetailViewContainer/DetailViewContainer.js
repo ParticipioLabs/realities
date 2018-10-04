@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
+import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
 import DetailView from './components/DetailView';
 
@@ -35,13 +36,14 @@ const createDetailViewQuery = nodeType => gql`
         }
       }
     }
+    showDetailedEditView @client
   }
 `;
 
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
-const DetailViewContainer = withRouter(({ match }) => {
+const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
   if (!match.params.needId && !match.params.responsibilityId) return null;
 
   const queryProps = !match.params.responsibilityId ? {
@@ -58,17 +60,33 @@ const DetailViewContainer = withRouter(({ match }) => {
 
   return (
     <Query {...queryProps}>
-      {({ loading, error, data }) => {
+      {({
+        loading,
+        error,
+        data,
+        client,
+      }) => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
-        return <DetailView node={node} />;
+        return (
+          <DetailView
+            node={node}
+            showEdit={data.showDetailedEditView}
+            isLoggedIn={auth.isLoggedIn}
+            onClickEdit={() => client.writeData({ data: { showDetailedEditView: true } })}
+            onClickCancel={() => client.writeData({ data: { showDetailedEditView: false } })}
+          />
+        );
       }}
     </Query>
   );
-});
+}));
 
 DetailViewContainer.propTypes = {
+  auth: PropTypes.shape({
+    isLoggedIn: PropTypes.bool,
+  }),
   match: PropTypes.shape({
     params: PropTypes.shape({
       needId: PropTypes.string,
@@ -78,6 +96,9 @@ DetailViewContainer.propTypes = {
 };
 
 DetailViewContainer.defaultProps = {
+  auth: {
+    isLoggedIn: false,
+  },
   match: {
     params: {
       needId: undefined,

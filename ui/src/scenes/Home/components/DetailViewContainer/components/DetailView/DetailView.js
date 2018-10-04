@@ -1,18 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardText,
-  CardTitle,
-} from 'reactstrap';
-import { FaPencil } from 'react-icons/lib/fa';
+import { Card, CardBody, CardHeader } from 'reactstrap';
+import { FaPencil, FaTimesCircle } from 'react-icons/lib/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
-import DependencyList from './components/DependencyList';
-import LocalGraph from './components/LocalGraph';
+import EditDetailsContainer from './components/EditDetailsContainer';
+import DetailViewBody from './components/DetailViewBody';
 
 const DetailViewCardHeader = styled(CardHeader)`
   background-color: ${props => props.color};
@@ -32,16 +26,13 @@ const HeaderButton = styled(IconButton)`
   padding: 0 0.4rem 0.2rem 0.4rem;
 `;
 
-const LabelSpan = styled.span`
-  font-weight: bold;
-  margin-right: 0.5em;
-`;
-
-const CardSection = styled.div`
-  margin-bottom: 1rem;
-`;
-
-const DetailView = ({ node, onClickEdit }) => (
+const DetailView = ({
+  node,
+  showEdit,
+  isLoggedIn,
+  onClickEdit,
+  onClickCancel,
+}) => (
   <Card>
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
@@ -49,67 +40,25 @@ const DetailView = ({ node, onClickEdit }) => (
       <HeaderText>
         {node.__typename}
       </HeaderText>
-      <HeaderButton onClick={onClickEdit}>
-        <FaPencil />
-      </HeaderButton>
+      {isLoggedIn && (
+        showEdit ? (
+          <HeaderButton onClick={onClickCancel}>
+            <FaTimesCircle />
+          </HeaderButton>
+        ) : (
+          <HeaderButton onClick={onClickEdit}>
+            <FaPencil />
+          </HeaderButton>
+        )
+      )}
     </DetailViewCardHeader>
-
-    <CardBody>
-      <CardTitle>
-        {node.title}
-      </CardTitle>
-
-      <CardText>
-        <LabelSpan>
-          Guide:
-        </LabelSpan>
-        {node.guide && (
-          node.guide.name
-            ? `${node.guide.name} (${node.guide.email})`
-            : node.guide.email
-        )}
-      </CardText>
-
-      <CardText>
-        <LabelSpan>
-          Realizer:
-        </LabelSpan>
-        {node.realizer && (
-          node.realizer.name
-            ? `${node.realizer.name} (${node.realizer.email})`
-            : node.realizer.email
-        )}
-      </CardText>
-
-      <CardText>
-        <LabelSpan>
-          Description:
-        </LabelSpan>
-        {node.description}
-      </CardText>
-
-      <CardText>
-        <LabelSpan>Deliberation:</LabelSpan>
-        <a href={node.deliberationLink} target="_blank">{node.deliberationLink}</a>
-      </CardText>
-
-      <CardSection>
-        <LabelSpan>Depends on:</LabelSpan>
-        <DependencyList
-          dependencies={[
-            ...(node.dependsOnNeeds || []),
-            ...(node.dependsOnResponsibilities || []),
-          ]}
-        />
-      </CardSection>
-
-      <CardSection>
-        <LabelSpan>Graph:</LabelSpan>
-        <Card>
-          <LocalGraph nodeType={node.__typename} nodeId={node.nodeId} />
-        </Card>
-      </CardSection>
-    </CardBody>
+    {showEdit ? (
+      <CardBody>
+        <EditDetailsContainer />
+      </CardBody>
+    ) : (
+      <DetailViewBody node={node} />
+    )}
   </Card>
 );
 
@@ -144,7 +93,10 @@ DetailView.propTypes = {
       }),
     })),
   }),
+  showEdit: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   onClickEdit: PropTypes.func,
+  onClickCancel: PropTypes.func,
 };
 
 DetailView.defaultProps = {
@@ -166,7 +118,10 @@ DetailView.defaultProps = {
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
+  showEdit: false,
+  isLoggedIn: false,
   onClickEdit: () => null,
+  onClickCancel: () => null,
 };
 
 export default DetailView;
