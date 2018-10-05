@@ -44,7 +44,10 @@ const NeedsList = withRouter(({
 ));
 
 NeedsList.propTypes = {
-  needs: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  needs: PropTypes.arrayOf(PropTypes.shape({
+    nodeId: PropTypes.string,
+    title: PropTypes.string,
+  })),
   selectedNeedId: PropTypes.string,
   history: PropTypes.shape({
     push: PropTypes.func,
