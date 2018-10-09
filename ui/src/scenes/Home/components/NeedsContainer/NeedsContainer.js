@@ -40,7 +40,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match, history }) => (
           {({ loading, error, data }) => {
             if (loading) return <WrappedLoader />;
             if (error) return `Error! ${error.message}`;
-            const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
+            const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
             if (!match.params.needId && firstNeedId) history.push(`/${firstNeedId}`);
             return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
           }}
