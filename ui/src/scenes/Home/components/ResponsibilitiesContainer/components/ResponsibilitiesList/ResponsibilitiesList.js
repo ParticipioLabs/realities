@@ -45,7 +45,10 @@ const ResponsibilitiesList = withRouter(({
 ));
 
 ResponsibilitiesList.propTypes = {
-  responsibilities: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  responsibilities: PropTypes.arrayOf(PropTypes.shape({
+    nodeId: PropTypes.string,
+    title: PropTypes.string,
+  })),
   selectedResponsibilityId: PropTypes.string,
   history: PropTypes.shape({
     push: PropTypes.func,

@@ -49,12 +49,18 @@ type Responsibility {
   responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
 }
 
+type SearchResult {
+  needs: [Need]
+  responsibilities: [Responsibility]
+}
+
 type Query {
   persons: [Person]
   needs: [Need]
   need(nodeId: ID!): Need
   responsibilities: [Responsibility]
   responsibility(nodeId: ID!): Responsibility
+  search(term: String!): SearchResult
 }
 
 type Mutation {
@@ -91,13 +97,17 @@ const context = (user) => {
   };
 };
 
-const runQuery = (session, query, queryParams) =>
+const runQuery = (session, query, queryParams, f) =>
   session.run(query, queryParams)
     .then((result) => {
       session.close();
-      const singleRecord = result.records[0];
-      const record = singleRecord.get(0);
-      return record.properties;
+      if (f) return f(result);
+      if (!result.records) return null;
+      if (result.records.length === 1) {
+        const singleRecord = result.records[0].get(0);
+        return singleRecord.properties;
+      }
+      return result.records.map(r => r.get(0).properties);
     }).catch((error) => {
       console.log(error);
     });
@@ -122,6 +132,29 @@ const resolvers = {
     },
     responsibility(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
+    },
+    search(object, params) {
+      // This could (and should) be replaced with a "filter" argument on the needs
+      // and responsibilities fields once neo4j-graphql-js supports that
+      const query = `
+        MATCH (n)
+        WHERE (n:Need OR n:Responsibility) AND toLower(n.title) CONTAINS toLower({term})
+        OPTIONAL MATCH (n)-[:FULFILLS]->(f:Need)
+        RETURN n, f
+      `;
+      return runQuery(driver.session(), query, params, (result) => {
+        const records = result.records.map(r => ({
+          node: r.get('n'),
+          fulfills: r.get('f'),
+        }));
+        const needs = records
+          .filter(r => r.node.labels[0] === 'Need')
+          .map(r => r.node.properties);
+        const responsibilities = records
+          .filter(r => r.node.labels[0] === 'Responsibility')
+          .map(r => Object.assign({}, r.node.properties, { fulfills: r.fulfills.properties }));
+        return { needs, responsibilities };
+      });
     },
   },
   Mutation: {

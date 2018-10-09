@@ -18,7 +18,7 @@ const GET_SHOW_CREATE_NEED = gql`
   }
 `;
 
-const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
+const NeedsContainer = withAuth(withRouter(({ auth, match, history }) => (
   <Query query={GET_SHOW_CREATE_NEED}>
     {({ data: localData, client }) => (
       <div>
@@ -40,6 +40,8 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           {({ loading, error, data }) => {
             if (loading) return <WrappedLoader />;
             if (error) return `Error! ${error.message}`;
+            const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
+            if (!match.params.needId && firstNeedId) history.push(`/${firstNeedId}`);
             return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
           }}
         </Query>
@@ -57,6 +59,9 @@ NeedsContainer.propTypes = {
       needId: PropTypes.string,
     }),
   }),
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
 };
 
 NeedsContainer.defaultProps = {
@@ -67,6 +72,9 @@ NeedsContainer.defaultProps = {
     params: {
       needId: undefined,
     },
+  },
+  history: {
+    push: () => null,
   },
 };
 
