@@ -43,7 +43,7 @@ class RealitiesNavbar extends Component {
         <StyledNavbarBrand tag={Link} to="/">
           Realities
         </StyledNavbarBrand>
-        <div className="flex-grow-1 mr-3">
+        <div className="flex-grow-1 mr-3 d-none d-md-block ">
           <Search />
         </div>
         <NavbarToggler onClick={this.toggle} />
