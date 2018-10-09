@@ -15,6 +15,7 @@ module.exports = {
         ]
       }
     ],
+    'react/no-did-update-set-state': 0,
     'import/no-extraneous-dependencies': 0,
     'import/no-unresolved': 0,
     'import/extensions': 0,
