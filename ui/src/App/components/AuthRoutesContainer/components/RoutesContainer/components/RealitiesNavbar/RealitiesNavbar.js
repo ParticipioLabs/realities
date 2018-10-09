@@ -16,6 +16,7 @@ import {
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import withAuth from '@/components/withAuth';
+import Search from '@/components/Search';
 
 const StyledNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
@@ -42,8 +43,11 @@ class RealitiesNavbar extends Component {
         <StyledNavbarBrand tag={Link} to="/">
           Realities
         </StyledNavbarBrand>
+        <div className="flex-grow-1 mr-3">
+          <Search />
+        </div>
         <NavbarToggler onClick={this.toggle} />
-        <Collapse isOpen={this.state.isOpen} navbar>
+        <Collapse isOpen={this.state.isOpen} navbar className="flex-grow-0">
           <Nav className="ml-auto" navbar>
             <NavItem>
               <NavLink tag={Link} to="/about">About</NavLink>
