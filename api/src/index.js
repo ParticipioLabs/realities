@@ -15,6 +15,7 @@ type Person {
   nodeId: ID!
   name: String
   email: String!
+  created: String
   guidesNeeds: [Need] @relation(name: "GUIDES", direction: "OUT")
   realizesNeeds: [Need] @relation(name: "REALIZES", direction: "OUT")
   guidesResponsibilities: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
@@ -26,6 +27,8 @@ type Need {
   title: String!
   description: String
   deliberationLink: String
+  created: String
+  deleted: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
@@ -40,6 +43,7 @@ type Responsibility {
   title: String!
   description: String
   deliberationLink: String
+  created: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
@@ -176,8 +180,8 @@ const resolvers = {
       const query = `
         MERGE (person:Person {email:{email}})
         FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-          SET person.nodeId = {personId})
-        CREATE (need:Need {title:{title}, nodeId:{needId}})
+          SET person += {nodeId:{personId}, created:timestamp()})
+        CREATE (need:Need {title:{title}, nodeId:{needId}, created:timestamp()})
         CREATE (person)-[:GUIDES]->(need)
         CREATE (person)-[:REALIZES]->(need)
         RETURN need
@@ -204,8 +208,12 @@ const resolvers = {
         WITH need
         MERGE (person:Person {email:{email}})
         FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-          SET person.nodeId = {personId})
-        CREATE (resp:Responsibility {title:{title}, nodeId:{responsibilityId}})-[r:FULFILLS]->(need)
+          SET person += {nodeId:{personId}, created:timestamp()})
+        CREATE (resp:Responsibility {
+          title:{title},
+          nodeId:{responsibilityId},
+          created:timestamp()
+        })-[r:FULFILLS]->(need)
         CREATE (person)-[:GUIDES]->(resp)
         RETURN resp
       `;
