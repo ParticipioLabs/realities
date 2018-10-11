@@ -32,14 +32,14 @@ const EditDetailsContainer = ({ node }) => (
     {(updateNode, { client }) => (
       <Formik
         initialValues={{
-          title: node.title,
-          description: node.description,
-          deliberationLink: node.deliberationLink,
+          title: node.title || '',
+          description: node.description || '',
+          deliberationLink: node.deliberationLink || '',
         }}
         validationSchema={yup.object().shape({
           title: yup.string().required('Title is required'),
-          description: yup.string(),
-          deliberationLink: yup.string(),
+          description: yup.string().nullable(),
+          deliberationLink: yup.string().nullable(),
         })}
         onSubmit={(values, { resetForm }) => {
           updateNode({
