@@ -227,7 +227,7 @@ const resolvers = {
         throw new Error("User isn't authenticated");
       }
       const query = `
-        MATCH (need {nodeId: {nodeId}})
+        MATCH (need:Need {nodeId: {nodeId}})
         SET need += {
           title: {title},
           description: {description},
@@ -245,7 +245,7 @@ const resolvers = {
         throw new Error("User isn't authenticated");
       }
       const query = `
-        MATCH (resp {nodeId: {nodeId}})
+        MATCH (resp:Responsibility {nodeId: {nodeId}})
         SET resp += {
           title: {title},
           description: {description},
