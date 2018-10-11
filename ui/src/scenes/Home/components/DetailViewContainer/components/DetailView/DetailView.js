@@ -6,6 +6,7 @@ import { FaPencil, FaTimesCircle } from 'react-icons/lib/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
 import EditDetailsContainer from './components/EditDetailsContainer';
+import DeleteNodeContainer from './components/DeleteNodeContainer';
 import DetailViewBody from './components/DetailViewBody';
 
 const DetailViewCardHeader = styled(CardHeader)`
@@ -24,6 +25,12 @@ const HeaderText = styled.span`
 const HeaderButton = styled(IconButton)`
   font-size: 1.25rem;
   padding: 0 0.4rem 0.2rem 0.4rem;
+`;
+
+const Divider = styled.div`
+  background-color: #ced4da;
+  height: 1px;
+  margin: 2rem 0;
 `;
 
 const DetailView = ({
@@ -55,6 +62,8 @@ const DetailView = ({
     {showEdit ? (
       <CardBody>
         <EditDetailsContainer node={node} />
+        <Divider />
+        <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
       </CardBody>
     ) : (
       <DetailViewBody node={node} />
