@@ -13,7 +13,7 @@ export const GET_NEEDS = gql`
 
 export const GET_NEED_RESPONSIBILITIES = gql`
   query NeedResponsibilities($needId: ID!) {
-    need(nodeId: $needId) {
+    need(nodeId: $needId, deleted: null) {
       nodeId
       fulfilledBy {
         nodeId

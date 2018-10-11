@@ -9,7 +9,7 @@ import DetailView from './components/DetailView';
 
 const createDetailViewQuery = nodeType => gql`
   query DetailViewContainer_${nodeType}($nodeId: ID!) {
-    ${nodeType}(nodeId: $nodeId) {
+    ${nodeType}(nodeId: $nodeId, deleted: null) {
       nodeId
       title
       description
@@ -69,6 +69,7 @@ const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
+        if (!node) return null;
         return (
           <DetailView
             node={node}

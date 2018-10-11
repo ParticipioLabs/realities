@@ -50,7 +50,7 @@ const RESPONSIBILITY_FRAGMENT = gql`
 
 const GET_NEED = gql`
   query LocalGraph_need($nodeId: ID!) {
-    need(nodeId: $nodeId) {
+    need(nodeId: $nodeId, deleted: null) {
       ...LocalGraphNeedFields
       fulfilledBy {
         ...LocalGraphResponsibilityFields
@@ -164,6 +164,7 @@ class LocalGraph extends Component {
           if (loading) return <WrappedLoader />;
           if (error) return `Error! ${error.message}`;
           const node = nodeType === 'Need' ? data.need : data.responsibility;
+          if (!node) return null;
           const graphData = graphUtils.getSubGraph(node);
           return (
             <div>
