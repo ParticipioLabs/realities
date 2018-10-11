@@ -16,10 +16,26 @@ type Person {
   name: String
   email: String!
   created: String
-  guidesNeeds: [Need] @relation(name: "GUIDES", direction: "OUT")
-  realizesNeeds: [Need] @relation(name: "REALIZES", direction: "OUT")
-  guidesResponsibilities: [Responsibility] @relation(name: "GUIDES", direction: "OUT")
-  realizesResponsibilities: [Responsibility] @relation(name: "REALIZES", direction: "OUT")
+  guidesNeeds: [Need]
+    @cypher(
+      statement:
+        "MATCH (this)-[:GUIDES]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  realizesNeeds: [Need]
+    @cypher(
+      statement:
+        "MATCH (this)-[:REALIZES]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  guidesResponsibilities: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)-[:GUIDES]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  realizesResponsibilities: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)-[:REALIZES]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
 }
 
 type Need {
@@ -31,11 +47,31 @@ type Need {
   deleted: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
-  fulfilledBy: [Responsibility] @relation(name: "FULFILLS", direction: "IN")
-  dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
-  dependsOnResponsibilities: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
-  needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
-  responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
+  fulfilledBy: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)<-[:FULFILLS]-(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  dependsOnNeeds: [Need]
+    @cypher(
+      statement:
+        "MATCH (this)-[:DEPENDS_ON]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  dependsOnResponsibilities: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)-[:DEPENDS_ON]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  needsThatDependOnThis: [Need]
+    @cypher(
+      statement:
+        "MATCH (this)<-[:DEPENDS_ON]-(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  responsibilitiesThatDependOnThis: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)<-[:DEPENDS_ON]-(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
 }
 
 type Responsibility {
@@ -44,13 +80,30 @@ type Responsibility {
   description: String
   deliberationLink: String
   created: String
+  deleted: String
   guide: Person @relation(name: "GUIDES", direction: "IN")
   realizer: Person @relation(name: "REALIZES", direction: "IN")
   fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
-  dependsOnNeeds: [Need] @relation(name: "DEPENDS_ON", direction: "OUT")
-  dependsOnResponsibilities: [Responsibility] @relation(name: "DEPENDS_ON", direction: "OUT")
-  needsThatDependOnThis: [Need] @relation(name: "DEPENDS_ON", direction: "IN")
-  responsibilitiesThatDependOnThis: [Responsibility] @relation(name: "DEPENDS_ON", direction: "IN")
+  dependsOnNeeds: [Need]
+    @cypher(
+      statement:
+        "MATCH (this)-[:DEPENDS_ON]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  dependsOnResponsibilities: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)-[:DEPENDS_ON]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  needsThatDependOnThis: [Need]
+    @cypher(
+      statement:
+        "MATCH (this)<-[:DEPENDS_ON]-(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  responsibilitiesThatDependOnThis: [Responsibility]
+    @cypher(
+      statement:
+        "MATCH (this)<-[:DEPENDS_ON]-(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
 }
 
 type SearchResult {
@@ -61,14 +114,21 @@ type SearchResult {
 type Query {
   persons: [Person]
   needs: [Need]
-  need(nodeId: ID!): Need
+    @cypher(
+      statement: "MATCH (n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  need(nodeId: ID!, deleted: String): Need
   responsibilities: [Responsibility]
-  responsibility(nodeId: ID!): Responsibility
+    @cypher(
+      statement: 
+        "MATCH (n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
+    )
+  responsibility(nodeId: ID!, deleted: String): Responsibility
   search(term: String!): SearchResult
 }
 
 type Mutation {
-  createNeed(title: String!): Need 
+  createNeed(title: String!): Need
   createResponsibility(
     title: String!,
     needId: ID!
@@ -85,6 +145,8 @@ type Mutation {
     description: String
     deliberationLink: String
   ): Responsibility
+  softDeleteNeed(nodeId: ID!): Need
+  softDeleteResponsibility(nodeId: ID!): Responsibility
 }
 
 `;
@@ -152,10 +214,10 @@ const resolvers = {
           fulfills: r.get('f'),
         }));
         const needs = records
-          .filter(r => r.node.labels[0] === 'Need')
+          .filter(r => r.node.labels[0] === 'Need' && !r.node.properties.deleted)
           .map(r => r.node.properties);
         const responsibilities = records
-          .filter(r => r.node.labels[0] === 'Responsibility')
+          .filter(r => r.node.labels[0] === 'Responsibility' && !r.node.properties.deleted)
           .map(r => Object.assign({}, r.node.properties, { fulfills: r.fulfills.properties }));
         return { needs, responsibilities };
       });
@@ -254,6 +316,40 @@ const resolvers = {
         RETURN resp
       `;
       return runQuery(driver.session(), query, params);
+    },
+    softDeleteNeed(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      // Here we should check if the user has permission
+      // to soft delete this particular need and if the need
+      // is free of responsibilities and dependents
+      const query = `
+        MATCH (need:Need {nodeId: {nodeId}})
+        SET need.deleted = timestamp()
+        RETURN need
+      `;
+      return runQuery(driver.session(), query, params);
+    },
+    softDeleteResponsibility(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      // Here we should check if the user has permission
+      // to soft delete this particular responsibility and
+      // if it is free of dependents
+      const query = `
+        MATCH (resp:Responsibility {nodeId: {nodeId}})-[:FULFILLS]->(need:Need)
+        SET resp.deleted = timestamp()
+        RETURN resp, need
+      `;
+      return runQuery(driver.session(), query, params, result => Object.assign(
+        {},
+        result.records[0].get('resp').properties,
+        { fulfills: result.records[0].get('need').properties },
+      ));
     },
   },
 };
