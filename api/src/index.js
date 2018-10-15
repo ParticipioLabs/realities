@@ -106,7 +106,7 @@ type Responsibility {
     )
 }
 
-type SearchResult {
+type SearchNeedsAndResponsibilitiesResult {
   needs: [Need]
   responsibilities: [Responsibility]
 }
@@ -124,7 +124,7 @@ type Query {
         "MATCH (n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
     )
   responsibility(nodeId: ID!, deleted: String): Responsibility
-  search(term: String!): SearchResult
+  searchNeedsAndResponsibilities(term: String!): SearchNeedsAndResponsibilitiesResult
 }
 
 type Mutation {
@@ -199,7 +199,7 @@ const resolvers = {
     responsibility(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
-    search(object, params) {
+    searchNeedsAndResponsibilities(object, params) {
       // This could (and should) be replaced with a "filter" argument on the needs
       // and responsibilities fields once neo4j-graphql-js supports that
       const query = `

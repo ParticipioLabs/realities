@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import _ from 'lodash';
 import { Query } from 'react-apollo';
 import { Card, CardBody } from 'reactstrap';
+import withDebouncedProp from '@/components/withDebouncedProp';
 import WrappedLoader from '@/components/WrappedLoader';
 import SearchResults from './components/SearchResults';
 
 const GET_SEARCH = gql`
-  query Search_search($term: String!) {
-    search(term: $term) {
+  query Search_searchNeedsAndResponsibilities($term: String!) {
+    searchNeedsAndResponsibilities(term: $term) {
       needs {
         nodeId
         title
@@ -35,63 +36,42 @@ const Wrapper = styled(Card)`
   z-index: 10;
 `;
 
-class SearchResultsContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { debouncedSearchTerm: props.searchTerm };
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.searchTerm !== this.props.searchTerm) {
-      if (!this.props.searchTerm) {
-        this.handleSearchTermUpdateDebounced.cancel();
-        this.setState({ debouncedSearchTerm: this.props.searchTerm });
-      } else {
-        this.handleSearchTermUpdateDebounced(this.props.searchTerm);
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    this.handleSearchTermUpdateDebounced.cancel();
-  }
-
-  handleSearchTermUpdateDebounced = _.debounce((searchTerm) => {
-    this.setState({ debouncedSearchTerm: searchTerm });
-  }, 250);
-
-  render() {
-    if (!this.state.debouncedSearchTerm) return null;
-
-    return (
-      <Wrapper>
-        <Query
-          query={GET_SEARCH}
-          variables={{ term: this.state.debouncedSearchTerm }}
-          fetchPolicy="no-cache"
-        >
-          {({ loading, error, data }) => {
-            if (loading) return <WrappedLoader />;
-            if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
-            const searchResults = [
-              ...((data.search && data.search.needs) || []),
-              ...((data.search && data.search.responsibilities) || []),
-            ];
-            if (searchResults.length === 0) return <CardBody>No results</CardBody>;
-            return (
-              <SearchResults
-                results={_.orderBy(searchResults, [r => r.title.toLowerCase()], ['asc'])}
-                getMenuProps={this.props.getMenuProps}
-                getItemProps={this.props.getItemProps}
-                highlightedIndex={this.props.highlightedIndex}
-              />
-            );
-          }}
-        </Query>
-      </Wrapper>
-    );
-  }
-}
+const SearchResultsContainer = withDebouncedProp('searchTerm', 250)(({
+  searchTerm,
+  getMenuProps,
+  getItemProps,
+  highlightedIndex,
+}) => {
+  if (!searchTerm) return null;
+  return (
+    <Wrapper>
+      <Query
+        query={GET_SEARCH}
+        variables={{ term: searchTerm }}
+        fetchPolicy="no-cache"
+      >
+        {({ loading, error, data }) => {
+          if (loading) return <WrappedLoader />;
+          if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
+          const searchResultObject = data.searchNeedsAndResponsibilities || {};
+          const searchResults = [
+            ...(searchResultObject.needs || []),
+            ...(searchResultObject.responsibilities || []),
+          ];
+          if (searchResults.length === 0) return <CardBody>No results</CardBody>;
+          return (
+            <SearchResults
+              results={_.orderBy(searchResults, [r => r.title.toLowerCase()], ['asc'])}
+              getMenuProps={getMenuProps}
+              getItemProps={getItemProps}
+              highlightedIndex={highlightedIndex}
+            />
+          );
+        }}
+      </Query>
+    </Wrapper>
+  );
+});
 
 SearchResultsContainer.propTypes = {
   searchTerm: PropTypes.string,
