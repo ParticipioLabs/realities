@@ -204,7 +204,10 @@ const resolvers = {
       // and responsibilities fields once neo4j-graphql-js supports that
       const query = `
         MATCH (n)
-        WHERE (n:Need OR n:Responsibility) AND toLower(n.title) CONTAINS toLower({term})
+        WHERE
+          (n:Need OR n:Responsibility)
+          AND toLower(n.title) CONTAINS toLower({term})
+          AND NOT EXISTS(n.deleted)
         OPTIONAL MATCH (n)-[:FULFILLS]->(f:Need)
         RETURN n, f
       `;
@@ -214,10 +217,10 @@ const resolvers = {
           fulfills: r.get('f'),
         }));
         const needs = records
-          .filter(r => r.node.labels[0] === 'Need' && !r.node.properties.deleted)
+          .filter(r => r.node.labels[0] === 'Need')
           .map(r => r.node.properties);
         const responsibilities = records
-          .filter(r => r.node.labels[0] === 'Responsibility' && !r.node.properties.deleted)
+          .filter(r => r.node.labels[0] === 'Responsibility')
           .map(r => Object.assign({}, r.node.properties, { fulfills: r.fulfills.properties }));
         return { needs, responsibilities };
       });
