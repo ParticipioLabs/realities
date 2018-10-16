@@ -36,6 +36,7 @@ const EditDetailsContainer = ({ node }) => (
           description: node.description || '',
           deliberationLink: node.deliberationLink || '',
         }}
+        enableReinitialize={true}
         validationSchema={yup.object().shape({
           title: yup.string().required('Title is required'),
           description: yup.string().nullable(),
