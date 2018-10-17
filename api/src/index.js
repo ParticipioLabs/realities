@@ -141,12 +141,16 @@ type Mutation {
   updateNeed(
     nodeId: ID!
     title: String!
+    guideEmail: String!
+    realizerEmail: String
     description: String
     deliberationLink: String
   ): Need
   updateResponsibility(
     nodeId: ID!
     title: String!
+    guideEmail: String!
+    realizerEmail: String
     description: String
     deliberationLink: String
   ): Responsibility
@@ -310,16 +314,38 @@ const resolvers = {
         // to edit this particular need
         throw new Error("User isn't authenticated");
       }
+      // Use cypher FOREACH hack to only set realizer
+      // if the Person node could be found
       const query = `
         MATCH (need:Need {nodeId: {nodeId}})
+        MATCH (:Person)-[g:GUIDES]->(need)
+        MATCH (guide:Person {email: {guideEmail}})
+        OPTIONAL MATCH (:Person)-[r:REALIZES]->(need)
+        OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
         SET need += {
           title: {title},
           description: {description},
           deliberationLink: {deliberationLink}
         }
-        RETURN need
+        DELETE g, r
+        CREATE (guide)-[:GUIDES]->(need)
+        FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
+          CREATE (realizer)-[:REALIZES]->(need))
+        RETURN need, guide, realizer
       `;
-      return runQuery(driver.session(), query, params);
+      return runQuery(driver.session(), query, params, (result) => {
+        const need = result.records[0].get('need');
+        const guide = result.records[0].get('guide');
+        const realizer = result.records[0].get('realizer');
+        return Object.assign(
+          {},
+          need.properties,
+          {
+            guide: guide && guide.properties,
+            realizer: realizer && realizer.properties,
+          },
+        );
+      });
     },
     updateResponsibility(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
@@ -328,16 +354,38 @@ const resolvers = {
         // to edit this particular responsibility
         throw new Error("User isn't authenticated");
       }
+      // Use cypher FOREACH hack to only set realizer
+      // if the Person node could be found
       const query = `
         MATCH (resp:Responsibility {nodeId: {nodeId}})
+        MATCH (:Person)-[g:GUIDES]->(resp)
+        MATCH (guide:Person {email: {guideEmail}})
+        OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
+        OPTIONAL MATCH (:Person)-[r:REALIZES]->(resp)
         SET resp += {
           title: {title},
           description: {description},
           deliberationLink: {deliberationLink}
         }
-        RETURN resp
+        DELETE g, r
+        CREATE (guide)-[:GUIDES]->(resp)
+        FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
+          CREATE (realizer)-[:REALIZES]->(resp))
+        RETURN resp, guide, realizer
       `;
-      return runQuery(driver.session(), query, params);
+      return runQuery(driver.session(), query, params, (result) => {
+        const resp = result.records[0].get('resp');
+        const guide = result.records[0].get('guide');
+        const realizer = result.records[0].get('realizer');
+        return Object.assign(
+          {},
+          resp.properties,
+          {
+            guide: guide && guide.properties,
+            realizer: realizer && realizer.properties,
+          },
+        );
+      });
     },
     softDeleteNeed(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
