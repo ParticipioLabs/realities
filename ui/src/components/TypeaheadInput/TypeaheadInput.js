@@ -35,6 +35,7 @@ const TypeaheadInput = ({
       inputValue,
       highlightedIndex,
       isOpen,
+      clearSelection,
     }) => (
       <Wrapper {...getRootProps({ refKey: 'innerRef' })}>
         <Input
@@ -42,7 +43,10 @@ const TypeaheadInput = ({
             name,
             id,
             disabled,
-            onBlur,
+            onBlur: (e) => {
+              if (!inputValue) clearSelection();
+              onBlur(e);
+            },
             invalid,
           })}
         />
