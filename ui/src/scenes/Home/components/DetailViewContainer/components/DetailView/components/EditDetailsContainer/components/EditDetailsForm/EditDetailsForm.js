@@ -1,15 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
 import styled from 'styled-components';
 import {
   Button,
+  Col,
   Form,
   FormFeedback,
   FormGroup,
   FormText,
   Input,
   Label,
+  Row,
 } from 'reactstrap';
+import TypeaheadInput from '@/components/TypeaheadInput';
+
+function personToString(person) {
+  if (!person) return '';
+  return person.name ? `${person.name} (${person.email})` : person.email;
+}
+
+const SEARCH_PERSON = gql`
+  query EditDetailsForm_searchPersons($term: String!) {
+    searchPersons(term: $term) {
+      persons {
+        nodeId
+        name
+        email
+      }
+    }
+  }
+`;
+
+const searchPersonsDataToResultsArray = data => data.searchPersons && data.searchPersons.persons;
 
 const StyledForm = styled(Form)`
   margin-bottom: 1rem;
@@ -22,6 +45,7 @@ const EditDetailsForm = ({
   handleChange,
   handleBlur,
   handleSubmit,
+  setFieldValue,
   isSubmitting,
   cancel,
 }) => (
@@ -37,12 +61,60 @@ const EditDetailsForm = ({
         disabled={isSubmitting}
         onChange={handleChange}
         onBlur={handleBlur}
-        invalid={touched.title && errors.title}
+        invalid={touched.title && !!errors.title}
       />
       <FormFeedback>
         {touched.title && errors.title}
       </FormFeedback>
     </FormGroup>
+    <Row>
+      <Col md="6">
+        <FormGroup>
+          <Label for="editDetailsGuide">
+            Guide
+          </Label>
+          <TypeaheadInput
+            name="guide"
+            id="editDetailsGuide"
+            selectedItem={values.guide}
+            itemToString={personToString}
+            searchQuery={SEARCH_PERSON}
+            queryDataToResultsArray={searchPersonsDataToResultsArray}
+            onChange={value => setFieldValue('guide', value)}
+            onBlur={handleBlur}
+            disabled={isSubmitting}
+            invalid={touched.guide && !!errors.guide}
+          />
+          <FormFeedback
+            className={touched.guide && !!errors.guide ? 'd-block' : ''}
+          >
+            {touched.guide && errors.guide}
+          </FormFeedback>
+        </FormGroup>
+      </Col>
+      <Col md="6">
+        <Label for="editDetailsRealizer">
+          Realizer
+        </Label>
+        <TypeaheadInput
+          name="realizer"
+          id="editDetailsRealizer"
+          selectedItem={values.realizer}
+          itemToString={personToString}
+          searchQuery={SEARCH_PERSON}
+          queryDataToResultsArray={searchPersonsDataToResultsArray}
+          onChange={value => setFieldValue('realizer', value)}
+          onBlur={handleBlur}
+          disabled={isSubmitting}
+          invalid={touched.realizer && !!errors.realizer}
+        />
+        <FormFeedback
+          className={touched.realizer && !!errors.realizer ? 'd-block' : ''}
+        >
+          {touched.realizer && errors.realizer}
+        </FormFeedback>
+      </Col>
+    </Row>
     <FormGroup>
       <Label for="editDetailsDescription">
         Description
@@ -118,6 +190,7 @@ EditDetailsForm.propTypes = {
   handleChange: PropTypes.func,
   handleBlur: PropTypes.func,
   handleSubmit: PropTypes.func,
+  setFieldValue: PropTypes.func,
   isSubmitting: PropTypes.bool,
   cancel: PropTypes.func,
 };
@@ -141,6 +214,7 @@ EditDetailsForm.defaultProps = {
   handleChange: () => null,
   handleBlur: () => null,
   handleSubmit: () => null,
+  setFieldValue: () => null,
   isSubmitting: false,
   cancel: () => null,
 };

@@ -106,9 +106,13 @@ type Responsibility {
     )
 }
 
-type SearchResult {
+type SearchNeedsAndResponsibilitiesResult {
   needs: [Need]
   responsibilities: [Responsibility]
+}
+
+type SearchPersonsResult {
+  persons: [Person]
 }
 
 type Query {
@@ -124,7 +128,8 @@ type Query {
         "MATCH (n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
     )
   responsibility(nodeId: ID!, deleted: String): Responsibility
-  search(term: String!): SearchResult
+  searchNeedsAndResponsibilities(term: String!): SearchNeedsAndResponsibilitiesResult
+  searchPersons(term: String!): SearchPersonsResult
 }
 
 type Mutation {
@@ -136,12 +141,16 @@ type Mutation {
   updateNeed(
     nodeId: ID!
     title: String!
+    guideEmail: String!
+    realizerEmail: String
     description: String
     deliberationLink: String
   ): Need
   updateResponsibility(
     nodeId: ID!
     title: String!
+    guideEmail: String!
+    realizerEmail: String
     description: String
     deliberationLink: String
   ): Responsibility
@@ -199,12 +208,15 @@ const resolvers = {
     responsibility(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
-    search(object, params) {
+    searchNeedsAndResponsibilities(object, params) {
       // This could (and should) be replaced with a "filter" argument on the needs
       // and responsibilities fields once neo4j-graphql-js supports that
       const query = `
         MATCH (n)
-        WHERE (n:Need OR n:Responsibility) AND toLower(n.title) CONTAINS toLower({term})
+        WHERE
+          (n:Need OR n:Responsibility)
+          AND toLower(n.title) CONTAINS toLower({term})
+          AND NOT EXISTS(n.deleted)
         OPTIONAL MATCH (n)-[:FULFILLS]->(f:Need)
         RETURN n, f
       `;
@@ -214,13 +226,27 @@ const resolvers = {
           fulfills: r.get('f'),
         }));
         const needs = records
-          .filter(r => r.node.labels[0] === 'Need' && !r.node.properties.deleted)
+          .filter(r => r.node.labels[0] === 'Need')
           .map(r => r.node.properties);
         const responsibilities = records
-          .filter(r => r.node.labels[0] === 'Responsibility' && !r.node.properties.deleted)
+          .filter(r => r.node.labels[0] === 'Responsibility')
           .map(r => Object.assign({}, r.node.properties, { fulfills: r.fulfills.properties }));
         return { needs, responsibilities };
       });
+    },
+    searchPersons(object, params) {
+      // This could (and should) be replaced with a "filter" argument
+      // on the persons field once neo4j-graphql-js supports that
+      const query = `
+        MATCH (p:Person)
+        WHERE
+          (toLower(p.name) CONTAINS toLower({term}) OR toLower(p.email) CONTAINS toLower({term}))
+          AND NOT EXISTS(p.deleted)
+        RETURN p
+      `;
+      return runQuery(driver.session(), query, params, result => ({
+        persons: result.records.map(r => r.get(0).properties),
+      }));
     },
   },
   Mutation: {
@@ -288,16 +314,38 @@ const resolvers = {
         // to edit this particular need
         throw new Error("User isn't authenticated");
       }
+      // Use cypher FOREACH hack to only set realizer
+      // if the Person node could be found
       const query = `
         MATCH (need:Need {nodeId: {nodeId}})
+        MATCH (:Person)-[g:GUIDES]->(need)
+        MATCH (guide:Person {email: {guideEmail}})
+        OPTIONAL MATCH (:Person)-[r:REALIZES]->(need)
+        OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
         SET need += {
           title: {title},
           description: {description},
           deliberationLink: {deliberationLink}
         }
-        RETURN need
+        DELETE g, r
+        CREATE (guide)-[:GUIDES]->(need)
+        FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
+          CREATE (realizer)-[:REALIZES]->(need))
+        RETURN need, guide, realizer
       `;
-      return runQuery(driver.session(), query, params);
+      return runQuery(driver.session(), query, params, (result) => {
+        const need = result.records[0].get('need');
+        const guide = result.records[0].get('guide');
+        const realizer = result.records[0].get('realizer');
+        return Object.assign(
+          {},
+          need.properties,
+          {
+            guide: guide && guide.properties,
+            realizer: realizer && realizer.properties,
+          },
+        );
+      });
     },
     updateResponsibility(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
@@ -306,16 +354,38 @@ const resolvers = {
         // to edit this particular responsibility
         throw new Error("User isn't authenticated");
       }
+      // Use cypher FOREACH hack to only set realizer
+      // if the Person node could be found
       const query = `
         MATCH (resp:Responsibility {nodeId: {nodeId}})
+        MATCH (:Person)-[g:GUIDES]->(resp)
+        MATCH (guide:Person {email: {guideEmail}})
+        OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
+        OPTIONAL MATCH (:Person)-[r:REALIZES]->(resp)
         SET resp += {
           title: {title},
           description: {description},
           deliberationLink: {deliberationLink}
         }
-        RETURN resp
+        DELETE g, r
+        CREATE (guide)-[:GUIDES]->(resp)
+        FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
+          CREATE (realizer)-[:REALIZES]->(resp))
+        RETURN resp, guide, realizer
       `;
-      return runQuery(driver.session(), query, params);
+      return runQuery(driver.session(), query, params, (result) => {
+        const resp = result.records[0].get('resp');
+        const guide = result.records[0].get('guide');
+        const realizer = result.records[0].get('realizer');
+        return Object.assign(
+          {},
+          resp.properties,
+          {
+            guide: guide && guide.properties,
+            realizer: realizer && realizer.properties,
+          },
+        );
+      });
     },
     softDeleteNeed(_, params, ctx) {
       const userRole = getUserRole(ctx.user);

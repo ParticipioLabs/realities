@@ -10,12 +10,16 @@ const createEditDetailsMutation = nodeType => gql`
   mutation EditDetailsContainer_update${nodeType}(
     $nodeId: ID!
     $title: String!
+    $guideEmail: String!
+    $realizerEmail: String
     $description: String
     $deliberationLink: String
   ) {
     update${nodeType}(
       nodeId: $nodeId
       title: $title
+      guideEmail: $guideEmail
+      realizerEmail: $realizerEmail
       description: $description
       deliberationLink: $deliberationLink
     ) {
@@ -23,6 +27,16 @@ const createEditDetailsMutation = nodeType => gql`
       title
       description
       deliberationLink
+      guide {
+        nodeId
+        email
+        name
+      }
+      realizer {
+        nodeId
+        email
+        name
+      }
     }
   }
 `;
@@ -33,11 +47,20 @@ const EditDetailsContainer = ({ node }) => (
       <Formik
         initialValues={{
           title: node.title || '',
+          guide: node.guide || null,
+          realizer: node.realizer || null,
           description: node.description || '',
           deliberationLink: node.deliberationLink || '',
         }}
+        enableReinitialize
         validationSchema={yup.object().shape({
           title: yup.string().required('Title is required'),
+          guide: yup.object().shape({
+            email: yup.string().required(),
+          }).typeError('Guide is required').required(),
+          realizer: yup.object().shape({
+            email: yup.string(),
+          }).nullable(),
           description: yup.string().nullable(),
           deliberationLink: yup.string().nullable(),
         })}
@@ -46,6 +69,8 @@ const EditDetailsContainer = ({ node }) => (
             variables: {
               nodeId: node.nodeId,
               title: values.title,
+              guideEmail: values.guide && values.guide.email,
+              realizerEmail: values.realizer && values.realizer.email,
               description: values.description,
               deliberationLink: values.deliberationLink,
             },
@@ -62,6 +87,7 @@ const EditDetailsContainer = ({ node }) => (
           handleChange,
           handleBlur,
           handleSubmit,
+          setFieldValue,
           isSubmitting,
         }) => (
           <EditDetailsForm
@@ -71,6 +97,7 @@ const EditDetailsContainer = ({ node }) => (
             handleChange={handleChange}
             handleBlur={handleBlur}
             handleSubmit={handleSubmit}
+            setFieldValue={setFieldValue}
             isSubmitting={isSubmitting}
             cancel={() => client.writeData({ data: { showDetailedEditView: false } })}
           />

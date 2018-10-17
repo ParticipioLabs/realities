@@ -1,31 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import styled from 'styled-components';
-import _ from 'lodash';
 import { Query } from 'react-apollo';
 import { Card, CardBody } from 'reactstrap';
 import withDebouncedProp from '@/components/withDebouncedProp';
 import WrappedLoader from '@/components/WrappedLoader';
-import SearchResults from './components/SearchResults';
-
-const GET_SEARCH = gql`
-  query Search_searchNeedsAndResponsibilities($term: String!) {
-    searchNeedsAndResponsibilities(term: $term) {
-      needs {
-        nodeId
-        title
-      }
-      responsibilities {
-        nodeId
-        title
-        fulfills {
-          nodeId
-        }
-      }
-    }
-  }
-`;
+import TypeaheadResults from './components/TypeaheadResults';
 
 const Wrapper = styled(Card)`
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
@@ -36,35 +16,35 @@ const Wrapper = styled(Card)`
   z-index: 10;
 `;
 
-const SearchResultsContainer = withDebouncedProp('searchTerm', 250)(({
-  searchTerm,
+const TypeaheadResultsContainer = withDebouncedProp('inputValue', 250)(({
+  inputValue,
   getMenuProps,
   getItemProps,
   highlightedIndex,
+  itemToString,
+  searchQuery,
+  queryDataToResultsArray,
 }) => {
-  if (!searchTerm) return null;
+  if (!inputValue) return null;
   return (
     <Wrapper>
       <Query
-        query={GET_SEARCH}
-        variables={{ term: searchTerm }}
+        query={searchQuery}
+        variables={{ term: inputValue }}
         fetchPolicy="no-cache"
       >
         {({ loading, error, data }) => {
           if (loading) return <WrappedLoader />;
           if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
-          const searchResultObject = data.searchNeedsAndResponsibilities || {};
-          const searchResults = [
-            ...(searchResultObject.needs || []),
-            ...(searchResultObject.responsibilities || []),
-          ];
+          const searchResults = queryDataToResultsArray(data) || [];
           if (searchResults.length === 0) return <CardBody>No results</CardBody>;
           return (
-            <SearchResults
-              results={_.orderBy(searchResults, [r => r.title.toLowerCase()], ['asc'])}
+            <TypeaheadResults
+              results={searchResults}
               getMenuProps={getMenuProps}
               getItemProps={getItemProps}
               highlightedIndex={highlightedIndex}
+              itemToString={itemToString}
             />
           );
         }}
@@ -73,18 +53,24 @@ const SearchResultsContainer = withDebouncedProp('searchTerm', 250)(({
   );
 });
 
-SearchResultsContainer.propTypes = {
-  searchTerm: PropTypes.string,
+TypeaheadResultsContainer.propTypes = {
+  inputValue: PropTypes.string,
   getMenuProps: PropTypes.func,
   getItemProps: PropTypes.func,
   highlightedIndex: PropTypes.number,
+  itemToString: PropTypes.func,
+  searchQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  queryDataToResultsArray: PropTypes.func,
 };
 
-SearchResultsContainer.defaultProps = {
-  searchTerm: '',
+TypeaheadResultsContainer.defaultProps = {
+  inputValue: '',
   getMenuProps: () => {},
   getItemProps: () => {},
   highlightedIndex: null,
+  itemToString: () => '',
+  searchQuery: {},
+  queryDataToResultsArray: () => [],
 };
 
-export default SearchResultsContainer;
+export default TypeaheadResultsContainer;
