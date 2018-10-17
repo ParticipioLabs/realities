@@ -111,6 +111,10 @@ type SearchNeedsAndResponsibilitiesResult {
   responsibilities: [Responsibility]
 }
 
+type SearchPersonsResult {
+  persons: [Person]
+}
+
 type Query {
   persons: [Person]
   needs: [Need]
@@ -125,6 +129,7 @@ type Query {
     )
   responsibility(nodeId: ID!, deleted: String): Responsibility
   searchNeedsAndResponsibilities(term: String!): SearchNeedsAndResponsibilitiesResult
+  searchPersons(term: String!): SearchPersonsResult
 }
 
 type Mutation {
@@ -224,6 +229,20 @@ const resolvers = {
           .map(r => Object.assign({}, r.node.properties, { fulfills: r.fulfills.properties }));
         return { needs, responsibilities };
       });
+    },
+    searchPersons(object, params) {
+      // This could (and should) be replaced with a "filter" argument
+      // on the persons field once neo4j-graphql-js supports that
+      const query = `
+        MATCH (p:Person)
+        WHERE
+          (toLower(p.name) CONTAINS toLower({term}) OR toLower(p.email) CONTAINS toLower({term}))
+          AND NOT EXISTS(p.deleted)
+        RETURN p
+      `;
+      return runQuery(driver.session(), query, params, result => ({
+        persons: result.records.map(r => r.get(0).properties),
+      }));
     },
   },
   Mutation: {
