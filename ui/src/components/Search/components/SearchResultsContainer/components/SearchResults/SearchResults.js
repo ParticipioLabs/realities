@@ -1,13 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
-import colors from '@/styles/colors';
-
-const RealitiesBadge = styled(Badge)`
-  background-color: ${props => props.badgecolor};
-  margin-right: .5em;
-`;
+import { ListGroup, ListGroupItem } from 'reactstrap';
+import TypeBadge from '@/components/TypeBadge';
 
 const SearchResults = ({
   results,
@@ -24,11 +18,7 @@ const SearchResults = ({
           style: { backgroundColor: highlightedIndex === index ? '#f8f9fa' : 'white' },
         })}
       >
-        <RealitiesBadge
-          badgecolor={item.__typename === 'Need' ? colors.need : colors.responsibility}
-        >
-          {item.__typename[0]}
-        </RealitiesBadge>
+        <TypeBadge nodeType={item.__typename} />
         {item.title}
       </ListGroupItem>
     ))}

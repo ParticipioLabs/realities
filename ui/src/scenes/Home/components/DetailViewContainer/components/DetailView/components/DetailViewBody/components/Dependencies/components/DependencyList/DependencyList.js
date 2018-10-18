@@ -1,13 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
-import styled from 'styled-components';
-import colors from '@/styles/colors';
-
-const RealitiesBadge = styled(Badge)`
-  margin-right: .5em;
-  background-color: ${props => props.badgecolor};
-`;
+import { ListGroup, ListGroupItem } from 'reactstrap';
+import TypeBadge from '@/components/TypeBadge';
 
 const Dependencies = ({ dependencies }) => (
   <ListGroup>
@@ -26,9 +20,7 @@ const Dependencies = ({ dependencies }) => (
         action
         onClick={onClick}
       >
-        <RealitiesBadge badgecolor={__typename === 'Need' ? colors.need : colors.responsibility}>
-          {__typename[0]}
-        </RealitiesBadge>
+        <TypeBadge nodeType={__typename} />
         {title}
       </ListGroupItem>
     ))}

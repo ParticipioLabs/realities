@@ -21,7 +21,7 @@ const TypeaheadResultsContainer = withDebouncedProp('inputValue', 250)(({
   getMenuProps,
   getItemProps,
   highlightedIndex,
-  itemToString,
+  itemToResult,
   searchQuery,
   queryDataToResultsArray,
 }) => {
@@ -44,7 +44,7 @@ const TypeaheadResultsContainer = withDebouncedProp('inputValue', 250)(({
               getMenuProps={getMenuProps}
               getItemProps={getItemProps}
               highlightedIndex={highlightedIndex}
-              itemToString={itemToString}
+              itemToResult={itemToResult}
             />
           );
         }}
@@ -58,7 +58,7 @@ TypeaheadResultsContainer.propTypes = {
   getMenuProps: PropTypes.func,
   getItemProps: PropTypes.func,
   highlightedIndex: PropTypes.number,
-  itemToString: PropTypes.func,
+  itemToResult: PropTypes.func,
   searchQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   queryDataToResultsArray: PropTypes.func,
 };
@@ -68,7 +68,7 @@ TypeaheadResultsContainer.defaultProps = {
   getMenuProps: () => {},
   getItemProps: () => {},
   highlightedIndex: null,
-  itemToString: () => '',
+  itemToResult: () => '',
   searchQuery: {},
   queryDataToResultsArray: () => [],
 };

@@ -15,6 +15,7 @@ const TypeaheadInput = ({
   id,
   selectedItem,
   itemToString,
+  itemToResult,
   searchQuery,
   queryDataToResultsArray,
   disabled,
@@ -57,7 +58,7 @@ const TypeaheadInput = ({
               getMenuProps,
               getItemProps,
               highlightedIndex,
-              itemToString,
+              itemToResult: itemToResult || itemToString,
               searchQuery,
               queryDataToResultsArray,
             }}
@@ -75,6 +76,7 @@ TypeaheadInput.propTypes = {
     nodeId: PropTypes.string,
   }),
   itemToString: PropTypes.func,
+  itemToResult: PropTypes.func,
   searchQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   queryDataToResultsArray: PropTypes.func,
   disabled: PropTypes.bool,
@@ -86,10 +88,9 @@ TypeaheadInput.propTypes = {
 TypeaheadInput.defaultProps = {
   name: '',
   id: '',
-  selectedItem: {
-    nodeId: '',
-  },
+  selectedItem: null,
   itemToString: () => '',
+  itemToResult: null,
   searchQuery: {},
   queryDataToResultsArray: () => [],
   disabled: false,
