@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
 import styled from 'styled-components';
-import { withRouter } from 'react-router-dom';
 import colors from '@/styles/colors';
 
 const RealitiesBadge = styled(Badge)`
@@ -10,22 +9,22 @@ const RealitiesBadge = styled(Badge)`
   background-color: ${props => props.badgecolor};
 `;
 
-const DependencyList = withRouter(({ dependencies, history }) => (
+const Dependencies = ({ dependencies }) => (
   <ListGroup>
     {dependencies.map(({
-      __typename,
-      nodeId,
-      title,
-      fulfills,
+      node: {
+        __typename,
+        nodeId,
+        title,
+      },
+      onClick,
     }) => (
       <ListGroupItem
         key={nodeId}
         tag="button"
         href="#"
         action
-        onClick={() => {
-          history.push(__typename === 'Need' ? `/${nodeId}` : `/${fulfills.nodeId}/${nodeId}`);
-        }}
+        onClick={onClick}
       >
         <RealitiesBadge badgecolor={__typename === 'Need' ? colors.need : colors.responsibility}>
           {__typename[0]}
@@ -34,27 +33,21 @@ const DependencyList = withRouter(({ dependencies, history }) => (
       </ListGroupItem>
     ))}
   </ListGroup>
-));
+);
 
-DependencyList.propTypes = {
+Dependencies.propTypes = {
   dependencies: PropTypes.arrayOf(PropTypes.shape({
-    __typename: PropTypes.string,
-    nodeId: PropTypes.string,
-    title: PropTypes.string,
-    fulfills: PropTypes.shape({
+    node: PropTypes.shape({
+      __typename: PropTypes.string,
       nodeId: PropTypes.string,
+      title: PropTypes.string,
     }),
+    onClick: PropTypes.func,
   })),
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
 };
 
-DependencyList.defaultProps = {
+Dependencies.defaultProps = {
   dependencies: [],
-  history: {
-    push: () => null,
-  },
 };
 
-export default DependencyList;
+export default Dependencies;
