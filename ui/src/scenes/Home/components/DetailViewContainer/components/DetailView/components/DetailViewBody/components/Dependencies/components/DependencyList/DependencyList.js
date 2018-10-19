@@ -1,9 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import TypeBadge from '@/components/TypeBadge';
+import RemoveDependency from './components/RemoveDependency';
 
-const Dependencies = ({ dependencies }) => (
+const StyledListGroupItem = styled(ListGroupItem)`
+  position: relative;
+  ${props => props.showremove && 'padding-right: 6em;'}
+`;
+
+const RemoveWrapper = styled.span`
+  position: absolute;
+  top: 0.54em;
+  right: 0.54em;
+`;
+
+const Dependencies = ({ dependencies, showRemove }) => (
   <ListGroup>
     {dependencies.map(({
       node: {
@@ -13,16 +26,22 @@ const Dependencies = ({ dependencies }) => (
       },
       onClick,
     }) => (
-      <ListGroupItem
+      <StyledListGroupItem
         key={nodeId}
-        tag="button"
+        tag="div"
         href="#"
         action
         onClick={onClick}
+        showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
       >
         <TypeBadge nodeType={__typename} />
         {title}
-      </ListGroupItem>
+        {showRemove && (
+          <RemoveWrapper>
+            <RemoveDependency nodeType={__typename} nodeId={nodeId} />
+          </RemoveWrapper>
+        )}
+      </StyledListGroupItem>
     ))}
   </ListGroup>
 );
@@ -36,10 +55,12 @@ Dependencies.propTypes = {
     }),
     onClick: PropTypes.func,
   })),
+  showRemove: PropTypes.bool,
 };
 
 Dependencies.defaultProps = {
   dependencies: [],
+  showRemove: false,
 };
 
 export default Dependencies;

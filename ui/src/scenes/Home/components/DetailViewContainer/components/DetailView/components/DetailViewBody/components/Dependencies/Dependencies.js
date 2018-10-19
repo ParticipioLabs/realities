@@ -23,6 +23,7 @@ const Dependencies = withAuth(withRouter(({
           ? `/${dep.nodeId}`
           : `/${dep.fulfills.nodeId}/${dep.nodeId}`),
       }))}
+      showRemove={auth.isLoggedIn}
     />
   </div>
 )));
