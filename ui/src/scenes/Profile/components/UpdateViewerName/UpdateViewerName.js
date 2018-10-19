@@ -31,10 +31,15 @@ const UpdateViewerName = withAuth(({ auth }) => (
     query={GET_VIEWER_NAME}
     variables={{ email: auth.email }}
   >
-    {({ loading, error, data }) => {
+    {({
+      loading,
+      error,
+      data,
+      refetch,
+    }) => {
       if (loading) return <WrappedLoader />;
       if (error) return `Error! ${error.message}`;
-      const viewer = data.person;
+      const viewer = data.person || {};
       return (
         <Mutation mutation={UPDATE_VIEWER_NAME}>
           {updateViewerName => (
@@ -45,7 +50,7 @@ const UpdateViewerName = withAuth(({ auth }) => (
                 name: yup.string().required('Name is required'),
               })}
               onSubmit={(values) => {
-                updateViewerName({ variables: { name: values.name } });
+                updateViewerName({ variables: { name: values.name } }).then(() => refetch());
               }}
             >
               {({
