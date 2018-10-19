@@ -51,7 +51,7 @@ const ListForm = ({
         type="submit"
         disabled={!value || isSubmitting}
       >
-        Submit
+        Save
       </Button>
     </Form>
   </Wrapper>

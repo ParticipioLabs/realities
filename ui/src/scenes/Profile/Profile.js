@@ -6,15 +6,16 @@ import {
   Row,
   Col,
 } from 'reactstrap';
+import UpdateViewerName from './components/UpdateViewerName';
 
-const About = () => (
+const Profile = () => (
   <Container fluid>
     <Row>
       <Col lg={{ size: 6, offset: 3 }}>
         <Card>
           <CardBody>
-            <h1>About</h1>
-            <p>A tool for tribal decentralised organisations.</p>
+            <h1>Profile</h1>
+            <UpdateViewerName />
           </CardBody>
         </Card>
       </Col>
@@ -22,4 +23,4 @@ const About = () => (
   </Container>
 );
 
-export default About;
+export default Profile;

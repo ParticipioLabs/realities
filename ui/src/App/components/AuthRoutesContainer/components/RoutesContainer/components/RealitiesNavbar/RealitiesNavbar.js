@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import withAuth from '@/components/withAuth';
 import Search from '@/components/Search';
+import ViewerName from '@/components/ViewerName';
 
 const StyledNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
@@ -55,9 +56,12 @@ class RealitiesNavbar extends Component {
             {this.props.auth.isLoggedIn ? (
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  {this.props.auth.email}
+                  <ViewerName />
                 </DropdownToggle>
                 <DropdownMenu right>
+                  <DropdownItem>
+                    <NavLink tag={Link} to="/profile">Profile</NavLink>
+                  </DropdownItem>
                   <DropdownItem>
                     <NavLink onClick={this.props.auth.logout} href="#">Logout</NavLink>
                   </DropdownItem>
