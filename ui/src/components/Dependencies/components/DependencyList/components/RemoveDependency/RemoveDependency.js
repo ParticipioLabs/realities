@@ -94,10 +94,11 @@ const RemoveDependency = withRouter(({ match, nodeType, nodeId }) => {
     : REMOVE_RESPONSIBILITY_DEPENDENCY;
   return (
     <Mutation mutation={REMOVE_DEPENDENCY}>
-      {removeDependency => (
+      {(removeDependency, { loading }) => (
         <Button
           size="sm"
           color="danger"
+          disabled={loading}
           onClick={(e) => {
             e.stopPropagation();
             removeDependency({
