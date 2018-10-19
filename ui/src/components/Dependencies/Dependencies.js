@@ -11,9 +11,10 @@ const Dependencies = withAuth(withRouter(({
   nodeType,
   nodeId,
   dependencies,
+  showAddRemove,
 }) => (
   <div>
-    {auth.isLoggedIn && (
+    {auth.isLoggedIn && showAddRemove && (
       <AddDependency nodeType={nodeType} nodeId={nodeId} />
     )}
     <DependencyList
@@ -23,7 +24,7 @@ const Dependencies = withAuth(withRouter(({
           ? `/${dep.nodeId}`
           : `/${dep.fulfills.nodeId}/${dep.nodeId}`),
       }))}
-      showRemove={auth.isLoggedIn}
+      showRemove={auth.isLoggedIn && showAddRemove}
     />
   </div>
 )));
@@ -45,6 +46,7 @@ Dependencies.propTypes = {
       nodeId: PropTypes.string,
     }),
   })),
+  showAddRemove: PropTypes.bool,
 };
 
 Dependencies.defaultProps = {
@@ -57,6 +59,7 @@ Dependencies.defaultProps = {
   nodeType: 'Need',
   nodeId: '',
   dependencies: [],
+  showAddRemove: false,
 };
 
 export default Dependencies;
