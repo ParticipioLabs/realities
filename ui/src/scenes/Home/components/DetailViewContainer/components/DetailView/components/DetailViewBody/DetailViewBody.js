@@ -7,7 +7,7 @@ import {
   CardText,
   CardTitle,
 } from 'reactstrap';
-import Dependencies from './components/Dependencies';
+import Dependencies from '@/components/Dependencies';
 import LocalGraph from './components/LocalGraph';
 
 const LabelSpan = styled.span`
