@@ -93,13 +93,14 @@ const AddDependency = ({ nodeType, nodeId }) => {
     : ADD_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES;
   return (
     <Mutation mutation={ADD_NEED_DEPENDENCY}>
-      {addNeedDependency => (
+      {(addNeedDependency, { loading: loadingAddNeed }) => (
         <Mutation mutation={ADD_RESPONSIBILITY_DEPENDENCY}>
-          {addResponsibilityDependency => (
+          {(addResponsibilityDependency, { loading: loadingAddResponsibility }) => (
             <Wrapper>
               Add dependency
               <TypeaheadInput
                 placeholder="Search"
+                disabled={loadingAddNeed || loadingAddResponsibility}
                 searchQuery={gql`
                   query AddDependency_searchNeedsAndResponsibilities($term: String!) {
                     searchNeedsAndResponsibilities(term: $term) {
