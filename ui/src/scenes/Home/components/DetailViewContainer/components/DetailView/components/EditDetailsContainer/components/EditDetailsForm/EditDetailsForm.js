@@ -159,7 +159,7 @@ const EditDetailsForm = ({
       color="primary"
       disabled={isSubmitting}
     >
-      Submit
+      Save
     </Button>
     <Button
       color="link"

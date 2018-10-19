@@ -145,6 +145,7 @@ type _ResponsibilityDependsOnResponsibilitiesPayload {
 
 type Query {
   persons: [Person]
+  person(email: String!): Person
   needs: [Need]
     @cypher(
       statement: "MATCH (n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
@@ -182,6 +183,7 @@ type Mutation {
     description: String
     deliberationLink: String
   ): Responsibility
+  updateViewerName(name: String!): Person
   softDeleteNeed(nodeId: ID!): Need
   softDeleteResponsibility(nodeId: ID!): Responsibility
   addNeedDependsOnNeeds(
@@ -254,6 +256,9 @@ const resolvers = {
   // root entry point to GraphQL service
   Query: {
     persons(object, params, ctx, resolveInfo) {
+      return neo4jgraphql(object, params, ctx, resolveInfo);
+    },
+    person(object, params, ctx, resolveInfo) {
       return neo4jgraphql(object, params, ctx, resolveInfo);
     },
     needs(object, params, ctx, resolveInfo) {
@@ -446,6 +451,31 @@ const resolvers = {
           },
         );
       });
+    },
+    updateViewerName(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        // Here we should check if the user has permission
+        // to edit this particular responsibility
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = Object.assign(
+        {},
+        params,
+        {
+          email: getUserEmail(ctx.user),
+          personId: uuidv4(),
+        },
+      );
+      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+      const query = `
+        MERGE (person:Person {email:{email}})
+        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+          SET person += {nodeId:{personId}, created:timestamp()})
+        SET person.name = {name}
+        RETURN person
+      `;
+      return runQuery(driver.session(), query, queryParams);
     },
     softDeleteNeed(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
