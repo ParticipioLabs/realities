@@ -3,14 +3,6 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import { Mutation } from 'react-apollo';
-import {
-  Button,
-  Collapse,
-  Form,
-  FormGroup,
-} from 'reactstrap';
-import { FaPlus } from 'react-icons/lib/fa';
-import colors from '@/styles/colors';
 import TypeaheadInput from '@/components/TypeaheadInput';
 import TypeBadge from '@/components/TypeBadge';
 
@@ -142,14 +134,14 @@ const AddDependency = ({ nodeType, nodeId }) => {
                   if (node.__typename === 'Need') {
                     addNeedDependency({
                       variables: {
-                        from: { nodeId: nodeId },
+                        from: { nodeId },
                         to: { nodeId: node.nodeId },
                       },
                     });
                   } else {
                     addResponsibilityDependency({
                       variables: {
-                        from: { nodeId: nodeId },
+                        from: { nodeId },
                         to: { nodeId: node.nodeId },
                       },
                     });

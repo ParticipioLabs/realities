@@ -160,7 +160,12 @@ class LocalGraph extends Component {
         query={nodeType === 'Need' ? GET_NEED : GET_RESPONSIBILITY}
         variables={{ nodeId }}
       >
-        {({ loading, error, data, refetch }) => {
+        {({
+          loading,
+          error,
+          data,
+          refetch,
+        }) => {
           if (loading) return <WrappedLoader />;
           if (error) return `Error! ${error.message}`;
           // The next line is a temporary hack to make up for a bug in Apollo where
