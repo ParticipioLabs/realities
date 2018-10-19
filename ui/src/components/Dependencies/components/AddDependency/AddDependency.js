@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import styled from 'styled-components';
 import { Mutation } from 'react-apollo';
+import { FormGroup, Label } from 'reactstrap';
 import TypeaheadInput from '@/components/TypeaheadInput';
 import TypeBadge from '@/components/TypeBadge';
 
@@ -80,10 +80,6 @@ const ADD_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES = gql`
   }
 `;
 
-const Wrapper = styled.div`
-  margin: 0.5em 0;
-`;
-
 const AddDependency = ({ nodeType, nodeId }) => {
   const ADD_NEED_DEPENDENCY = nodeType === 'Need'
     ? ADD_NEED_DEPENDS_ON_NEEDS
@@ -96,10 +92,12 @@ const AddDependency = ({ nodeType, nodeId }) => {
       {(addNeedDependency, { loading: loadingAddNeed }) => (
         <Mutation mutation={ADD_RESPONSIBILITY_DEPENDENCY}>
           {(addResponsibilityDependency, { loading: loadingAddResponsibility }) => (
-            <Wrapper>
-              Add dependency
+            <FormGroup>
+              <Label for="editDetailsTitle">
+                Add dependency
+              </Label>
               <TypeaheadInput
-                placeholder="Search"
+                placeholder="Search needs and responsibilities"
                 disabled={loadingAddNeed || loadingAddResponsibility}
                 searchQuery={gql`
                   query AddDependency_searchNeedsAndResponsibilities($term: String!) {
@@ -149,7 +147,7 @@ const AddDependency = ({ nodeType, nodeId }) => {
                   }
                 }}
               />
-            </Wrapper>
+            </FormGroup>
           )}
         </Mutation>
       )}
