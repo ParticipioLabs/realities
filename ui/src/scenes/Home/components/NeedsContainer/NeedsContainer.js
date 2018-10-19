@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { GET_NEEDS } from '@/services/queries';
@@ -18,7 +18,7 @@ const GET_SHOW_CREATE_NEED = gql`
   }
 `;
 
-const NeedsContainer = withAuth(withRouter(({ auth, match, history }) => (
+const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
   <Query query={GET_SHOW_CREATE_NEED}>
     {({ data: localData, client }) => (
       <div>
@@ -41,7 +41,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match, history }) => (
             if (loading) return <WrappedLoader />;
             if (error) return `Error! ${error.message}`;
             const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-            if (!match.params.needId && firstNeedId) history.push(`/${firstNeedId}`);
+            if (!match.params.needId && firstNeedId) return <Redirect to={`/${firstNeedId}`} />;
             return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
           }}
         </Query>
@@ -59,9 +59,6 @@ NeedsContainer.propTypes = {
       needId: PropTypes.string,
     }),
   }),
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
 };
 
 NeedsContainer.defaultProps = {
@@ -72,9 +69,6 @@ NeedsContainer.defaultProps = {
     params: {
       needId: undefined,
     },
-  },
-  history: {
-    push: () => null,
   },
 };
 
