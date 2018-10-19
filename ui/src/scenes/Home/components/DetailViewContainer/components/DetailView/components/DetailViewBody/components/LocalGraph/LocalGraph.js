@@ -160,9 +160,13 @@ class LocalGraph extends Component {
         query={nodeType === 'Need' ? GET_NEED : GET_RESPONSIBILITY}
         variables={{ nodeId }}
       >
-        {({ loading, error, data }) => {
+        {({ loading, error, data, refetch }) => {
           if (loading) return <WrappedLoader />;
           if (error) return `Error! ${error.message}`;
+          // The next line is a temporary hack to make up for a bug in Apollo where
+          // the query returns an empty data object sometimes:
+          // https://github.com/apollographql/apollo-client/issues/3267
+          if (!data.need && !data.responsibility) refetch();
           const node = nodeType === 'Need' ? data.need : data.responsibility;
           if (!node) return null;
           const graphData = graphUtils.getSubGraph(node);
