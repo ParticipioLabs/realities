@@ -7,7 +7,7 @@ import {
   CardText,
   CardTitle,
 } from 'reactstrap';
-import DependencyList from '@/components/DependencyList';
+import Dependencies from '@/components/Dependencies';
 import LocalGraph from './components/LocalGraph';
 
 const LabelSpan = styled.span`
@@ -61,7 +61,9 @@ const DetailViewBody = ({ node }) => (
 
     <CardSection>
       <LabelSpan>Depends on:</LabelSpan>
-      <DependencyList
+      <Dependencies
+        nodeType={node.__typename}
+        nodeId={node.nodeId}
         dependencies={[
           ...(node.dependsOnNeeds || []),
           ...(node.dependsOnResponsibilities || []),

@@ -106,13 +106,41 @@ type Responsibility {
     )
 }
 
+input _NeedInput {
+  nodeId: ID!
+}
+
+input _ResponsibilityInput {
+  nodeId: ID!
+}
+
 type SearchNeedsAndResponsibilitiesResult {
   needs: [Need]
   responsibilities: [Responsibility]
 }
 
-type SearchPersonsResult {
+type _SearchPersonsPayload {
   persons: [Person]
+}
+
+type _NeedDependsOnNeedsPayload {
+  from: Need
+  to: Need
+}
+
+type _NeedDependsOnResponsibilitiesPayload {
+  from: Need
+  to: Responsibility
+}
+
+type _ResponsibilityDependsOnNeedsPayload {
+  from: Responsibility
+  to: Need
+}
+
+type _ResponsibilityDependsOnResponsibilitiesPayload {
+  from: Responsibility
+  to: Responsibility
 }
 
 type Query {
@@ -129,13 +157,13 @@ type Query {
     )
   responsibility(nodeId: ID!, deleted: String): Responsibility
   searchNeedsAndResponsibilities(term: String!): SearchNeedsAndResponsibilitiesResult
-  searchPersons(term: String!): SearchPersonsResult
+  searchPersons(term: String!): _SearchPersonsPayload
 }
 
 type Mutation {
   createNeed(title: String!): Need
   createResponsibility(
-    title: String!,
+    title: String!
     needId: ID!
   ): Responsibility 
   updateNeed(
@@ -156,6 +184,38 @@ type Mutation {
   ): Responsibility
   softDeleteNeed(nodeId: ID!): Need
   softDeleteResponsibility(nodeId: ID!): Responsibility
+  addNeedDependsOnNeeds(
+    from: _NeedInput!
+    to: _NeedInput!
+  ): _NeedDependsOnNeedsPayload
+  addNeedDependsOnResponsibilities(
+    from: _NeedInput!
+    to: _ResponsibilityInput!
+  ): _NeedDependsOnResponsibilitiesPayload
+  addResponsibilityDependsOnNeeds(
+    from: _ResponsibilityInput!
+    to: _NeedInput!
+  ): _ResponsibilityDependsOnNeedsPayload
+  addResponsibilityDependsOnResponsibilities(
+    from: _ResponsibilityInput!
+    to: _ResponsibilityInput!
+  ): _ResponsibilityDependsOnResponsibilitiesPayload
+  removeNeedDependsOnNeeds(
+    from: _NeedInput!
+    to: _NeedInput!
+  ): _NeedDependsOnNeedsPayload
+  removeNeedDependsOnResponsibilities(
+    from: _NeedInput!
+    to: _ResponsibilityInput!
+  ): _NeedDependsOnResponsibilitiesPayload
+  removeResponsibilityDependsOnNeeds(
+    from: _ResponsibilityInput!
+    to: _NeedInput!
+  ): _ResponsibilityDependsOnNeedsPayload
+  removeResponsibilityDependsOnResponsibilities(
+    from: _ResponsibilityInput!
+    to: _ResponsibilityInput!
+  ): _ResponsibilityDependsOnResponsibilitiesPayload
 }
 
 `;
@@ -420,6 +480,285 @@ const resolvers = {
         result.records[0].get('resp').properties,
         { fulfills: result.records[0].get('need').properties },
       ));
+    },
+    addNeedDependsOnNeeds(_, params, ctx) {
+      // This could probably be replaced if neo4j-graphql-js develops better support
+      // for mutating relationships. Right now they require relationships to be
+      // defined with the @relation directive, which we can't use because we have to
+      // filter soft-deleted nodes in our relations in the schema.
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromNeed:Need {nodeId: {fromId}})
+        MATCH (toNeed:Need {nodeId: {toId}})
+        MERGE (fromNeed)-[:DEPENDS_ON]->(toNeed)
+        WITH fromNeed, toNeed
+        MATCH (fromNeed)-[:DEPENDS_ON]->(dependency:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromNeed, toNeed, dependency
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromNeed = result.records[0].get('fromNeed').properties;
+        const toNeed = result.records[0].get('toNeed').properties;
+        const dependencies = result.records.map(r => r.get('dependency').properties);
+        return {
+          from: Object.assign({}, fromNeed, { dependsOnNeeds: dependencies }),
+          to: toNeed,
+        };
+      });
+    },
+    addNeedDependsOnResponsibilities(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromNeed:Need {nodeId: {fromId}})
+        MATCH (toResp:Responsibility {nodeId: {toId}})
+        MERGE (fromNeed)-[:DEPENDS_ON]->(toResp)
+        WITH fromNeed, toResp
+        MATCH (fromNeed)-[:DEPENDS_ON]->(dependency:Responsibility)
+        MATCH (dependency)-[:FULFILLS]->(fulfills:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromNeed, toResp, dependency, fulfills
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromNeed = result.records[0].get('fromNeed').properties;
+        const toResp = result.records[0].get('toResp').properties;
+        const dependencies = result.records.map(r => Object.assign(
+          {},
+          r.get('dependency').properties,
+          { fulfills: r.get('fulfills').properties },
+        ));
+        return {
+          from: Object.assign({}, fromNeed, { dependsOnResponsibilities: dependencies }),
+          to: toResp,
+        };
+      });
+    },
+    addResponsibilityDependsOnNeeds(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromResp:Responsibility {nodeId: {fromId}})
+        MATCH (toNeed:Need {nodeId: {toId}})
+        MERGE (fromResp)-[:DEPENDS_ON]->(toNeed)
+        WITH fromResp, toNeed
+        MATCH (fromResp)-[:DEPENDS_ON]->(dependency:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromResp, toNeed, dependency
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromResp = result.records[0].get('fromResp').properties;
+        const toNeed = result.records[0].get('toNeed').properties;
+        const dependencies = result.records.map(r => r.get('dependency').properties);
+        return {
+          from: Object.assign({}, fromResp, { dependsOnNeeds: dependencies }),
+          to: toNeed,
+        };
+      });
+    },
+    addResponsibilityDependsOnResponsibilities(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromResp:Responsibility {nodeId: {fromId}})
+        MATCH (toResp:Responsibility {nodeId: {toId}})
+        MERGE (fromResp)-[:DEPENDS_ON]->(toResp)
+        WITH fromResp, toResp
+        MATCH (fromResp)-[:DEPENDS_ON]->(dependency:Responsibility)
+        MATCH (dependency)-[:FULFILLS]->(fulfills:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromResp, toResp, dependency, fulfills
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromResp = result.records[0].get('fromResp').properties;
+        const toResp = result.records[0].get('toResp').properties;
+        const dependencies = result.records.map(r => Object.assign(
+          {},
+          r.get('dependency').properties,
+          { fulfills: r.get('fulfills').properties },
+        ));
+        return {
+          from: Object.assign({}, fromResp, { dependsOnResponsibilities: dependencies }),
+          to: toResp,
+        };
+      });
+    },
+    removeNeedDependsOnNeeds(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromNeed:Need {nodeId: {fromId}})-[r:DEPENDS_ON]->(toNeed:Need {nodeId: {toId}})
+        DELETE r
+        WITH fromNeed, toNeed
+        MATCH (fromNeed)
+        OPTIONAL MATCH (fromNeed)-[:DEPENDS_ON]->(dependency:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromNeed, toNeed, dependency
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromNeed = result.records[0].get('fromNeed').properties;
+        const toNeed = result.records[0].get('toNeed').properties;
+        const dependencies = result.records
+          .map(r => r.get('dependency'))
+          .filter(d => !!d)
+          .map(d => d.properties);
+        return {
+          from: Object.assign({}, fromNeed, { dependsOnNeeds: dependencies }),
+          to: toNeed,
+        };
+      });
+    },
+    removeNeedDependsOnResponsibilities(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromNeed:Need {nodeId: {fromId}})-[r:DEPENDS_ON]->(toResp:Responsibility {nodeId: {toId}})
+        DELETE r
+        WITH fromNeed, toResp
+        MATCH (fromNeed)
+        OPTIONAL MATCH
+          (fromNeed)
+          -[:DEPENDS_ON]->
+          (dependency:Responsibility)
+          -[:FULFILLS]->
+          (fulfills:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromNeed, toResp, dependency, fulfills
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromNeed = result.records[0].get('fromNeed').properties;
+        const toResp = result.records[0].get('toResp').properties;
+        const dependencies = result.records
+          .map(r => ({ d: r.get('dependency'), f: r.get('fulfills') }))
+          .filter(r => r.d && r.f)
+          .map(r => Object.assign(
+            {},
+            r.d.properties,
+            { fulfills: r.f.properties },
+          ));
+        return {
+          from: Object.assign({}, fromNeed, { dependsOnResponsibilities: dependencies }),
+          to: toResp,
+        };
+      });
+    },
+    removeResponsibilityDependsOnNeeds(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH (fromResp:Responsibility {nodeId: {fromId}})-[r:DEPENDS_ON]->(toNeed:Need {nodeId: {toId}})
+        DELETE r
+        WITH fromResp, toNeed
+        MATCH (fromResp)
+        OPTIONAL MATCH (fromResp)-[:DEPENDS_ON]->(dependency:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromResp, toNeed, dependency
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromResp = result.records[0].get('fromResp').properties;
+        const toNeed = result.records[0].get('toNeed').properties;
+        const dependencies = result.records
+          .map(r => r.get('dependency'))
+          .filter(d => !!d)
+          .map(d => d.properties);
+        return {
+          from: Object.assign({}, fromResp, { dependsOnNeeds: dependencies }),
+          to: toNeed,
+        };
+      });
+    },
+    removeResponsibilityDependsOnResponsibilities(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        fromId: params.from.nodeId,
+        toId: params.to.nodeId,
+      };
+      const query = `
+        MATCH
+          (fromResp:Responsibility {nodeId: {fromId}})
+          -[r:DEPENDS_ON]->
+          (toResp:Responsibility {nodeId: {toId}})
+        DELETE r
+        WITH fromResp, toResp
+        MATCH (fromResp)
+        OPTIONAL MATCH 
+          (fromResp)
+          -[:DEPENDS_ON]->
+          (dependency:Responsibility)
+          -[:FULFILLS]->
+          (fulfills:Need)
+        WHERE NOT EXISTS(dependency.deleted)
+        RETURN fromResp, toResp, dependency, fulfills
+        ORDER BY dependency.created DESC
+      `;
+      return runQuery(driver.session(), query, queryParams, (result) => {
+        const fromResp = result.records[0].get('fromResp').properties;
+        const toResp = result.records[0].get('toResp').properties;
+        const dependencies = result.records
+          .map(r => ({ d: r.get('dependency'), f: r.get('fulfills') }))
+          .filter(r => r.d && r.f)
+          .map(r => Object.assign(
+            {},
+            r.d.properties,
+            { fulfills: r.f.properties },
+          ));
+        return {
+          from: Object.assign({}, fromResp, { dependsOnResponsibilities: dependencies }),
+          to: toResp,
+        };
+      });
     },
   },
 };

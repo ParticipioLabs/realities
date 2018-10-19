@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 import { FaPencil, FaTimesCircle } from 'react-icons/lib/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
+import Dependencies from '@/components/Dependencies';
 import EditDetailsContainer from './components/EditDetailsContainer';
 import DeleteNodeContainer from './components/DeleteNodeContainer';
 import DetailViewBody from './components/DetailViewBody';
@@ -62,6 +63,16 @@ const DetailView = ({
     {showEdit ? (
       <CardBody>
         <EditDetailsContainer node={node} />
+        <Divider />
+        <Dependencies
+          showAddRemove
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          dependencies={[
+            ...(node.dependsOnNeeds || []),
+            ...(node.dependsOnResponsibilities || []),
+          ]}
+        />
         <Divider />
         <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
       </CardBody>

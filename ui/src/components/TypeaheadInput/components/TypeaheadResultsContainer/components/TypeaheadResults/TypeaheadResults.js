@@ -7,7 +7,7 @@ const TypeaheadResults = ({
   getMenuProps,
   getItemProps,
   highlightedIndex,
-  itemToString,
+  itemToResult,
 }) => (
   <ListGroup flush {...getMenuProps()}>
     {results.map((item, index) => (
@@ -18,7 +18,7 @@ const TypeaheadResults = ({
           style: { backgroundColor: highlightedIndex === index ? '#f8f9fa' : 'white' },
         })}
       >
-        {itemToString(item)}
+        {itemToResult(item)}
       </ListGroupItem>
     ))}
   </ListGroup>
@@ -31,7 +31,7 @@ TypeaheadResults.propTypes = {
   getMenuProps: PropTypes.func,
   getItemProps: PropTypes.func,
   highlightedIndex: PropTypes.number,
-  itemToString: PropTypes.func,
+  itemToResult: PropTypes.func,
 };
 
 TypeaheadResults.defaultProps = {
@@ -39,7 +39,7 @@ TypeaheadResults.defaultProps = {
   getMenuProps: () => {},
   getItemProps: () => {},
   highlightedIndex: null,
-  itemToString: () => '',
+  itemToResult: () => '',
 };
 
 export default TypeaheadResults;

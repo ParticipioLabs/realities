@@ -13,8 +13,10 @@ const Wrapper = styled.span`
 const TypeaheadInput = ({
   name,
   id,
+  placeholder,
   selectedItem,
   itemToString,
+  itemToResult,
   searchQuery,
   queryDataToResultsArray,
   disabled,
@@ -42,6 +44,7 @@ const TypeaheadInput = ({
           {...getInputProps({
             name,
             id,
+            placeholder,
             disabled,
             onBlur: (e) => {
               if (!inputValue) clearSelection();
@@ -57,7 +60,7 @@ const TypeaheadInput = ({
               getMenuProps,
               getItemProps,
               highlightedIndex,
-              itemToString,
+              itemToResult: itemToResult || itemToString,
               searchQuery,
               queryDataToResultsArray,
             }}
@@ -71,10 +74,12 @@ const TypeaheadInput = ({
 TypeaheadInput.propTypes = {
   name: PropTypes.string,
   id: PropTypes.string,
+  placeholder: PropTypes.string,
   selectedItem: PropTypes.shape({
     nodeId: PropTypes.string,
   }),
   itemToString: PropTypes.func,
+  itemToResult: PropTypes.func,
   searchQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   queryDataToResultsArray: PropTypes.func,
   disabled: PropTypes.bool,
@@ -86,10 +91,10 @@ TypeaheadInput.propTypes = {
 TypeaheadInput.defaultProps = {
   name: '',
   id: '',
-  selectedItem: {
-    nodeId: '',
-  },
+  placeholder: '',
+  selectedItem: null,
   itemToString: () => '',
+  itemToResult: null,
   searchQuery: {},
   queryDataToResultsArray: () => [],
   disabled: false,
