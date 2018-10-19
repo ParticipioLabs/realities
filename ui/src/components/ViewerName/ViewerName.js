@@ -9,7 +9,6 @@ const GET_VIEWER_NAME = gql`
     person(email: $email) {
       nodeId
       name
-      email
     }
   }
 `;
@@ -23,7 +22,7 @@ const ViewerName = withAuth(({ auth }) => (
       if (loading) return auth.email;
       if (error) return `Error! ${error.message}`;
       const viewer = data.person || {};
-      return viewer.name || viewer.email;
+      return viewer.name || auth.email;
     }}
   </Query>
 ));
