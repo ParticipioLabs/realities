@@ -13,6 +13,7 @@ const Wrapper = styled.span`
 const TypeaheadInput = ({
   name,
   id,
+  placeholder,
   selectedItem,
   itemToString,
   itemToResult,
@@ -43,6 +44,7 @@ const TypeaheadInput = ({
           {...getInputProps({
             name,
             id,
+            placeholder,
             disabled,
             onBlur: (e) => {
               if (!inputValue) clearSelection();
@@ -72,6 +74,7 @@ const TypeaheadInput = ({
 TypeaheadInput.propTypes = {
   name: PropTypes.string,
   id: PropTypes.string,
+  placeholder: PropTypes.string,
   selectedItem: PropTypes.shape({
     nodeId: PropTypes.string,
   }),
@@ -88,6 +91,7 @@ TypeaheadInput.propTypes = {
 TypeaheadInput.defaultProps = {
   name: '',
   id: '',
+  placeholder: '',
   selectedItem: null,
   itemToString: () => '',
   itemToResult: null,

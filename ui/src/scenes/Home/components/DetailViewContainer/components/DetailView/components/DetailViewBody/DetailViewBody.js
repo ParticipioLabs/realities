@@ -62,6 +62,8 @@ const DetailViewBody = ({ node }) => (
     <CardSection>
       <LabelSpan>Depends on:</LabelSpan>
       <Dependencies
+        nodeType={node.__typename}
+        nodeId={node.nodeId}
         dependencies={[
           ...(node.dependsOnNeeds || []),
           ...(node.dependsOnResponsibilities || []),
