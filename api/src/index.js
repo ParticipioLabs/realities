@@ -167,6 +167,7 @@ type Mutation {
     title: String!
     needId: ID!
   ): Responsibility 
+  createViewer: Person
   updateNeed(
     nodeId: ID!
     title: String!
@@ -372,6 +373,24 @@ const resolvers = {
       `;
       return runQuery(driver.session(), query, queryParams);
     },
+    createViewer(_, params, ctx) {
+      const userRole = getUserRole(ctx.user);
+      if (!userRole) {
+        throw new Error("User isn't authenticated");
+      }
+      const queryParams = {
+        email: getUserEmail(ctx.user),
+        personId: uuidv4(),
+      };
+      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+      const query = `
+        MERGE (person:Person {email:{email}})
+        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+          SET person += {nodeId:{personId}, created:timestamp()})
+        RETURN person
+      `;
+      return runQuery(driver.session(), query, queryParams);
+    },
     updateNeed(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
       if (!userRole) {
@@ -455,8 +474,6 @@ const resolvers = {
     updateViewerName(_, params, ctx) {
       const userRole = getUserRole(ctx.user);
       if (!userRole) {
-        // Here we should check if the user has permission
-        // to edit this particular responsibility
         throw new Error("User isn't authenticated");
       }
       const queryParams = Object.assign(

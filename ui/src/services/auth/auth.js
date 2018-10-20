@@ -19,27 +19,31 @@ function fireHandlers() {
 
 export default {
   login: () => {
-    auth0.authorize({ dict_title: 'Realities' });
+    auth0.authorize({ title: 'Realities' });
   },
-  handleAuthentication: () => {
-    auth0.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        store.set('auth', {
-          accessToken: authResult.accessToken,
-          idToken: authResult.idToken,
-          expiresAt: (authResult.expiresIn * 1000) + new Date().getTime(),
-          email: authResult.idTokenPayload && authResult.idTokenPayload.email,
-        });
-        fireHandlers();
-        history.replace('/');
-      } else if (err) {
-        // Handle authentication error, for example by displaying a notification to the user
-      }
-    });
-  },
+  handleAuthentication: () => (
+    new Promise((resolve, reject) => {
+      auth0.parseHash((err, authResult) => {
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          const auth = {
+            accessToken: authResult.accessToken,
+            idToken: authResult.idToken,
+            expiresAt: (authResult.expiresIn * 1000) + new Date().getTime(),
+            email: authResult.idTokenPayload && authResult.idTokenPayload.email,
+          };
+          store.set('auth', auth);
+          fireHandlers();
+          resolve(auth);
+        } else {
+          reject(err);
+        }
+      });
+    })
+  ),
   logout: () => {
     store.remove('auth');
     fireHandlers();
+    history.push('/');
   },
   isLoggedIn: () => !!store.get('auth'),
   getAccessToken: () => {
