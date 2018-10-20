@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
@@ -41,7 +42,9 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
             if (loading) return <WrappedLoader />;
             if (error) return `Error! ${error.message}`;
             const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-            if (!match.params.needId && firstNeedId) return <Redirect to={`/${firstNeedId}`} />;
+            if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
+              return <Redirect to={`/${firstNeedId}`} />;
+            }
             return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
           }}
         </Query>
