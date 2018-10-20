@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import * as yup from 'yup';
 import { Query, Mutation } from 'react-apollo';
 import { Formik } from 'formik';
+import history from '@/services/history';
 import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
 import UpdateViewerNameForm from './components/UpdateViewerNameForm';
@@ -45,12 +46,14 @@ const UpdateViewerName = withAuth(({ auth }) => (
           {updateViewerName => (
             <Formik
               initialValues={{ name: viewer.name || '' }}
-              enableReinitialize
               validationSchema={yup.object().shape({
                 name: yup.string().required('Name is required'),
               })}
               onSubmit={(values) => {
-                updateViewerName({ variables: { name: values.name } }).then(() => refetch());
+                updateViewerName({ variables: { name: values.name } })
+                  .then(() => {
+                    refetch().then(() => history.push('/'));
+                  });
               }}
             >
               {({
