@@ -1,7 +1,7 @@
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
