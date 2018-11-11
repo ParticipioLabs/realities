@@ -11,6 +11,7 @@ import {
   createResponsibility,
   createViewer,
   updateReality,
+  updateViewerName,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 
@@ -127,11 +128,12 @@ const resolvers = {
   Mutation: {
     createNeed: combineResolvers(
       isAuthenticated,
-      (obj, args, { user, driver }) => createNeed(driver, args, user.email),
+      (obj, { title }, { user, driver }) => createNeed(driver, { title }, user.email),
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, args, { user, driver }) => createResponsibility(driver, args, user.email),
+      (obj, { title, needId }, { user, driver }) =>
+        createResponsibility(driver, { title, needId }, user.email),
     ),
     createViewer: combineResolvers(
       isAuthenticated,
@@ -145,29 +147,10 @@ const resolvers = {
       isAuthenticated,
       (obj, args, { driver }) => updateReality(driver, args),
     ),
-    updateViewerName(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        throw new Error("User isn't authenticated");
-      }
-      const queryParams = Object.assign(
-        {},
-        params,
-        {
-          email: user.email,
-          personId: uuidv4(),
-        },
-      );
-      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
-      const query = `
-        MERGE (person:Person {email:{email}})
-        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-          SET person += {nodeId:{personId}, created:timestamp()})
-        SET person.name = {name}
-        RETURN person
-      `;
-      return runQuery(driver.session(), query, queryParams);
-    },
+    updateViewerName: combineResolvers(
+      isAuthenticated,
+      (obj, { name }, { user, driver }) => updateViewerName(driver, { name }, user.email),
+    ),
     softDeleteNeed(_, params, { user, driver }) {
       const userRole = user.role;
       if (!userRole) {

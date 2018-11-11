@@ -95,15 +95,12 @@ export function findNodeByRelationshipAndLabel(
   return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId });
 }
 
-export function createNeed(driver, params, userEmail) {
-  const queryParams = Object.assign(
-    {},
-    params,
-    {
-      email: userEmail,
-      needId: uuidv4(),
-    },
-  );
+export function createNeed(driver, { title }, userEmail) {
+  const queryParams = {
+    title,
+    email: userEmail,
+    needId: uuidv4(),
+  };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
     MATCH (person:Person {email:{email}})
@@ -115,15 +112,13 @@ export function createNeed(driver, params, userEmail) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function createResponsibility(driver, params, userEmail) {
-  const queryParams = Object.assign(
-    {},
-    params,
-    {
-      email: userEmail,
-      responsibilityId: uuidv4(),
-    },
-  );
+export function createResponsibility(driver, { title, needId }, userEmail) {
+  const queryParams = {
+    title,
+    needId,
+    email: userEmail,
+    responsibilityId: uuidv4(),
+  };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
     MATCH (need:Need {nodeId: {needId}})
@@ -176,4 +171,21 @@ export function updateReality(driver, args) {
     RETURN reality
   `;
   return runQueryAndGetRecord(driver.session(), query, args);
+}
+
+export function updateViewerName(driver, { name }, userEmail) {
+  const queryParams = {
+    name,
+    email: userEmail,
+    personId: uuidv4(),
+  };
+  // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+  const query = `
+    MERGE (person:Person {email:{email}})
+    FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+      SET person += {nodeId:{personId}, created:timestamp()})
+    SET person.name = {name}
+    RETURN person
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
