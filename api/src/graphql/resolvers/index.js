@@ -44,6 +44,9 @@ const resolvers = {
     },
   },
   Person: {
+    created({ created }) {
+      return created.toString();
+    },
     guidesNeeds({ nodeId }, args, { driver }) {
       return findNodesByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Need');
     },
@@ -60,6 +63,12 @@ const resolvers = {
   Reality: {
     __resolveType(obj) {
       return obj.__label;
+    },
+    created({ created }) {
+      return created.toString();
+    },
+    deleted({ deleted }) {
+      return deleted.toString();
     },
     guide({ nodeId }, args, { driver }) {
       return findNodeByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Person', 'IN');
