@@ -1,4 +1,5 @@
 import uuidv4 from 'uuid/v4';
+import { combineResolvers } from 'graphql-resolvers';
 import {
   runQuery,
   findNodesByLabel,
@@ -6,7 +7,12 @@ import {
   findNodeByLabelAndProperty,
   findNodesByRelationshipAndLabel,
   findNodeByRelationshipAndLabel,
+  createNeed,
+  createResponsibility,
+  createViewer,
+  updateReality,
 } from '../connectors';
+import { isAuthenticated } from '../authorization';
 
 const resolvers = {
   // root entry point to GraphQL service
@@ -119,161 +125,26 @@ const resolvers = {
     },
   },
   Mutation: {
-    createNeed(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        throw new Error("User isn't authenticated");
-      }
-      const queryParams = Object.assign(
-        {},
-        params,
-        {
-          email: user.email,
-          personId: uuidv4(),
-          needId: uuidv4(),
-        },
-      );
-      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
-      const query = `
-        MERGE (person:Person {email:{email}})
-        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-          SET person += {nodeId:{personId}, created:timestamp()})
-        CREATE (need:Need {title:{title}, nodeId:{needId}, created:timestamp()})
-        CREATE (person)-[:GUIDES]->(need)
-        CREATE (person)-[:REALIZES]->(need)
-        RETURN need
-      `;
-      return runQuery(driver.session(), query, queryParams);
-    },
-    createResponsibility(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        throw new Error("User isn't authenticated");
-      }
-      const queryParams = Object.assign(
-        {},
-        params,
-        {
-          email: user.email,
-          personId: uuidv4(),
-          responsibilityId: uuidv4(),
-        },
-      );
-      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
-      const query = `
-        MATCH (need:Need {nodeId: {needId}})
-        WITH need
-        MERGE (person:Person {email:{email}})
-        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-          SET person += {nodeId:{personId}, created:timestamp()})
-        CREATE (resp:Responsibility {
-          title:{title},
-          nodeId:{responsibilityId},
-          created:timestamp()
-        })-[r:FULFILLS]->(need)
-        CREATE (person)-[:GUIDES]->(resp)
-        RETURN resp
-      `;
-      return runQuery(driver.session(), query, queryParams);
-    },
-    createViewer(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        throw new Error("User isn't authenticated");
-      }
-      const queryParams = {
-        email: user.email,
-        personId: uuidv4(),
-      };
-      // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
-      const query = `
-        MERGE (person:Person {email:{email}})
-        FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-          SET person += {nodeId:{personId}, created:timestamp()})
-        RETURN person
-      `;
-      return runQuery(driver.session(), query, queryParams);
-    },
-    updateNeed(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        // Here we should check if the user has permission
-        // to edit this particular need
-        throw new Error("User isn't authenticated");
-      }
-      // Use cypher FOREACH hack to only set realizer
-      // if the Person node could be found
-      const query = `
-        MATCH (need:Need {nodeId: {nodeId}})
-        MATCH (:Person)-[g:GUIDES]->(need)
-        MATCH (guide:Person {email: {guideEmail}})
-        OPTIONAL MATCH (:Person)-[r:REALIZES]->(need)
-        OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
-        SET need += {
-          title: {title},
-          description: {description},
-          deliberationLink: {deliberationLink}
-        }
-        DELETE g, r
-        CREATE (guide)-[:GUIDES]->(need)
-        FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
-          CREATE (realizer)-[:REALIZES]->(need))
-        RETURN need, guide, realizer
-      `;
-      return runQuery(driver.session(), query, params, (result) => {
-        const need = result.records[0].get('need');
-        const guide = result.records[0].get('guide');
-        const realizer = result.records[0].get('realizer');
-        return Object.assign(
-          {},
-          need.properties,
-          {
-            guide: guide && guide.properties,
-            realizer: realizer && realizer.properties,
-          },
-        );
-      });
-    },
-    updateResponsibility(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        // Here we should check if the user has permission
-        // to edit this particular responsibility
-        throw new Error("User isn't authenticated");
-      }
-      // Use cypher FOREACH hack to only set realizer
-      // if the Person node could be found
-      const query = `
-        MATCH (resp:Responsibility {nodeId: {nodeId}})
-        MATCH (:Person)-[g:GUIDES]->(resp)
-        MATCH (guide:Person {email: {guideEmail}})
-        OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
-        OPTIONAL MATCH (:Person)-[r:REALIZES]->(resp)
-        SET resp += {
-          title: {title},
-          description: {description},
-          deliberationLink: {deliberationLink}
-        }
-        DELETE g, r
-        CREATE (guide)-[:GUIDES]->(resp)
-        FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
-          CREATE (realizer)-[:REALIZES]->(resp))
-        RETURN resp, guide, realizer
-      `;
-      return runQuery(driver.session(), query, params, (result) => {
-        const resp = result.records[0].get('resp');
-        const guide = result.records[0].get('guide');
-        const realizer = result.records[0].get('realizer');
-        return Object.assign(
-          {},
-          resp.properties,
-          {
-            guide: guide && guide.properties,
-            realizer: realizer && realizer.properties,
-          },
-        );
-      });
-    },
+    createNeed: combineResolvers(
+      isAuthenticated,
+      (obj, args, { user, driver }) => createNeed(driver, args, user.email),
+    ),
+    createResponsibility: combineResolvers(
+      isAuthenticated,
+      (obj, args, { user, driver }) => createResponsibility(driver, args, user.email),
+    ),
+    createViewer: combineResolvers(
+      isAuthenticated,
+      (obj, args, { user, driver }) => createViewer(driver, user.email),
+    ),
+    updateNeed: combineResolvers(
+      isAuthenticated,
+      (obj, args, { driver }) => updateReality(driver, args),
+    ),
+    updateResponsibility: combineResolvers(
+      isAuthenticated,
+      (obj, args, { driver }) => updateReality(driver, args),
+    ),
     updateViewerName(_, params, { user, driver }) {
       const userRole = user.role;
       if (!userRole) {

@@ -1,3 +1,5 @@
+import uuidv4 from 'uuid/v4';
+
 // runQuery is exported and used in resolvers for the time being
 // but should be removed once all resolvers and connectors are refactored.
 export function runQuery(session, query, queryParams, f) {
@@ -16,7 +18,7 @@ export function runQuery(session, query, queryParams, f) {
     });
 }
 
-function getRecords(session, query, params) {
+function runQueryAndGetRecords(session, query, params) {
   return session.run(query, params)
     .then((result) => {
       session.close();
@@ -25,15 +27,11 @@ function getRecords(session, query, params) {
     });
 }
 
-function getRecord(session, query, params) {
-  return session.run(query, params)
-    .then((result) => {
-      session.close();
-      if (result.records && result.records.length === 1) {
-        const singleRecord = result.records[0].get(0);
-        return singleRecord.properties;
-      }
-      return null;
+function runQueryAndGetRecord(session, query, params) {
+  return runQueryAndGetRecords(session, query, params)
+    .then((records) => {
+      if (!records || records.length !== 1) return null;
+      return records[0];
     });
 }
 
@@ -43,7 +41,7 @@ export function findNodesByLabel(driver, label) {
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return getRecords(driver.session(), query, { label });
+  return runQueryAndGetRecords(driver.session(), query, { label });
 }
 
 export function findNodeByLabelAndId(driver, label, nodeId) {
@@ -52,7 +50,7 @@ export function findNodeByLabelAndId(driver, label, nodeId) {
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return getRecord(driver.session(), query, { nodeId });
+  return runQueryAndGetRecord(driver.session(), query, { nodeId });
 }
 
 export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyValue) {
@@ -61,7 +59,7 @@ export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyV
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return getRecord(driver.session(), query, { value: propertyValue });
+  return runQueryAndGetRecord(driver.session(), query, { value: propertyValue });
 }
 
 function getRelationshipQuery(relationship, label, direction) {
@@ -83,7 +81,7 @@ export function findNodesByRelationshipAndLabel(
   direction,
 ) {
   const query = getRelationshipQuery(relationship, label, direction);
-  return getRecords(driver.session(), query, { nodeId: originNodeId });
+  return runQueryAndGetRecords(driver.session(), query, { nodeId: originNodeId });
 }
 
 export function findNodeByRelationshipAndLabel(
@@ -94,5 +92,88 @@ export function findNodeByRelationshipAndLabel(
   direction,
 ) {
   const query = getRelationshipQuery(relationship, label, direction);
-  return getRecord(driver.session(), query, { nodeId: originNodeId });
+  return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId });
+}
+
+export function createNeed(driver, params, userEmail) {
+  const queryParams = Object.assign(
+    {},
+    params,
+    {
+      email: userEmail,
+      needId: uuidv4(),
+    },
+  );
+  // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+  const query = `
+    MATCH (person:Person {email:{email}})
+    CREATE (need:Need {title:{title}, nodeId:{needId}, created:timestamp()})
+    CREATE (person)-[:GUIDES]->(need)
+    CREATE (person)-[:REALIZES]->(need)
+    RETURN need
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
+}
+
+export function createResponsibility(driver, params, userEmail) {
+  const queryParams = Object.assign(
+    {},
+    params,
+    {
+      email: userEmail,
+      responsibilityId: uuidv4(),
+    },
+  );
+  // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+  const query = `
+    MATCH (need:Need {nodeId: {needId}})
+    WITH need
+    MATCH (person:Person {email:{email}})
+    CREATE (resp:Responsibility {
+      title:{title},
+      nodeId:{responsibilityId},
+      created:timestamp()
+    })-[r:FULFILLS]->(need)
+    CREATE (person)-[:GUIDES]->(resp)
+    RETURN resp
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
+}
+
+export function createViewer(driver, userEmail) {
+  const queryParams = {
+    email: userEmail,
+    personId: uuidv4(),
+  };
+  // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+  const query = `
+    MERGE (person:Person {email:{email}})
+    FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
+      SET person += {nodeId:{personId}, created:timestamp()})
+    RETURN person
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
+}
+
+export function updateReality(driver, args) {
+  // Use cypher FOREACH hack to only set realizer
+  // if the Person node could be found
+  const query = `
+    MATCH (reality {nodeId: {nodeId}})
+    MATCH (:Person)-[g:GUIDES]->(reality)
+    MATCH (guide:Person {email: {guideEmail}})
+    OPTIONAL MATCH (:Person)-[r:REALIZES]->(reality)
+    OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
+    SET reality += {
+      title: {title},
+      description: {description},
+      deliberationLink: {deliberationLink}
+    }
+    DELETE g, r
+    CREATE (guide)-[:GUIDES]->(reality)
+    FOREACH (doThis IN CASE WHEN realizer IS NOT NULL THEN [1] ELSE [] END |
+      CREATE (realizer)-[:REALIZES]->(reality))
+    RETURN reality
+  `;
+  return runQueryAndGetRecord(driver.session(), query, args);
 }
