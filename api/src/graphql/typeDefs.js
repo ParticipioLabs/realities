@@ -1,150 +1,16 @@
 const typeDefs = `
-  type Person {
-    nodeId: ID!
-    name: String
-    email: String!
-    created: String
-    guidesNeeds: [Need]
-      @cypher(
-        statement:
-          "MATCH (this)-[:GUIDES]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    realizesNeeds: [Need]
-      @cypher(
-        statement:
-          "MATCH (this)-[:REALIZES]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    guidesResponsibilities: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)-[:GUIDES]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    realizesResponsibilities: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)-[:REALIZES]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-  }
-
-  type Need {
-    nodeId: ID!
-    title: String!
-    description: String
-    deliberationLink: String
-    created: String
-    deleted: String
-    guide: Person @relation(name: "GUIDES", direction: "IN")
-    realizer: Person @relation(name: "REALIZES", direction: "IN")
-    fulfilledBy: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)<-[:FULFILLS]-(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    dependsOnNeeds: [Need]
-      @cypher(
-        statement:
-          "MATCH (this)-[:DEPENDS_ON]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    dependsOnResponsibilities: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)-[:DEPENDS_ON]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    needsThatDependOnThis: [Need]
-      @cypher(
-        statement:
-          "MATCH (this)<-[:DEPENDS_ON]-(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    responsibilitiesThatDependOnThis: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)<-[:DEPENDS_ON]-(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-  }
-
-  type Responsibility {
-    nodeId: ID!
-    title: String!
-    description: String
-    deliberationLink: String
-    created: String
-    deleted: String
-    guide: Person @relation(name: "GUIDES", direction: "IN")
-    realizer: Person @relation(name: "REALIZES", direction: "IN")
-    fulfills: Need @relation(name: "FULFILLS", direction:"OUT")
-    dependsOnNeeds: [Need]
-      @cypher(
-        statement:
-          "MATCH (this)-[:DEPENDS_ON]->(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    dependsOnResponsibilities: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)-[:DEPENDS_ON]->(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    needsThatDependOnThis: [Need]
-      @cypher(
-        statement:
-          "MATCH (this)<-[:DEPENDS_ON]-(n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    responsibilitiesThatDependOnThis: [Responsibility]
-      @cypher(
-        statement:
-          "MATCH (this)<-[:DEPENDS_ON]-(n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-  }
-
-  input _NeedInput {
-    nodeId: ID!
-  }
-
-  input _ResponsibilityInput {
-    nodeId: ID!
-  }
-
-  type SearchNeedsAndResponsibilitiesResult {
-    needs: [Need]
-    responsibilities: [Responsibility]
-  }
-
-  type _SearchPersonsPayload {
-    persons: [Person]
-  }
-
-  type _NeedDependsOnNeedsPayload {
-    from: Need
-    to: Need
-  }
-
-  type _NeedDependsOnResponsibilitiesPayload {
-    from: Need
-    to: Responsibility
-  }
-
-  type _ResponsibilityDependsOnNeedsPayload {
-    from: Responsibility
-    to: Need
-  }
-
-  type _ResponsibilityDependsOnResponsibilitiesPayload {
-    from: Responsibility
-    to: Responsibility
+  schema {
+    query: Query
+    mutation: Mutation
   }
 
   type Query {
     persons: [Person]
     person(email: String!): Person
     needs: [Need]
-      @cypher(
-        statement: "MATCH (n:Need) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    need(nodeId: ID!, deleted: String): Need
+    need(nodeId: ID!): Need
     responsibilities: [Responsibility]
-      @cypher(
-        statement: 
-          "MATCH (n:Responsibility) WHERE NOT EXISTS(n.deleted) RETURN n ORDER BY n.created DESC"
-      )
-    responsibility(nodeId: ID!, deleted: String): Responsibility
+    responsibility(nodeId: ID!): Responsibility
     searchNeedsAndResponsibilities(term: String!): SearchNeedsAndResponsibilitiesResult
     searchPersons(term: String!): _SearchPersonsPayload
   }
@@ -207,6 +73,101 @@ const typeDefs = `
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
     ): _ResponsibilityDependsOnResponsibilitiesPayload
+  }
+
+  type Person {
+    nodeId: ID!
+    name: String
+    email: String!
+    created: String
+    guidesNeeds: [Need]
+    realizesNeeds: [Need]
+    guidesResponsibilities: [Responsibility]
+    realizesResponsibilities: [Responsibility]
+  }
+
+  interface Reality {
+    nodeId: ID!
+    title: String!
+    description: String
+    deliberationLink: String
+    created: String
+    deleted: String
+    guide: Person
+    realizer: Person
+    dependsOnNeeds: [Need]
+    dependsOnResponsibilities: [Responsibility]
+    needsThatDependOnThis: [Need]
+    responsibilitiesThatDependOnThis: [Responsibility]
+  }
+
+  type Need implements Reality {
+    nodeId: ID!
+    title: String!
+    description: String
+    deliberationLink: String
+    created: String
+    deleted: String
+    guide: Person
+    realizer: Person
+    fulfilledBy: [Responsibility]
+    dependsOnNeeds: [Need]
+    dependsOnResponsibilities: [Responsibility]
+    needsThatDependOnThis: [Need]
+    responsibilitiesThatDependOnThis: [Responsibility]
+  }
+
+  type Responsibility implements Reality {
+    nodeId: ID!
+    title: String!
+    description: String
+    deliberationLink: String
+    created: String
+    deleted: String
+    guide: Person
+    realizer: Person
+    fulfills: Need
+    dependsOnNeeds: [Need]
+    dependsOnResponsibilities: [Responsibility]
+    needsThatDependOnThis: [Need]
+    responsibilitiesThatDependOnThis: [Responsibility]
+  }
+
+  input _NeedInput {
+    nodeId: ID!
+  }
+
+  input _ResponsibilityInput {
+    nodeId: ID!
+  }
+
+  type SearchNeedsAndResponsibilitiesResult {
+    needs: [Need]
+    responsibilities: [Responsibility]
+  }
+
+  type _SearchPersonsPayload {
+    persons: [Person]
+  }
+
+  type _NeedDependsOnNeedsPayload {
+    from: Need
+    to: Need
+  }
+
+  type _NeedDependsOnResponsibilitiesPayload {
+    from: Need
+    to: Responsibility
+  }
+
+  type _ResponsibilityDependsOnNeedsPayload {
+    from: Responsibility
+    to: Need
+  }
+
+  type _ResponsibilityDependsOnResponsibilitiesPayload {
+    from: Responsibility
+    to: Responsibility
   }
 `;
 

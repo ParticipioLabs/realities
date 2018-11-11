@@ -9,7 +9,7 @@ import DetailView from './components/DetailView';
 
 const createDetailViewQuery = nodeType => gql`
   query DetailViewContainer_${nodeType}($nodeId: ID!) {
-    ${nodeType}(nodeId: $nodeId, deleted: null) {
+    ${nodeType}(nodeId: $nodeId) {
       nodeId
       title
       description

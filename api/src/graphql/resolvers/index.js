@@ -1,44 +1,33 @@
-import { neo4jgraphql } from 'neo4j-graphql-js';
 import uuidv4 from 'uuid/v4';
-
-const runQuery = (session, query, queryParams, f) =>
-  session.run(query, queryParams)
-    .then((result) => {
-      session.close();
-      if (f) return f(result);
-      if (!result.records) return null;
-      if (result.records.length === 1) {
-        const singleRecord = result.records[0].get(0);
-        return singleRecord.properties;
-      }
-      return result.records.map(r => r.get(0).properties);
-    }).catch((error) => {
-      console.log(error);
-    });
-
-const getUserRole = user => user && user['https://realities.theborderland.se/role'];
-const getUserEmail = user => user && user['https://realities.theborderland.se/email'];
+import {
+  runQuery,
+  findNodesByLabel,
+  findNodeByLabelAndId,
+  findNodeByLabelAndProperty,
+  findNodesByRelationshipAndLabel,
+  findNodeByRelationshipAndLabel,
+} from '../connectors';
 
 const resolvers = {
   // root entry point to GraphQL service
   Query: {
-    persons(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
+    persons(obj, args, { driver }) {
+      return findNodesByLabel(driver, 'Person');
     },
-    person(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
+    person(obj, { email }, { driver }) {
+      return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
     },
-    needs(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
+    needs(obj, args, { driver }) {
+      return findNodesByLabel(driver, 'Need');
     },
-    need(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
+    need(obj, { nodeId }, { driver }) {
+      return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
+    responsibilities(obj, args, { driver }) {
+      return findNodesByLabel(driver, 'Responsibility');
     },
-    responsibility(object, params, ctx, resolveInfo) {
-      return neo4jgraphql(object, params, ctx, resolveInfo);
+    responsibility(obj, { nodeId }, { driver }) {
+      return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
     },
     searchNeedsAndResponsibilities(object, params, { driver }) {
       // This could (and should) be replaced with a "filter" argument on the needs
@@ -81,9 +70,57 @@ const resolvers = {
       }));
     },
   },
+  Person: {
+    guidesNeeds({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Need');
+    },
+    realizesNeeds({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'REALIZES', 'Need');
+    },
+    guidesResponsibilities({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Responsibility');
+    },
+    realizesResponsibilities({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'REALIZES', 'Responsibility');
+    },
+  },
+  Reality: {
+    __resolveType(obj) {
+      // TODO: Make sure connectors actually set this field.
+      return obj._label;
+    },
+    guide({ nodeId }, args, { driver }) {
+      return findNodeByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Person', 'IN');
+    },
+    realizer({ nodeId }, args, { driver }) {
+      return findNodeByRelationshipAndLabel(driver, nodeId, 'REALIZES', 'Person', 'IN');
+    },
+    dependsOnNeeds({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Need');
+    },
+    dependsOnResponsibilities({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Responsibility');
+    },
+    needsThatDependOnThis({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Need', 'IN');
+    },
+    responsibilitiesThatDependOnThis({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
+    },
+  },
+  Need: {
+    fulfilledBy({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'FULFILLS', 'Responsibility', 'IN');
+    },
+  },
+  Responsibility: {
+    fulfills({ nodeId }, args, { driver }) {
+      return findNodeByRelationshipAndLabel(driver, nodeId, 'FULFILLS', 'Need');
+    },
+  },
   Mutation: {
     createNeed(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -91,7 +128,7 @@ const resolvers = {
         {},
         params,
         {
-          email: getUserEmail(user),
+          email: user.email,
           personId: uuidv4(),
           needId: uuidv4(),
         },
@@ -109,7 +146,7 @@ const resolvers = {
       return runQuery(driver.session(), query, queryParams);
     },
     createResponsibility(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -117,7 +154,7 @@ const resolvers = {
         {},
         params,
         {
-          email: getUserEmail(user),
+          email: user.email,
           personId: uuidv4(),
           responsibilityId: uuidv4(),
         },
@@ -140,12 +177,12 @@ const resolvers = {
       return runQuery(driver.session(), query, queryParams);
     },
     createViewer(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
       const queryParams = {
-        email: getUserEmail(user),
+        email: user.email,
         personId: uuidv4(),
       };
       // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
@@ -158,7 +195,7 @@ const resolvers = {
       return runQuery(driver.session(), query, queryParams);
     },
     updateNeed(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         // Here we should check if the user has permission
         // to edit this particular need
@@ -198,7 +235,7 @@ const resolvers = {
       });
     },
     updateResponsibility(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         // Here we should check if the user has permission
         // to edit this particular responsibility
@@ -238,7 +275,7 @@ const resolvers = {
       });
     },
     updateViewerName(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -246,7 +283,7 @@ const resolvers = {
         {},
         params,
         {
-          email: getUserEmail(user),
+          email: user.email,
           personId: uuidv4(),
         },
       );
@@ -261,7 +298,7 @@ const resolvers = {
       return runQuery(driver.session(), query, queryParams);
     },
     softDeleteNeed(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -276,7 +313,7 @@ const resolvers = {
       return runQuery(driver.session(), query, params);
     },
     softDeleteResponsibility(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -299,7 +336,7 @@ const resolvers = {
       // for mutating relationships. Right now they require relationships to be
       // defined with the @relation directive, which we can't use because we have to
       // filter soft-deleted nodes in our relations in the schema.
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -328,7 +365,7 @@ const resolvers = {
       });
     },
     addNeedDependsOnResponsibilities(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -362,7 +399,7 @@ const resolvers = {
       });
     },
     addResponsibilityDependsOnNeeds(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -391,7 +428,7 @@ const resolvers = {
       });
     },
     addResponsibilityDependsOnResponsibilities(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -425,7 +462,7 @@ const resolvers = {
       });
     },
     removeNeedDependsOnNeeds(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -457,7 +494,7 @@ const resolvers = {
       });
     },
     removeNeedDependsOnResponsibilities(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -498,7 +535,7 @@ const resolvers = {
       });
     },
     removeResponsibilityDependsOnNeeds(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }
@@ -530,7 +567,7 @@ const resolvers = {
       });
     },
     removeResponsibilityDependsOnResponsibilities(_, params, { user, driver }) {
-      const userRole = getUserRole(user);
+      const userRole = user.role;
       if (!userRole) {
         throw new Error("User isn't authenticated");
       }

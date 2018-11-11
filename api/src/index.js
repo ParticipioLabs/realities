@@ -28,13 +28,25 @@ app.use(jwt({
   }),
 }));
 
+function getUser(user) {
+  if (!user) return null;
+  return Object.assign(
+    {},
+    user,
+    {
+      email: user['https://realities.theborderland.se/email'],
+      role: user['https://realities.theborderland.se/role'],
+    },
+  );
+}
+
 app.use(
   '/graphql',
   bodyParser.json(),
   graphqlExpress(req => ({
     schema,
     context: {
-      user: req.user,
+      user: getUser(req.user),
       driver: neo4jDriver,
     },
   })),

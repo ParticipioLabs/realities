@@ -5,6 +5,7 @@ import resolvers from './resolvers';
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
+  inheritResolversFromInterfaces: true,
 });
 
 export default schema;
