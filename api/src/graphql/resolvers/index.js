@@ -1,4 +1,3 @@
-import uuidv4 from 'uuid/v4';
 import { combineResolvers } from 'graphql-resolvers';
 import {
   runQuery,
@@ -12,6 +11,7 @@ import {
   createViewer,
   updateReality,
   updateViewerName,
+  softDeleteNode,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 
@@ -151,40 +151,16 @@ const resolvers = {
       isAuthenticated,
       (obj, { name }, { user, driver }) => updateViewerName(driver, { name }, user.email),
     ),
-    softDeleteNeed(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        throw new Error("User isn't authenticated");
-      }
-      // Here we should check if the user has permission
-      // to soft delete this particular need and if the need
-      // is free of responsibilities and dependents
-      const query = `
-        MATCH (need:Need {nodeId: {nodeId}})
-        SET need.deleted = timestamp()
-        RETURN need
-      `;
-      return runQuery(driver.session(), query, params);
-    },
-    softDeleteResponsibility(_, params, { user, driver }) {
-      const userRole = user.role;
-      if (!userRole) {
-        throw new Error("User isn't authenticated");
-      }
-      // Here we should check if the user has permission
-      // to soft delete this particular responsibility and
-      // if it is free of dependents
-      const query = `
-        MATCH (resp:Responsibility {nodeId: {nodeId}})-[:FULFILLS]->(need:Need)
-        SET resp.deleted = timestamp()
-        RETURN resp, need
-      `;
-      return runQuery(driver.session(), query, params, result => Object.assign(
-        {},
-        result.records[0].get('resp').properties,
-        { fulfills: result.records[0].get('need').properties },
-      ));
-    },
+    // TODO: Check if need is free of responsibilities and dependents before soft deleting
+    softDeleteNeed: combineResolvers(
+      isAuthenticated,
+      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+    ),
+    // TODO: Check if responsibility is free of dependents before soft deleting
+    softDeleteResponsibility: combineResolvers(
+      isAuthenticated,
+      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+    ),
     addNeedDependsOnNeeds(_, params, { user, driver }) {
       // This could probably be replaced if neo4j-graphql-js develops better support
       // for mutating relationships. Right now they require relationships to be

@@ -189,3 +189,12 @@ export function updateViewerName(driver, { name }, userEmail) {
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
+
+export function softDeleteNode(driver, { nodeId }) {
+  const query = `
+    MATCH (n {nodeId: {nodeId}})
+    SET n.deleted = timestamp()
+    RETURN n
+  `;
+  return runQueryAndGetRecord(driver.session(), query, { nodeId });
+}
