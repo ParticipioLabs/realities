@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
 
 // runQuery is exported and used in resolvers for the time being
@@ -23,7 +24,10 @@ function runQueryAndGetRecords(session, query, params) {
     .then((result) => {
       session.close();
       if (!result.records) return null;
-      return result.records.map(r => r.get(0).properties);
+      return result.records.map((r) => {
+        const { properties, labels } = r.get(0);
+        return Object.assign({}, properties, { __label: labels[0] });
+      });
     });
 }
 
@@ -35,11 +39,34 @@ function runQueryAndGetRecord(session, query, params) {
     });
 }
 
+function runQueryAndGetRecordsWithFields(session, query, params) {
+  return session.run(query, params)
+    .then((result) => {
+      session.close();
+      if (!result.records) return null;
+      return result.records.map((r) => {
+        const pairs = r.keys.map((key) => {
+          const { properties, labels } = r.get(key);
+          return [key, Object.assign({}, properties, { __label: labels[0] })];
+        });
+        return _.fromPairs(pairs);
+      });
+    });
+}
+
+function runQueryAndGetRecordWithFields(session, query, params) {
+  return runQueryAndGetRecordsWithFields(session, query, params)
+    .then((records) => {
+      if (!records || records.length !== 1) return null;
+      return records[0];
+    });
+}
+
 export function findNodesByLabel(driver, label) {
   const query = `
     MATCH (n:${label})
     WHERE NOT EXISTS(n.deleted)
-    RETURN n
+    RETURN n ORDER BY n.created DESC
   `;
   return runQueryAndGetRecords(driver.session(), query, { label });
 }
@@ -50,7 +77,11 @@ export function findNodeByLabelAndId(driver, label, nodeId) {
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return runQueryAndGetRecord(driver.session(), query, { nodeId });
+  return runQueryAndGetRecord(driver.session(), query, { nodeId })
+    .then((result) => {
+      console.log(result);
+      return result;
+    });
 }
 
 export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyValue) {
@@ -69,7 +100,7 @@ function getRelationshipQuery(relationship, label, direction) {
   return `
     MATCH ({nodeId: {nodeId}})${relationshipFragment}(n:${label})
     WHERE NOT EXISTS(n.deleted)
-    RETURN n
+    RETURN n ORDER BY n.created DESC
   `;
 }
 
@@ -197,4 +228,31 @@ export function softDeleteNode(driver, { nodeId }) {
     RETURN n
   `;
   return runQueryAndGetRecord(driver.session(), query, { nodeId });
+}
+
+export function addDependency(driver, { from, to }) {
+  const queryParams = {
+    fromId: from.nodeId,
+    toId: to.nodeId,
+  };
+  const query = `
+    MATCH (from {nodeId: {fromId}})
+    MATCH (to {nodeId: {toId}})
+    MERGE (from)-[:DEPENDS_ON]->(to)
+    RETURN from, to
+  `;
+  return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
+}
+
+export function removeDependency(driver, { from, to }) {
+  const queryParams = {
+    fromId: from.nodeId,
+    toId: to.nodeId,
+  };
+  const query = `
+    MATCH (from {nodeId: {fromId}})-[r:DEPENDS_ON]->(to {nodeId: {toId}})
+    DELETE r
+    RETURN from, to
+  `;
+  return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
 }

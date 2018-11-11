@@ -43,6 +43,7 @@
     "graphql-resolvers": "^0.2.2",
     "graphql-tools": "^2.24.0",
     "jwks-rsa": "^1.2.1",
+    "lodash": "^4.17.11",
     "mime": "^2.0.3",
     "mocha": "^4.0.1",
     "neo4j-driver": "^1.6.3",
