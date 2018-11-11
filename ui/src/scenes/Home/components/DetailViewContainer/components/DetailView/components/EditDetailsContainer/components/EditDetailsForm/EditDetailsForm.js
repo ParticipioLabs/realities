@@ -22,17 +22,13 @@ function personToString(person) {
 
 const SEARCH_PERSON = gql`
   query EditDetailsForm_searchPersons($term: String!) {
-    searchPersons(term: $term) {
-      persons {
-        nodeId
-        name
-        email
-      }
+    persons(search: $term) {
+      nodeId
+      name
+      email
     }
   }
 `;
-
-const searchPersonsDataToResultsArray = data => data.searchPersons && data.searchPersons.persons;
 
 const StyledForm = styled(Form)`
   margin-bottom: 1rem;
@@ -79,7 +75,7 @@ const EditDetailsForm = ({
             selectedItem={values.guide}
             itemToString={personToString}
             searchQuery={SEARCH_PERSON}
-            queryDataToResultsArray={searchPersonsDataToResultsArray}
+            queryDataToResultsArray={data => data.persons}
             onChange={value => setFieldValue('guide', value)}
             onBlur={handleBlur}
             disabled={isSubmitting}
@@ -102,7 +98,7 @@ const EditDetailsForm = ({
           selectedItem={values.realizer}
           itemToString={personToString}
           searchQuery={SEARCH_PERSON}
-          queryDataToResultsArray={searchPersonsDataToResultsArray}
+          queryDataToResultsArray={data => data.persons}
           onChange={value => setFieldValue('realizer', value)}
           onBlur={handleBlur}
           disabled={isSubmitting}

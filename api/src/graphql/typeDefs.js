@@ -5,14 +5,12 @@ const typeDefs = `
   }
 
   type Query {
-    persons: [Person]
+    persons(search: String): [Person]
     person(email: String!): Person
-    needs: [Need]
+    needs(search: String): [Need]
     need(nodeId: ID!): Need
-    responsibilities: [Responsibility]
+    responsibilities(search: String): [Responsibility]
     responsibility(nodeId: ID!): Responsibility
-    searchNeedsAndResponsibilities(term: String!): SearchNeedsAndResponsibilitiesResult
-    searchPersons(term: String!): _SearchPersonsPayload
   }
 
   type Mutation {
@@ -139,15 +137,6 @@ const typeDefs = `
 
   input _ResponsibilityInput {
     nodeId: ID!
-  }
-
-  type SearchNeedsAndResponsibilitiesResult {
-    needs: [Need]
-    responsibilities: [Responsibility]
-  }
-
-  type _SearchPersonsPayload {
-    persons: [Person]
   }
 
   type _NeedDependsOnNeedsPayload {

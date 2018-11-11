@@ -1,24 +1,6 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
 
-// runQuery is exported and used in resolvers for the time being
-// but should be removed once all resolvers and connectors are refactored.
-export function runQuery(session, query, queryParams, f) {
-  return session.run(query, queryParams)
-    .then((result) => {
-      session.close();
-      if (f) return f(result);
-      if (!result.records) return null;
-      if (result.records.length === 1) {
-        const singleRecord = result.records[0].get(0);
-        return singleRecord.properties;
-      }
-      return result.records.map(r => r.get(0).properties);
-    }).catch((error) => {
-      console.log(error);
-    });
-}
-
 function runQueryAndGetRecords(session, query, params) {
   return session.run(query, params)
     .then((result) => {
@@ -77,11 +59,7 @@ export function findNodeByLabelAndId(driver, label, nodeId) {
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return runQueryAndGetRecord(driver.session(), query, { nodeId })
-    .then((result) => {
-      console.log(result);
-      return result;
-    });
+  return runQueryAndGetRecord(driver.session(), query, { nodeId });
 }
 
 export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyValue) {
@@ -255,4 +233,24 @@ export function removeDependency(driver, { from, to }) {
     RETURN from, to
   `;
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
+}
+
+export function searchPersons(driver, term) {
+  const query = `
+    MATCH (p:Person)
+    WHERE
+      (toLower(p.name) CONTAINS toLower({term}) OR toLower(p.email) CONTAINS toLower({term}))
+      AND NOT EXISTS(p.deleted)
+    RETURN p
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { term });
+}
+
+export function searchRealities(driver, label, term) {
+  const query = `
+    MATCH (n:${label})
+    WHERE toLower(n.title) CONTAINS toLower({term}) AND NOT EXISTS(n.deleted)
+    RETURN n
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { term });
 }

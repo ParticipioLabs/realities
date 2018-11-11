@@ -1,6 +1,5 @@
 import { combineResolvers } from 'graphql-resolvers';
 import {
-  runQuery,
   findNodesByLabel,
   findNodeByLabelAndId,
   findNodeByLabelAndProperty,
@@ -14,67 +13,34 @@ import {
   softDeleteNode,
   addDependency,
   removeDependency,
+  searchPersons,
+  searchRealities,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 
 const resolvers = {
   // root entry point to GraphQL service
   Query: {
-    persons(obj, args, { driver }) {
+    persons(obj, { search }, { driver }) {
+      if (search) return searchPersons(driver, search);
       return findNodesByLabel(driver, 'Person');
     },
     person(obj, { email }, { driver }) {
       return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
     },
-    needs(obj, args, { driver }) {
+    needs(obj, { search }, { driver }) {
+      if (search) return searchRealities(driver, 'Need', search);
       return findNodesByLabel(driver, 'Need');
     },
     need(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(obj, args, { driver }) {
+    responsibilities(obj, { search }, { driver }) {
+      if (search) return searchRealities(driver, 'Responsibility', search);
       return findNodesByLabel(driver, 'Responsibility');
     },
     responsibility(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
-    },
-    searchNeedsAndResponsibilities(object, params, { driver }) {
-      // TODO: Replace this field with a "filter" argument on the needs and responsibilities fields
-      const query = `
-        MATCH (n)
-        WHERE
-          (n:Need OR n:Responsibility)
-          AND toLower(n.title) CONTAINS toLower({term})
-          AND NOT EXISTS(n.deleted)
-        OPTIONAL MATCH (n)-[:FULFILLS]->(f:Need)
-        RETURN n, f
-      `;
-      return runQuery(driver.session(), query, params, (result) => {
-        const records = result.records.map(r => ({
-          node: r.get('n'),
-          fulfills: r.get('f'),
-        }));
-        const needs = records
-          .filter(r => r.node.labels[0] === 'Need')
-          .map(r => r.node.properties);
-        const responsibilities = records
-          .filter(r => r.node.labels[0] === 'Responsibility')
-          .map(r => Object.assign({}, r.node.properties, { fulfills: r.fulfills.properties }));
-        return { needs, responsibilities };
-      });
-    },
-    searchPersons(object, params, { driver }) {
-      // TODO: Replace this field with a "filter" argument on the persons field
-      const query = `
-        MATCH (p:Person)
-        WHERE
-          (toLower(p.name) CONTAINS toLower({term}) OR toLower(p.email) CONTAINS toLower({term}))
-          AND NOT EXISTS(p.deleted)
-        RETURN p
-      `;
-      return runQuery(driver.session(), query, params, result => ({
-        persons: result.records.map(r => r.get(0).properties),
-      }));
     },
   },
   Person: {
