@@ -101,25 +101,20 @@ const AddDependency = ({ nodeType, nodeId }) => {
                 disabled={loadingAddNeed || loadingAddResponsibility}
                 searchQuery={gql`
                   query AddDependency_searchNeedsAndResponsibilities($term: String!) {
-                    searchNeedsAndResponsibilities(term: $term) {
-                      needs {
-                        nodeId
-                        title
-                      }
-                      responsibilities {
-                        nodeId
-                        title
-                      }
+                    needs(search: $term) {
+                      nodeId
+                      title
+                    }
+                    responsibilities(search: $term) {
+                      nodeId
+                      title
                     }
                   }
                 `}
-                queryDataToResultsArray={(data) => {
-                  const searchResultObject = data.searchNeedsAndResponsibilities || {};
-                  return [
-                    ...(searchResultObject.needs || []),
-                    ...(searchResultObject.responsibilities || []),
-                  ];
-                }}
+                queryDataToResultsArray={data => [
+                  ...(data.needs || []),
+                  ...(data.responsibilities || []),
+                ]}
                 itemToString={i => (i && i.title) || ''}
                 itemToResult={i => (
                   <span>

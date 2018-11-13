@@ -50,7 +50,7 @@ const RESPONSIBILITY_FRAGMENT = gql`
 
 const GET_NEED = gql`
   query LocalGraph_need($nodeId: ID!) {
-    need(nodeId: $nodeId, deleted: null) {
+    need(nodeId: $nodeId) {
       ...LocalGraphNeedFields
       fulfilledBy {
         ...LocalGraphResponsibilityFields

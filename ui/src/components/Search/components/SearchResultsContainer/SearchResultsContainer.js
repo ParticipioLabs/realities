@@ -11,17 +11,15 @@ import SearchResults from './components/SearchResults';
 
 const GET_SEARCH = gql`
   query Search_searchNeedsAndResponsibilities($term: String!) {
-    searchNeedsAndResponsibilities(term: $term) {
-      needs {
+    needs(search: $term) {
+      nodeId
+      title
+    }
+    responsibilities(search: $term) {
+      nodeId
+      title
+      fulfills {
         nodeId
-        title
-      }
-      responsibilities {
-        nodeId
-        title
-        fulfills {
-          nodeId
-        }
       }
     }
   }
@@ -53,10 +51,9 @@ const SearchResultsContainer = withDebouncedProp('searchTerm', 250)(({
         {({ loading, error, data }) => {
           if (loading) return <WrappedLoader />;
           if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
-          const searchResultObject = data.searchNeedsAndResponsibilities || {};
           const searchResults = [
-            ...(searchResultObject.needs || []),
-            ...(searchResultObject.responsibilities || []),
+            ...(data.needs || []),
+            ...(data.responsibilities || []),
           ];
           if (searchResults.length === 0) return <CardBody>No results</CardBody>;
           return (
