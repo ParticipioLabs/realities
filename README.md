@@ -10,6 +10,13 @@ To report a bug or suggest a specific improvement or feature, create an issue ri
 
 If you want to chat to other members of the community and collaborate in real-time, head over to our [Gitter](https://gitter.im/realities).
 
+## Dependencies
+
+  * nodejs 8.9.x
+  * npm 5.5.x
+  * neo4j
+  * neo4j [apoc](https://neo4j-contrib.github.io/neo4j-apoc-procedures/) 
+  
 ## Install and run locally
 
 Realities uses Neo4j as database. You need to run Neo4j on your machine or connect to a remote database (for example a free 1000 node sandbox at http://graphenedb.com). Running a local Neo4j database is very easy, just go to https://neo4j.com/download/ and follow the instructions.
