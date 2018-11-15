@@ -2,6 +2,11 @@ const typeDefs = `
   schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
+  }
+
+  type Subscription {
+    needAdded:Need
   }
 
   type Query {

@@ -1,4 +1,6 @@
 import { combineResolvers } from 'graphql-resolvers';
+import { PubSub } from 'apollo-server';
+
 import {
   findNodesByLabel,
   findNodeByLabelAndId,
@@ -18,8 +20,15 @@ import {
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 
+const pubsub = new PubSub();
+
+const NEED_ADDED = 'NEED_ADDED';
+
 const resolvers = {
   // root entry point to GraphQL service
+  Subscription: {
+    needAdded: { subscribe: () => pubsub.asyncIterator([NEED_ADDED]) },
+  },
   Query: {
     persons(obj, { search }, { driver }) {
       if (search) return searchPersons(driver, search);
@@ -102,7 +111,13 @@ const resolvers = {
   Mutation: {
     createNeed: combineResolvers(
       isAuthenticated,
-      (obj, { title }, { user, driver }) => createNeed(driver, { title }, user.email),
+      (obj, { title }, { user, driver }) => {
+        const needPromise = createNeed(driver, { title }, user.email);
+
+        needPromise.then(need => pubsub.publish(NEED_ADDED, { needAdded: need }));
+
+        return needPromise;
+      },
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
