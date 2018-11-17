@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 dotenv.config({ silent: true });
 
 const driver = neo4j.driver(
-  process.env.GRAPHENEDB_URL,
+  process.env.DB_URL,
   neo4j.auth.basic(
-    process.env.GRAPHENEDB_NAME,
-    process.env.GRAPHENEDB_KEY,
+    process.env.DB_USERNAME,
+    process.env.DB_PASSWORD,
   ),
 );
 
