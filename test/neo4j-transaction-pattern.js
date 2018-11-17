@@ -8,7 +8,7 @@ const session = driver.session();
 let writeTxResultPromise = session.writeTransaction(function (transaction) {
   // used transaction will be committed automatically, no need for explicit commit/rollback
   let result = transaction.run('MERGE (n:Person {name : {nameParam} }) RETURN n', {nameParam: 'Bob'});
-  // return the result or process it and return the result of processing 
+  // return the result or process it and return the result of processing
   // it is also possible to run more statements in the same transaction
   return result;
 });
