@@ -2,21 +2,26 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import withAuth from '@/components/withAuth';
-import AddDeliberation from './components/AddDeliberation';
+//import AddDeliberation from './components/AddDeliberation';
 import DeliberationList from './components/DeliberationList';
 
-const Deliberations = withAuth(withRouter(({
+const Deliberations = ({
   auth,
   history,
   nodeType,
   nodeId,
   deliberations,
   showAddRemove,
-}) => (
-  <div>
-    {auth.isLoggedIn && showAddRemove && (
-      <AddDeliberation nodeType={nodeType} nodeId={nodeId} />
-    )}
+}) => {
+  console.log({deliberations})
+  return (
+  //<div>
+    //{auth.isLoggedIn && showAddRemove && (
+    //  <AddDeliberation nodeType={nodeType} nodeId={nodeId} />
+    //)}
+    //<ul>
+    //  {deliberations.map(deliberation => <li>{deliberation.title}</li>)}
+    //</ul>
     <DeliberationList
       deliberations={deliberations.map(info => ({
         node: info,
@@ -24,8 +29,8 @@ const Deliberations = withAuth(withRouter(({
       }))}
       showRemove={auth.isLoggedIn && showAddRemove}
     />
-  </div>
-)));
+  //</div>
+)};
 
 Deliberations.propTypes = {
   auth: PropTypes.shape({
@@ -40,9 +45,6 @@ Deliberations.propTypes = {
     __typename: PropTypes.string,
     nodeId: PropTypes.string,
     title: PropTypes.string,
-    fulfills: PropTypes.shape({
-      nodeId: PropTypes.string,
-    }),
   })),
   showAddRemove: PropTypes.bool,
 };

@@ -41,7 +41,9 @@ const DetailView = ({
   isLoggedIn,
   onClickEdit,
   onClickCancel,
-}) => (
+}) => {
+  console.log({node})
+  return (
   <Card>
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
@@ -69,10 +71,7 @@ const DetailView = ({
           showAddRemove
           nodeType={node.__typename}
           nodeId={node.nodeId}
-          deliberations={[
-            ...(node.hasDeliberation || []),
-            ...(node.hasDeliberationGroup || []),
-          ]}
+          deliberations={node.deliberations}
         />
         <Divider />
         <Dependencies
@@ -91,7 +90,7 @@ const DetailView = ({
       <DetailViewBody node={node} />
     )}
   </Card>
-);
+)};
 
 DetailView.propTypes = {
   node: PropTypes.shape({
@@ -99,7 +98,11 @@ DetailView.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
-    deliberationLink: PropTypes.string,
+    deliberations: PropTypes.arrayOf(PropTypes.shape({
+      __typename: PropTypes.string,
+      nodeId: PropTypes.string,
+      title: PropTypes.string,
+    })),
     guide: PropTypes.shape({
       nodeId: PropTypes.string,
       email: PropTypes.string,
@@ -135,7 +138,7 @@ DetailView.defaultProps = {
     nodeId: '',
     title: '',
     description: '',
-    deliberationLink: '',
+    deliberations: [],
     guide: {
       nodeId: '',
       email: '',

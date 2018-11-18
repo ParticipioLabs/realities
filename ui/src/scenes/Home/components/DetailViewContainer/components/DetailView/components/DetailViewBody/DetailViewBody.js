@@ -56,17 +56,16 @@ const DetailViewBody = ({ node }) => (
       {node.description}
     </CardText>
 
-    <CardText>
+    <CardSection>
       <LabelSpan>Deliberations:</LabelSpan>
       <Deliberations
         nodeType={node.__typename}
         nodeId={node.nodeId}
         deliberations={[
-          ...(node.hasDeliberation || []),
-          ...(node.hasDeliberationGroup || []),
+          ...(node.deliberations || [])
         ]}
       />
-    </CardText>
+    </CardSection>
 
     <CardSection>
       <LabelSpan>Depends on:</LabelSpan>
