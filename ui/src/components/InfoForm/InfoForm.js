@@ -42,10 +42,10 @@ const InfoForm = ({
           onBlur={handleBlur}
           onKeyPress={(e) => {
             // Submit form if user hits Enter
-            //if (e.key === 'Enter') {
-            //  e.preventDefault();
-            //  handleSubmit();
-            //}
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSubmit();
+            }
           }}
         />
         <Input
@@ -59,17 +59,17 @@ const InfoForm = ({
           onBlur={handleBlur}
           onKeyPress={(e) => {
             // Submit form if user hits Enter
-            //if (e.key === 'Enter') {
-            //  e.preventDefault();
-            //  handleSubmit();
-            //}
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSubmit();
+            }
           }}
         />
       </StyledFormGroup>
       <Button
         size="sm"
         type="submit"
-        disabled={!value || isSubmitting}
+        disabled={!urlValue & !titleValue || isSubmitting}
       >
         Save
       </Button>

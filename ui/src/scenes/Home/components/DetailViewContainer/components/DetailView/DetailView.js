@@ -6,6 +6,7 @@ import { FaPencil, FaTimesCircle } from 'react-icons/lib/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
 import Dependencies from '@/components/Dependencies';
+import Deliberations from '@/components/Deliberations';
 import EditDetailsContainer from './components/EditDetailsContainer';
 import DeleteNodeContainer from './components/DeleteNodeContainer';
 import DetailViewBody from './components/DetailViewBody';

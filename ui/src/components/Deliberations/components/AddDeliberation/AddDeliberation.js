@@ -98,7 +98,7 @@ const AddDeliberation = ({ nodeType, nodeId }) => {
               <Label for="editDetailsTitle">
                 Add dependency
               </Label>
-              <TypeaheadInput
+              <InfoForm
                 placeholder="Search needs and responsibilities"
                 disabled={loadingAddNeed || loadingAddResponsibility}
                 searchQuery={gql`

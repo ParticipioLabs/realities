@@ -24,7 +24,11 @@ const createDetailViewQuery = nodeType => gql`
         email
         name
       }
-
+      deliberations {
+        nodeId
+        title
+        url
+      }
       dependsOnNeeds {
         nodeId
         title
@@ -40,11 +44,7 @@ const createDetailViewQuery = nodeType => gql`
     showDetailedEditView @client
   }
 `;
-//hasDeliberations {
-//  nodeId
-//  title
-//  url
-//}
+
 
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
@@ -76,6 +76,7 @@ const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
         if (error) return `Error! ${error.message}`;
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
         if (!node) return null;
+        console.log(data);
         return (
           <DetailView
             node={node}

@@ -40,9 +40,9 @@ Deliberations.propTypes = {
     __typename: PropTypes.string,
     nodeId: PropTypes.string,
     title: PropTypes.string,
-    //fulfills: PropTypes.shape({
-    //  nodeId: PropTypes.string,
-    //}),
+    fulfills: PropTypes.shape({
+      nodeId: PropTypes.string,
+    }),
   })),
   showAddRemove: PropTypes.bool,
 };

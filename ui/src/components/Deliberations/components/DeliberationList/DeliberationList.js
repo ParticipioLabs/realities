@@ -23,7 +23,6 @@ const Deliberations = ({ deliberations, showRemove }) => (
         __typename,
         nodeId,
         title,
-        url,
       },
       onClick,
     }) => (
