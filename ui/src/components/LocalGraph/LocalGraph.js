@@ -212,9 +212,13 @@ class LocalGraph extends Component {
           if (nodeType === 'Need') node = data.need;
           else if (nodeType === 'Responsibility') node = data.responsibility;
           else node = data.person;
+          console.log('data', data);
+          console.log('node', node);
 
           if (!node) return null;
-          const graphData = graphUtils.getSubGraph(node);
+          let graphData;
+          if (nodeType === 'Person') graphData = graphUtils.getPersonGraph(node);
+          else graphData = graphUtils.getSubGraph(node);
           return (
             <div>
               <div id="localGraphWrapper">
