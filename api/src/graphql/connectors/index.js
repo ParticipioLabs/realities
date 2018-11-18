@@ -144,6 +144,27 @@ export function createResponsibility(driver, { title, needId }, userEmail) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
+export function createInfo(driver, { title, realityId }, infoUrl) {
+  const queryParams = {
+    title,
+    realityId,
+    url: infoUrl,
+    infoId: uuidv4(),
+  };
+  // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
+  const query = `
+    MATCH (reality {nodeId: {realityId}})
+    WITH reality
+    MERGE (info:Info {url: {infoUrl}})
+    FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
+      SET info += {nodeId:{infoId}, created:timestamp()})
+    WITH reality, info
+    CREATE (reality)-[:HAS_DELIBERATION]->(info)
+    RETURN info
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
+}
+
 export function createViewer(driver, userEmail) {
   const queryParams = {
     email: userEmail,
@@ -180,6 +201,24 @@ export function updateReality(driver, args) {
     RETURN reality
   `;
   return runQueryAndGetRecord(driver.session(), query, args);
+}
+
+export function updateInfo(driver, { title }, infoUrl) {
+  // Use cypher FOREACH hack to only set realizer
+  // if the Info node could be found
+  const queryParams = {
+    url: infoUrl,
+    infoId: uuidv4(),
+    title,
+  };
+  const query = `
+    MATCH (info {url: {url}})
+    FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
+      SET info += {nodeId:{}, created:timestamp()})
+    SET info.title = {title}
+    RETURN info
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
 export function updateViewerName(driver, { name }, userEmail) {
@@ -235,6 +274,33 @@ export function removeDependency(driver, { from, to }) {
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
 }
 
+export function addDeliberation(driver, { from, to }) {
+  const queryParams = {
+    fromId: from.nodeId,
+    toId: to.nodeId,
+  };
+  const query = `
+    MATCH (from {nodeId: {fromId}})
+    MATCH (to {nodeId: {toId}})
+    MERGE (from)-[:HAS_DELIBERATION]->(to)
+    RETURN from, to
+  `;
+  return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
+}
+
+export function removeDeliberation(driver, { from, to }) {
+  const queryParams = {
+    fromId: from.nodeId,
+    toId: to.nodeId,
+  };
+  const query = `
+    MATCH (from {nodeId: {fromId}})-[r:HAS_DELIBERATION]->(to {nodeId: {toId}})
+    DELETE r
+    RETURN from, to
+  `;
+  return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
+}
+
 export function searchPersons(driver, term) {
   const query = `
     MATCH (p:Person)
@@ -247,6 +313,15 @@ export function searchPersons(driver, term) {
 }
 
 export function searchRealities(driver, label, term) {
+  const query = `
+    MATCH (n:${label})
+    WHERE toLower(n.title) CONTAINS toLower({term}) AND NOT EXISTS(n.deleted)
+    RETURN n
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { term });
+}
+
+export function searchInfos(driver, label, term) {
   const query = `
     MATCH (n:${label})
     WHERE toLower(n.title) CONTAINS toLower({term}) AND NOT EXISTS(n.deleted)
