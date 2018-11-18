@@ -23,7 +23,7 @@ const Profile = withAuth(({ auth }) => {
             <CardBody>
               <h1>Profile</h1>
               <UpdateViewerName />
-              <UserGraph />
+              <UserGraph email={auth.email} />
             </CardBody>
           </Card>
         </Col>
