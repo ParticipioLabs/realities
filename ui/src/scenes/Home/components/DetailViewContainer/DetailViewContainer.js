@@ -24,6 +24,7 @@ const createDetailViewQuery = nodeType => gql`
         email
         name
       }
+
       dependsOnNeeds {
         nodeId
         title
@@ -39,6 +40,11 @@ const createDetailViewQuery = nodeType => gql`
     showDetailedEditView @client
   }
 `;
+//hasDeliberations {
+//  nodeId
+//  title
+//  url
+//}
 
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');

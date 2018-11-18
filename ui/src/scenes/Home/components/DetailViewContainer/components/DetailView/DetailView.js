@@ -64,6 +64,16 @@ const DetailView = ({
       <CardBody>
         <EditDetailsContainer node={node} />
         <Divider />
+        <Deliberations
+          showAddRemove
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          deliberations={[
+            ...(node.hasDeliberation || []),
+            ...(node.hasDeliberationGroup || []),
+          ]}
+        />
+        <Divider />
         <Dependencies
           showAddRemove
           nodeType={node.__typename}
