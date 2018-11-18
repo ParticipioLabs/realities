@@ -1,11 +1,12 @@
 import React from 'react';
-import withAuth from '@/components/withAuth';
+import { string } from 'prop-types';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
 const GET_USER_DETAILS = gql`
   query ($email: String!) {
     person(email: $email) {
+      nodeId
       name
       guidesNeeds {
         title
@@ -23,15 +24,20 @@ const GET_USER_DETAILS = gql`
   }
 `;
 
-const UserGraph = withAuth(({ auth }) => (
-  <Query query={GET_USER_DETAILS} variables={{ email: auth.email }}>
-    {(props) => {
-      console.log(props);
-      return (
-        <div>User Graph</div>
-      );
-    }}
+const UserGraph = ({ email }) => (
+  <Query query={GET_USER_DETAILS} variables={{ email }}>
+    {({ data }) => (
+      <div>User Graph</div>
+    )}
   </Query>
-));
+);
 
-export default withAuth(UserGraph);
+UserGraph.propTypes = {
+  email: string,
+};
+
+UserGraph.defaultProps = {
+  email: '',
+};
+
+export default UserGraph;
