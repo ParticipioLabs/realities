@@ -7,19 +7,14 @@ import {
   findNodeByRelationshipAndLabel,
   createNeed,
   createResponsibility,
-  createInfo,
   createViewer,
   updateReality,
-  updateInfo,
   updateViewerName,
   softDeleteNode,
   addDependency,
   removeDependency,
-  addDeliberation,
-  removeDeliberation,
   searchPersons,
   searchRealities,
-  searchInfos,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 
@@ -46,13 +41,6 @@ const resolvers = {
     },
     responsibility(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
-    },
-    infos(obj, { search }, { driver }) {
-      if (search) return searchInfos(driver, search);
-      return findNodesByLabel(driver, 'Info');
-    },
-    info(obj, { url }, { driver }) {
-      return findNodeByLabelAndProperty(driver, 'Info', 'url', url);
     },
   },
   Person: {
@@ -100,9 +88,6 @@ const resolvers = {
     responsibilitiesThatDependOnThis({ nodeId }, args, { driver }) {
       return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
     },
-    deliberations({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'HAS_DELIBERATION');
-    },
   },
   Need: {
     fulfilledBy({ nodeId }, args, { driver }) {
@@ -114,17 +99,6 @@ const resolvers = {
       return findNodeByRelationshipAndLabel(driver, nodeId, 'FULFILLS', 'Need');
     },
   },
-  Info: {
-    created({ created }) {
-      return created.toString();
-    },
-    deleted({ deleted }) {
-      return deleted.toString();
-    },
-    isDeliberationFor({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'HAS_DELIBERATION', 'Reality', 'IN');
-    },
-  },
   Mutation: {
     createNeed: combineResolvers(
       isAuthenticated,
@@ -134,11 +108,6 @@ const resolvers = {
       isAuthenticated,
       (obj, { title, needId }, { user, driver }) =>
         createResponsibility(driver, { title, needId }, user.email),
-    ),
-    createInfo: combineResolvers(
-      isAuthenticated,
-      (obj, { title, realityId }, { user, driver }) =>
-        createInfo(driver, { title, realityId }, user.email),
     ),
     createViewer: combineResolvers(
       isAuthenticated,
@@ -152,10 +121,6 @@ const resolvers = {
       isAuthenticated,
       (obj, args, { driver }) => updateReality(driver, args),
     ),
-    updateInfo: combineResolvers(
-      isAuthenticated,
-      (obj, args, { driver }) => updateInfo(driver, args),
-    ),
     updateViewerName: combineResolvers(
       isAuthenticated,
       (obj, { name }, { user, driver }) => updateViewerName(driver, { name }, user.email),
@@ -167,10 +132,6 @@ const resolvers = {
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
-      isAuthenticated,
-      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
-    ),
-    softDeleteInfo: combineResolvers(
       isAuthenticated,
       (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
     ),
@@ -190,10 +151,6 @@ const resolvers = {
       isAuthenticated,
       (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
     ),
-    addRealityHasDeliberation: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDeliberation(driver, { from, to }),
-    ),
     removeNeedDependsOnNeeds: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
@@ -209,10 +166,6 @@ const resolvers = {
     removeResponsibilityDependsOnResponsibilities: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
-    removeRealityHasDeliberation: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDeliberation(driver, { from, to }),
     ),
   },
 };
