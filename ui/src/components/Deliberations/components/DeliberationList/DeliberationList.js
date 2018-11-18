@@ -23,15 +23,14 @@ const Deliberations = ({ deliberations, showRemove }) => (
         __typename,
         nodeId,
         title,
+        url
       },
       onClick,
     }) => (
-      <StyledListGroupItem
+      <a href={url} target="_blank"><StyledListGroupItem
         key={nodeId}
         tag="div"
-        href="#"
         action
-        onClick={onClick}
         showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
       >
         <TypeBadge nodeType={__typename} />
@@ -41,7 +40,7 @@ const Deliberations = ({ deliberations, showRemove }) => (
             <RemoveDeliberation nodeType={__typename} nodeId={nodeId} />
           </RemoveWrapper>
         )}
-      </StyledListGroupItem>
+      </StyledListGroupItem></a>
     ))}
   </ListGroup>
 );

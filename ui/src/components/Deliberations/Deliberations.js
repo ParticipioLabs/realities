@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import withAuth from '@/components/withAuth';
-//import AddDeliberation from './components/AddDeliberation';
+import AddDeliberation from './components/AddDeliberation';
 import DeliberationList from './components/DeliberationList';
 
 const Deliberations = ({
@@ -15,21 +15,18 @@ const Deliberations = ({
 }) => {
   console.log({deliberations})
   return (
-  //<div>
-    //{auth.isLoggedIn && showAddRemove && (
-    //  <AddDeliberation nodeType={nodeType} nodeId={nodeId} />
-    //)}
-    //<ul>
-    //  {deliberations.map(deliberation => <li>{deliberation.title}</li>)}
-    //</ul>
+  <div>
+    {auth.isLoggedIn  && (
+      <AddDeliberation nodeType={nodeType} nodeId={nodeId} />
+    )}
     <DeliberationList
       deliberations={deliberations.map(info => ({
         node: info,
-        onClick: () => history.push(`/${info.nodeId}`),
+        onClick: () => history.push(`${info.url}`),
       }))}
       showRemove={auth.isLoggedIn && showAddRemove}
     />
-  //</div>
+  </div>
 )};
 
 Deliberations.propTypes = {
