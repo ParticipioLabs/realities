@@ -69,7 +69,6 @@ const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
-        console.log(node);
         if (!node) return null;
         return (
           <DetailView

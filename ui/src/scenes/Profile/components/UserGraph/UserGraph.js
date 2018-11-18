@@ -1,44 +1,21 @@
 import React from 'react';
 import { string } from 'prop-types';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
 import styled from 'styled-components';
-import LocalGraph from './components/LocalGraph';
+import LocalGraph from '@/components/LocalGraph';
 
 const CardSection = styled.div`
   margin-bottom: 1rem;
 `;
-const GET_USER_DETAILS = gql`
-  query ($email: String!) {
-    person(email: $email) {
-      nodeId
-      name
-      guidesNeeds {
-        title
-      }
-      realizesNeeds {
-        title
-      }
-      guidesResponsibilities {
-        title
-      }
-      realizesResponsibilities {
-        title
-      }
-    }
-  }
-`;
-
 
 const UserGraph = ({ email }) => (
-  <Query query={GET_USER_DETAILS} variables={{ email }}>
-    {({ data }) => (
-      <CardSection>
-        <div>User Graph</div>
-        <LocalGraph nodeType={data.__typename} nodeId={data.nodeId} />
-      </CardSection>
-    )}
-  </Query>
+  <CardSection>
+    <div>User Graph</div>
+    <LocalGraph
+      nodeId="0f6180cd-1c0f-4150-905a-06fbc3d9d35e"
+      nodeType="Person"
+      email={email}
+    />
+  </CardSection>
 );
 
 UserGraph.propTypes = {

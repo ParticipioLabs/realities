@@ -71,6 +71,7 @@ const GET_NEED = gql`
   }
   ${NEED_FRAGMENT}
   ${RESPONSIBILITY_FRAGMENT}
+
 `;
 
 const GET_RESPONSIBILITY = gql`
@@ -96,6 +97,30 @@ const GET_RESPONSIBILITY = gql`
   }
   ${NEED_FRAGMENT}
   ${RESPONSIBILITY_FRAGMENT}
+`;
+
+const GET_PERSON = gql`
+query LocalGraphPersonFields($email: String!) {
+  person(email: $email) {
+    nodeId
+    name
+    guidesNeeds {
+      ...LocalGraphNeedFields
+    }
+    realizesNeeds {
+      ...LocalGraphNeedFields
+    }
+    guidesResponsibilities {
+      ...LocalGraphResponsibilityFields
+    }
+    realizesResponsibilities {
+      ...LocalGraphResponsibilityFields
+    }
+
+  }
+}
+${NEED_FRAGMENT}
+${RESPONSIBILITY_FRAGMENT}
 `;
 
 const graphOptions = {
@@ -153,12 +178,22 @@ class LocalGraph extends Component {
   };
 
   render() {
-    const { nodeType, nodeId } = this.props;
+    const { nodeType, nodeId, email } = this.props;
     const { selectedNode } = this.state;
+
+    let gqlQuery;
+    if (nodeType === 'Need') {
+      gqlQuery = GET_NEED;
+    } else if (nodeType === 'Responsibility') {
+      gqlQuery = GET_RESPONSIBILITY;
+    } else {
+      gqlQuery = GET_PERSON;
+    }
+
     return (
       <Query
-        query={nodeType === 'Need' ? GET_NEED : GET_RESPONSIBILITY}
-        variables={{ nodeId }}
+        query={gqlQuery}
+        variables={{ nodeId, nodeType, email }}
       >
         {({
           loading,
@@ -171,8 +206,15 @@ class LocalGraph extends Component {
           // The next line is a temporary hack to make up for a bug in Apollo where
           // the query returns an empty data object sometimes:
           // https://github.com/apollographql/apollo-client/issues/3267
-          if (!data.need && !data.responsibility) refetch();
-          const node = nodeType === 'Need' ? data.need : data.responsibility;
+          if (!data.need && !data.responsibility && !data.person) refetch();
+
+          let node;
+          if (nodeType === 'Need') node = data.need;
+          else if (nodeType === 'Responsibility') node = data.responsibility;
+          else node = data.person;
+
+          console.log(node)
+
           if (!node) return null;
           const graphData = graphUtils.getSubGraph(node);
           return (
@@ -211,11 +253,13 @@ class LocalGraph extends Component {
 LocalGraph.propTypes = {
   nodeType: PropTypes.string,
   nodeId: PropTypes.string,
+  email: PropTypes.string,
 };
 
 LocalGraph.defaultProps = {
   nodeType: '',
   nodeId: '',
+  email: '',
 };
 
 export default LocalGraph;
