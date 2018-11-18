@@ -213,8 +213,6 @@ class LocalGraph extends Component {
           else if (nodeType === 'Responsibility') node = data.responsibility;
           else node = data.person;
 
-          console.log(node)
-
           if (!node) return null;
           const graphData = graphUtils.getSubGraph(node);
           return (
