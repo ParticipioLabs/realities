@@ -10,6 +10,7 @@ import {
 } from 'reactstrap';
 import withAuth from '@/components/withAuth';
 import UpdateViewerName from './components/UpdateViewerName';
+import UserGraph from './components/UserGraph';
 
 const Profile = withAuth(({ auth }) => {
   if (!auth.isLoggedIn) return <Redirect to="/" />;
@@ -21,6 +22,7 @@ const Profile = withAuth(({ auth }) => {
             <CardBody>
               <h1>Profile</h1>
               <UpdateViewerName />
+              <UserGraph />
             </CardBody>
           </Card>
         </Col>
