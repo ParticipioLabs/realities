@@ -1,47 +1,45 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
+import sendEmail from '../../email/sendEmail';
+import { updatedRealityEmail } from '../../email/templates';
 
 function runQueryAndGetRecords(session, query, params) {
-  return session.run(query, params)
-    .then((result) => {
-      session.close();
-      if (!result.records) return null;
-      return result.records.map((r) => {
-        const { properties, labels } = r.get(0);
-        return Object.assign({}, properties, { __label: labels[0] });
-      });
+  return session.run(query, params).then((result) => {
+    session.close();
+    if (!result.records) return null;
+    return result.records.map((r) => {
+      const { properties, labels } = r.get(0);
+      return Object.assign({}, properties, { __label: labels[0] });
     });
+  });
 }
 
 function runQueryAndGetRecord(session, query, params) {
-  return runQueryAndGetRecords(session, query, params)
-    .then((records) => {
-      if (!records || records.length !== 1) return null;
-      return records[0];
-    });
+  return runQueryAndGetRecords(session, query, params).then((records) => {
+    if (!records || records.length !== 1) return null;
+    return records[0];
+  });
 }
 
 function runQueryAndGetRecordsWithFields(session, query, params) {
-  return session.run(query, params)
-    .then((result) => {
-      session.close();
-      if (!result.records) return null;
-      return result.records.map((r) => {
-        const pairs = r.keys.map((key) => {
-          const { properties, labels } = r.get(key);
-          return [key, Object.assign({}, properties, { __label: labels[0] })];
-        });
-        return _.fromPairs(pairs);
+  return session.run(query, params).then((result) => {
+    session.close();
+    if (!result.records) return null;
+    return result.records.map((r) => {
+      const pairs = r.keys.map((key) => {
+        const { properties, labels } = r.get(key);
+        return [key, Object.assign({}, properties, { __label: labels[0] })];
       });
+      return _.fromPairs(pairs);
     });
+  });
 }
 
 function runQueryAndGetRecordWithFields(session, query, params) {
-  return runQueryAndGetRecordsWithFields(session, query, params)
-    .then((records) => {
-      if (!records || records.length !== 1) return null;
-      return records[0];
-    });
+  return runQueryAndGetRecordsWithFields(session, query, params).then((records) => {
+    if (!records || records.length !== 1) return null;
+    return records[0];
+  });
 }
 
 export function findNodesByLabel(driver, label) {
@@ -72,9 +70,10 @@ export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyV
 }
 
 function getRelationshipQuery(relationship, label, direction) {
-  const relationshipFragment = direction && direction.toUpperCase() === 'IN'
-    ? `<-[:${relationship.toUpperCase()}]-`
-    : `-[:${relationship.toUpperCase()}]->`;
+  const relationshipFragment =
+    direction && direction.toUpperCase() === 'IN'
+      ? `<-[:${relationship.toUpperCase()}]-`
+      : `-[:${relationship.toUpperCase()}]->`;
   return `
     MATCH ({nodeId: {nodeId}})${relationshipFragment}(n:${label})
     WHERE NOT EXISTS(n.deleted)
@@ -159,9 +158,27 @@ export function createViewer(driver, userEmail) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function updateReality(driver, args) {
+export function updateReality(driver, args, user, obj) {
   // Use cypher FOREACH hack to only set realizer
   // if the Person node could be found
+
+  const emails = [args.guideEmail]; // .filter(email => email !== user.email);
+  if (args.guideEmail !== args.realizerEmail) emails.push(args.realizerEmail);
+
+  if (emails.length) {
+    const message = {
+      to: emails,
+      from: {
+        email: process.env.FROM_EMAIL || 'realities@theborderland.se',
+        name: process.env.FROM_NAME || 'Realities',
+      },
+      subject: 'A reality has been updated',
+      text: 'text missing for now',
+      html: updatedRealityEmail(args),
+    };
+    sendEmail(message);
+  }
+
   const query = `
     MATCH (reality {nodeId: {nodeId}})
     MATCH (:Person)-[g:GUIDES]->(reality)
