@@ -70,9 +70,16 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
                   document: NEEDS_CREATE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
-                    const newNeed = subscriptionData.data.needCreated;
-                    console.log('New Need Received!', newNeed, prev);
-                    return { needs: [newNeed].concat(prev.needs) };
+                    const { needCreated } = subscriptionData.data;
+
+                    const alreadyExists = prev.needs
+                      .filter(need => need.nodeId === needCreated.nodeId)
+                      .length > 0;
+
+                    if (alreadyExists) {
+                      return prev;
+                    }
+                    return { needs: [needCreated, ...prev.needs] };
                   },
                 });
                 subscribeToMore({
