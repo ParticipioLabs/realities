@@ -127,14 +127,9 @@ const resolvers = {
       isAuthenticated,
       (obj, { title, needId }, { user, driver }) => {
         const resultPromise = createResponsibility(driver, { title, needId }, user.email);
-        // do actual query instead to fill out relations. HACK-ALERT
         resultPromise.then((responsibility) => {
-          const hacked = Object.assign({}, responsibility);
-          hacked.dependsOnNeeds = [{ nodeId: needId, title: 'HACK', __label: 'Need' }];
-          console.log(hacked);
-          pubsub.publish(RESPONSIBILITY_CREATED, { responsibilityCreated: hacked });
+          pubsub.publish(RESPONSIBILITY_CREATED, { responsibilityCreated: responsibility });
         });
-
         return resultPromise;
       },
     ),
