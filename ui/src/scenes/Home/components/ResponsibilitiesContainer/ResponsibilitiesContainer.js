@@ -25,9 +25,6 @@ const RESPONSIBILITES_CREATE_SUBSCRIPTION = gql`
     responsibilityCreated {
       title
       nodeId
-      dependsOnNeeds {
-        nodeId
-      }
     }
   }
 `;
@@ -72,10 +69,22 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                       document: RESPONSIBILITES_CREATE_SUBSCRIPTION,
                       updateQuery: (prev, { subscriptionData }) => {
                         if (!subscriptionData.data) return prev;
-                        // TODO BUG: Why is responsibilityCreated null ??
-                        console.log('New Repsonsibility Received!', subscriptionData.data, prev);
-                        // TODO
-                        return { needs: [{}].concat(prev.needs) };
+
+                        const { responsibilityCreated } = subscriptionData.data;
+
+                        // item will already exist in cache if it was added by the current client
+                        const alreadyExists = prev.need.fulfilledBy
+                          .filter(resp => resp.nodeId === responsibilityCreated.nodeId).length > 0;
+
+                        if (alreadyExists) {
+                          return prev;
+                        }
+                        return {
+                            need: {
+                              ...prev.need,
+                              fulfilledBy: [...prev.need.fulfilledBy, responsibilityCreated],
+                            },
+                        };
                       },
                     });
                     subscribeToMore({
