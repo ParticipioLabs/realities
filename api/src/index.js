@@ -11,6 +11,9 @@ import neo4jDriver from './db/neo4jDriver';
 
 import schema from './graphql/schema';
 
+// Max listeners for a pub/sub
+require('events').EventEmitter.defaultMaxListeners = 15;
+
 const { NODE_ENV, PORT } = process.env;
 const API_PORT = NODE_ENV && NODE_ENV.includes('prod') ? PORT || 3000 : 3100;
 const app = express();
@@ -70,6 +73,7 @@ const server = new ApolloServer({
   schema,
   subscriptions: {
     onConnect: async (connectionParams) => {
+      //console.log('Client connecting', connectionParams);
       if (connectionParams.authToken) {
         return verifyToken(connectionParams.authToken)
           .then(user => ({ user }));

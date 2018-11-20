@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { Formik } from 'formik';
-import { GET_NEEDS } from '@/services/queries';
 import ListForm from '@/components/ListForm';
 
 const CREATE_NEED = gql`
@@ -20,14 +19,9 @@ const CREATE_NEED = gql`
 const CreateNeed = withRouter(({ history }) => (
   <Mutation
     mutation={CREATE_NEED}
-    update={(cache, { data: { createNeed } }) => {
+    update={(cache) => {
       cache.writeData({ data: { showCreateNeed: false } });
-      const { needs } = cache.readQuery({ query: GET_NEEDS });
-      cache.writeQuery({
-        query: GET_NEEDS,
-        data: { needs: [createNeed].concat(needs) },
-      });
-    }}
+   }}
   >
     {createNeed => (
       <Formik

@@ -19,6 +19,31 @@ const GET_SHOW_CREATE_NEED = gql`
   }
 `;
 
+const NEEDS_ADD_SUBSCRIPTION = gql`
+  subscription Needs {
+    needAdded {
+     title
+     nodeId
+    }
+  }
+`;
+
+const NEEDS_REMOVE_SUBSCRIPTION = gql`
+  subscription Needs {
+    needRemoved
+  }
+`;
+
+// TODO: Not implemented yet!
+const NEEDS_CHANGE_SUBSCRIPTION = gql`
+  subscription Needs {
+    needChanged {
+      title
+      nodeId
+    }
+  }
+`;
+
 const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
   <Query query={GET_SHOW_CREATE_NEED}>
     {({ data: localData, client }) => (
@@ -38,14 +63,55 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           <CreateNeed />
         </Collapse>
         <Query query={GET_NEEDS}>
-          {({ loading, error, data }) => {
+          {({
+              subscribeToMore,
+              loading,
+              error,
+              data,
+            }) => {
             if (loading) return <WrappedLoader />;
             if (error) return `Error! ${error.message}`;
+
             const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
             if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
               return <Redirect to={`/${firstNeedId}`} />;
             }
-            return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
+
+            return (<NeedsList
+              needs={data.needs}
+              selectedNeedId={match.params.needId}
+              subscribeToNeedsEvents={() => {
+                subscribeToMore({
+                  document: NEEDS_ADD_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    const newNeed = subscriptionData.data.needAdded;
+                    console.log('New Need Received!', newNeed, prev);
+                    return { needs: [newNeed].concat(prev.needs) };
+                  },
+                });
+                subscribeToMore({
+                  document: NEEDS_REMOVE_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    const newNeed = subscriptionData.data.needRemoved;
+                    console.log('Need Removed!', newNeed, prev);
+                    return {
+                      needs: _.filter(prev.needs, (item =>
+                        item.nodeId !== subscriptionData.data.needRemoved)),
+                    };
+                  },
+                });
+                subscribeToMore({
+                  document: NEEDS_CHANGE_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    console.log('Need Change!', prev);
+                    return prev;
+                  },
+                });
+              }}
+            />);
           }}
         </Query>
       </div>

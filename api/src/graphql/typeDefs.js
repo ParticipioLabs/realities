@@ -6,7 +6,9 @@ const typeDefs = `
   }
 
   type Subscription {
-    needAdded:Need
+    needAdded: Need
+    needRemoved: ID!
+    needChanged: Need
   }
 
   type Query {

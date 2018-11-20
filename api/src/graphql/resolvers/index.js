@@ -23,11 +23,15 @@ import { isAuthenticated } from '../authorization';
 const pubsub = new PubSub();
 
 const NEED_ADDED = 'NEED_ADDED';
+const NEED_REMOVED = 'NEED_REMOVED';
+const NEED_CHANGED = 'NEED_CHANGED';
 
 const resolvers = {
   // root entry point to GraphQL service
   Subscription: {
     needAdded: { subscribe: () => pubsub.asyncIterator([NEED_ADDED]) },
+    needRemoved: { subscribe: () => pubsub.asyncIterator([NEED_REMOVED]) },
+    needChanged: { subscribe: () => pubsub.asyncIterator([NEED_CHANGED]) },
   },
   Query: {
     persons(obj, { search }, { driver }) {
@@ -113,9 +117,7 @@ const resolvers = {
       isAuthenticated,
       (obj, { title }, { user, driver }) => {
         const needPromise = createNeed(driver, { title }, user.email);
-
         needPromise.then(need => pubsub.publish(NEED_ADDED, { needAdded: need }));
-
         return needPromise;
       },
     ),
@@ -131,6 +133,7 @@ const resolvers = {
     updateNeed: combineResolvers(
       isAuthenticated,
       (obj, args, { driver }) => updateReality(driver, args),
+      // TODO: Trigger NEED_CHANGED here
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
@@ -143,7 +146,11 @@ const resolvers = {
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
     softDeleteNeed: combineResolvers(
       isAuthenticated,
-      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+      (obj, { nodeId }, { driver }) => {
+        const needPromise = softDeleteNode(driver, { nodeId });
+        needPromise.then(() => pubsub.publish(NEED_REMOVED, { needRemoved: nodeId }));
+        return needPromise;
+      },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
