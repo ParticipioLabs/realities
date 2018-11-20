@@ -84,7 +84,8 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
 
                         // item will already exist in cache if it was added by the current client
                         const alreadyExists = prev.need.fulfilledBy
-                          .filter(resp => resp.nodeId === responsibilityCreated.nodeId).length > 0;
+                          .filter(resp => resp.nodeId === responsibilityCreated.nodeId)
+                          .length > 0;
 
                         if (alreadyExists) {
                           return prev;
