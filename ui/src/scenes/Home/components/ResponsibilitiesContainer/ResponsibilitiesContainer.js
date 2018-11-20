@@ -75,6 +75,8 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
 
                         const { responsibilityCreated } = subscriptionData.data;
 
+                        // console.log('Responsibility Created!', responsibilityCreated, prev);
+
                         // if the new responsibility is not on the current need, do nothing
                         if (responsibilityCreated.fulfills.nodeId !== prev.need.nodeId) return prev;
 
