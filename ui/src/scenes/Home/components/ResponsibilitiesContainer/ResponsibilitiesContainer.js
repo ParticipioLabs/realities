@@ -53,7 +53,11 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
           <Collapse isOpen={localData.showCreateResponsibility}>
             <CreateResponsibility />
           </Collapse>
-          <Query query={GET_NEED_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
+          <Query
+            query={GET_NEED_RESPONSIBILITIES}
+            variables={{ needId: match.params.needId }}
+            fetchPolicy="cache-and-network"
+          >
             {({
               subscribeToMore,
               loading,
