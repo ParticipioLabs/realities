@@ -82,7 +82,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                         return {
                             need: {
                               ...prev.need,
-                              fulfilledBy: [...prev.need.fulfilledBy, responsibilityCreated],
+                              fulfilledBy: [responsibilityCreated, ...prev.need.fulfilledBy],
                             },
                         };
                       },
