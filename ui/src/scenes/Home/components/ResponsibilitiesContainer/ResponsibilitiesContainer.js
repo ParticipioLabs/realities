@@ -64,7 +64,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
               error,
               data,
             }) => {
-              if (loading) return <WrappedLoader />;
+              if (loading && !data.need) return <WrappedLoader />;
               if (error) return `Error! ${error.message}`;
               if (!data.need) return null;
               return (
