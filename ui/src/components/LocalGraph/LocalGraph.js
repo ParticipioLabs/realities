@@ -99,48 +99,19 @@ const GET_RESPONSIBILITY = gql`
   ${RESPONSIBILITY_FRAGMENT}
 `;
 
-const GET_PERSON = gql`
-query LocalGraphPersonFields($email: String!) {
-  person(email: $email) {
+const NEED_ON_PERSON_FRAGMENT = gql`
+  fragment NeedOnPerson on Need {
     nodeId
-    name
-    guidesNeeds {
+    title
+    guide {
       nodeId
-      title
-      guide {
-        nodeId
-        name
-      }
-      realizer {
-        nodeId
-        name
-      }
+      name
     }
-    realizesNeeds {
+    realizer {
       nodeId
-     title
-      guide {
-        nodeId
-        name
-      }
-      realizer {
-        nodeId
-        name
-      }
+      name
     }
-    guidesResponsibilities {
-      nodeId
-      title
-      guide {
-        nodeId
-        name
-      }
-      realizer {
-        nodeId
-        name
-      }
-    }
-    realizesResponsibilities {
+    fulfilledBy {
       nodeId
       title
       guide {
@@ -153,7 +124,62 @@ query LocalGraphPersonFields($email: String!) {
       }
     }
   }
-}
+`;
+const RESPONSIBILITY_ON_PERSON_FRAGMENT = gql`
+  fragment ResponsibilityOnPerson on Responsibility {
+    nodeId
+    title
+    dependsOnResponsibilities {
+      nodeId
+      title
+      guide {
+        nodeId
+        name
+      }
+    }
+    guide {
+      nodeId
+      name
+    }
+    realizer {
+      nodeId
+      name
+    }
+    fulfills {
+      nodeId
+      title
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
+    }
+  }
+`;
+const GET_PERSON = gql`
+  query LocalGraphPersonFields($email: String!) {
+    person(email: $email) {
+      nodeId
+      name
+      guidesNeeds {
+        ...NeedOnPerson
+      }
+      realizesNeeds {
+        ...NeedOnPerson
+      }
+      guidesResponsibilities {
+        ...ResponsibilityOnPerson
+      }
+      realizesResponsibilities {
+        ...ResponsibilityOnPerson
+      }
+    }
+  }
+${NEED_ON_PERSON_FRAGMENT}
+${RESPONSIBILITY_ON_PERSON_FRAGMENT}
 `;
 
 const graphOptions = {
