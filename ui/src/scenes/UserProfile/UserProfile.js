@@ -4,7 +4,9 @@ import { Container, Row, Col } from 'reactstrap';
 import LocalGraph from '@/components/LocalGraph';
 
 const UserProfile = ({ location }) => {
-  const { email, name } = location.state;
+  const {
+    email, name, nodeId, __typename,
+  } = location.state.node;
   if (!email) {
     return (
       <Container>
@@ -25,7 +27,7 @@ const UserProfile = ({ location }) => {
       </Row>
       <Row>
         <Col>
-          <LocalGraph email={email} />
+          <LocalGraph email={email} nodeId={nodeId} nodeType={__typename} />
         </Col>
       </Row>
     </Container>
@@ -37,6 +39,8 @@ UserProfile.propTypes = {
     state: PropTypes.shape({
       email: PropTypes.string,
       name: PropTypes.string,
+      nodeId: PropTypes.string,
+      __typename: PropTypes.string,
     }),
   }),
 };
@@ -46,6 +50,8 @@ UserProfile.defaultProps = {
     state: {
       email: '',
       name: '',
+      nodeId: '',
+      __typename: '',
     },
   },
 };

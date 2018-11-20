@@ -24,7 +24,7 @@ const Search = withRouter(({ history }) => (
             history.push(`/${node.fulfills.nodeId}/${node.nodeId}`);
             break;
           case 'Person':
-            history.push('/userprofile', { email: node.email, name: node.name });
+            history.push('/userprofile', { node });
             break;
           default:
             history.push('/');
