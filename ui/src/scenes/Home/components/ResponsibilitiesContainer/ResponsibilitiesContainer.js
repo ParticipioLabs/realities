@@ -25,6 +25,9 @@ const RESPONSIBILITES_CREATE_SUBSCRIPTION = gql`
     responsibilityCreated {
       title
       nodeId
+      fulfills {
+        nodeId
+      }
     }
   }
 `;
@@ -71,6 +74,9 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                         if (!subscriptionData.data) return prev;
 
                         const { responsibilityCreated } = subscriptionData.data;
+
+                        // if the new responsibility is not on the current need, do nothing
+                        if (responsibilityCreated.fulfills.nodeId !== prev.need.nodeId) return prev;
 
                         // item will already exist in cache if it was added by the current client
                         const alreadyExists = prev.need.fulfilledBy
