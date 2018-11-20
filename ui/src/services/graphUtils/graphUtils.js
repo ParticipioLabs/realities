@@ -82,5 +82,27 @@ function getSubGraph(originNode = {}) {
 
   return graph;
 }
+function getPersonGraph(originNode = {}) {
+  const trimmedLabel = _.truncate(originNode.name, { length: 12, separator: ',.?! ' });
+  const graph = {
+    nodes: [
+      {
+        id: originNode.nodeId,
+        label: trimmedLabel,
+        color: colorCollection[originNode.__typename],
+        title: originNode.name,
+        shape: 'ellipse',
+        description: originNode.description,
+      },
+    ],
+    edges: [],
+  };
 
-export default { getSubGraph };
+  pushNode(graph, originNode, originNode.guidesNeeds, 'Guides', 'OUT');
+  pushNode(graph, originNode, originNode.realizesNeeds, 'Realizes', 'OUT');
+  pushNode(graph, originNode, originNode.guidesResponsibilities, 'Realizes', 'OUT');
+  console.log('graph', graph);
+  return graph;
+}
+
+export default { getSubGraph, getPersonGraph };
