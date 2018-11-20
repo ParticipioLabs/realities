@@ -212,8 +212,6 @@ class LocalGraph extends Component {
           if (nodeType === 'Need') node = data.need;
           else if (nodeType === 'Responsibility') node = data.responsibility;
           else node = data.person;
-          console.log('data', data);
-          console.log('node', node);
 
           if (!node) return null;
           let graphData;
