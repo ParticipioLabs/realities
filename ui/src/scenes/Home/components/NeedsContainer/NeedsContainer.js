@@ -76,9 +76,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
                       .filter(need => need.nodeId === needCreated.nodeId)
                       .length > 0;
 
-                    if (alreadyExists) {
-                      return prev;
-                    }
+                    if (alreadyExists) return prev;
                     return { needs: [needCreated, ...prev.needs] };
                   },
                 });

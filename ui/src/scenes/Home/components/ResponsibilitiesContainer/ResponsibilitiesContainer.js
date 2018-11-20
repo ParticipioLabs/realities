@@ -89,9 +89,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                           .filter(resp => resp.nodeId === responsibilityCreated.nodeId)
                           .length > 0;
 
-                        if (alreadyExists) {
-                          return prev;
-                        }
+                        if (alreadyExists) return prev;
                         return {
                             need: {
                               ...prev.need,
