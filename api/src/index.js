@@ -73,7 +73,7 @@ const server = new ApolloServer({
   schema,
   subscriptions: {
     onConnect: async (connectionParams) => {
-      //console.log('Client connecting', connectionParams);
+      //  console.log('Client connecting', connectionParams);
       if (connectionParams.authToken) {
         return verifyToken(connectionParams.authToken)
           .then(user => ({ user }));

@@ -22,16 +22,18 @@ import { isAuthenticated } from '../authorization';
 
 const pubsub = new PubSub();
 
-const NEED_ADDED = 'NEED_ADDED';
-const NEED_REMOVED = 'NEED_REMOVED';
-const NEED_CHANGED = 'NEED_CHANGED';
+const NEED_CREATED = 'NEED_CREATED';
+const RESPONSIBILITY_CREATED = 'RESPONSIBILITY_CREATED';
+const REALITY_DELETED = 'REALITY_DELETED';
+const REALITY_UPDATED = 'REALITY_UPDATED';
 
 const resolvers = {
   // root entry point to GraphQL service
   Subscription: {
-    needAdded: { subscribe: () => pubsub.asyncIterator([NEED_ADDED]) },
-    needRemoved: { subscribe: () => pubsub.asyncIterator([NEED_REMOVED]) },
-    needChanged: { subscribe: () => pubsub.asyncIterator([NEED_CHANGED]) },
+    needCreated: { subscribe: () => pubsub.asyncIterator([NEED_CREATED]) },
+    responsibilityCreated: { subscribe: () => pubsub.asyncIterator([RESPONSIBILITY_CREATED]) },
+    realityDeleted: { subscribe: () => pubsub.asyncIterator([REALITY_DELETED]) },
+    realityUpdated: { subscribe: () => pubsub.asyncIterator([REALITY_UPDATED]) },
   },
   Query: {
     persons(obj, { search }, { driver }) {
@@ -116,15 +118,25 @@ const resolvers = {
     createNeed: combineResolvers(
       isAuthenticated,
       (obj, { title }, { user, driver }) => {
-        const needPromise = createNeed(driver, { title }, user.email);
-        needPromise.then(need => pubsub.publish(NEED_ADDED, { needAdded: need }));
-        return needPromise;
+        const resultPromise = createNeed(driver, { title }, user.email);
+        resultPromise.then(need => pubsub.publish(NEED_CREATED, { needCreated: need }));
+        return resultPromise;
       },
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, { title, needId }, { user, driver }) =>
-        createResponsibility(driver, { title, needId }, user.email),
+      (obj, { title, needId }, { user, driver }) => {
+        const resultPromise = createResponsibility(driver, { title, needId }, user.email);
+        // do actual query instead to fill out relations. HACK-ALERT
+        resultPromise.then((responsibility) => {
+          const hacked = Object.assign({}, responsibility);
+          hacked.dependsOnNeeds = [{ nodeId: needId, title: 'HACK', __label: 'Need' }];
+          console.log(hacked);
+          pubsub.publish(RESPONSIBILITY_CREATED, { responsibilityCreated: hacked });
+        });
+
+        return resultPromise;
+      },
     ),
     createViewer: combineResolvers(
       isAuthenticated,
@@ -133,7 +145,7 @@ const resolvers = {
     updateNeed: combineResolvers(
       isAuthenticated,
       (obj, args, { driver }) => updateReality(driver, args),
-      // TODO: Trigger NEED_CHANGED here
+      // TODO: Trigger NEED_UPDATED here
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
@@ -147,15 +159,19 @@ const resolvers = {
     softDeleteNeed: combineResolvers(
       isAuthenticated,
       (obj, { nodeId }, { driver }) => {
-        const needPromise = softDeleteNode(driver, { nodeId });
-        needPromise.then(() => pubsub.publish(NEED_REMOVED, { needRemoved: nodeId }));
-        return needPromise;
+        const resultPromise = softDeleteNode(driver, { nodeId });
+        resultPromise.then(reality => pubsub.publish(REALITY_DELETED, { realityDeleted: reality }));
+        return resultPromise;
       },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+      (obj, { nodeId }, { driver }) => {
+        const resultPromise = softDeleteNode(driver, { nodeId });
+        resultPromise.then(reality => pubsub.publish(REALITY_DELETED, { realityDeleted: reality }));
+        return resultPromise;
+      },
     ),
     addNeedDependsOnNeeds: combineResolvers(
       isAuthenticated,

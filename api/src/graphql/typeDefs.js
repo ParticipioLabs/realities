@@ -6,9 +6,10 @@ const typeDefs = `
   }
 
   type Subscription {
-    needAdded: Need
-    needRemoved: ID!
-    needChanged: Need
+    needCreated: Need
+    responsibilityCreated: Responsibility
+    realityDeleted: Reality
+    realityUpdated: Reality
   }
 
   type Query {

@@ -6,6 +6,7 @@ import { withRouter, Redirect } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { GET_NEEDS } from '@/services/queries';
+import { REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
@@ -19,27 +20,11 @@ const GET_SHOW_CREATE_NEED = gql`
   }
 `;
 
-const NEEDS_ADD_SUBSCRIPTION = gql`
-  subscription Needs {
-    needAdded {
+const NEEDS_CREATE_SUBSCRIPTION = gql`
+  subscription NeedsContainer_needCreated {
+    needCreated {
      title
      nodeId
-    }
-  }
-`;
-
-const NEEDS_REMOVE_SUBSCRIPTION = gql`
-  subscription Needs {
-    needRemoved
-  }
-`;
-
-// TODO: Not implemented yet!
-const NEEDS_CHANGE_SUBSCRIPTION = gql`
-  subscription Needs {
-    needChanged {
-      title
-      nodeId
     }
   }
 `;
@@ -82,28 +67,28 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
               selectedNeedId={match.params.needId}
               subscribeToNeedsEvents={() => {
                 subscribeToMore({
-                  document: NEEDS_ADD_SUBSCRIPTION,
+                  document: NEEDS_CREATE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
-                    const newNeed = subscriptionData.data.needAdded;
+                    const newNeed = subscriptionData.data.needCreated;
                     console.log('New Need Received!', newNeed, prev);
                     return { needs: [newNeed].concat(prev.needs) };
                   },
                 });
                 subscribeToMore({
-                  document: NEEDS_REMOVE_SUBSCRIPTION,
+                  document: REALITIES_DELETE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
-                    const newNeed = subscriptionData.data.needRemoved;
-                    console.log('Need Removed!', newNeed, prev);
+                    const newNeed = subscriptionData.data.realityDeleted;
+                    console.log('Need Removed!', newNeed, prev, subscriptionData.data.realityDeleted.nodeId);
                     return {
                       needs: _.filter(prev.needs, (item =>
-                        item.nodeId !== subscriptionData.data.needRemoved)),
+                        item.nodeId !== subscriptionData.data.realityDeleted.nodeId)),
                     };
                   },
                 });
                 subscribeToMore({
-                  document: NEEDS_CHANGE_SUBSCRIPTION,
+                  document: REALITIES_UPDATE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
                     console.log('Need Change!', prev);
