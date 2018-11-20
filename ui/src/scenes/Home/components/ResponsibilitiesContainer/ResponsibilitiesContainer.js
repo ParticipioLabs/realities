@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
-import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import withAuth from '@/components/withAuth';
@@ -29,31 +28,31 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
             text="Responsibilities"
             color={colors.responsibility}
             showButton={auth.isLoggedIn && !!match.params.needId}
-            onButtonClick={() => client.writeData({
-              data: {
-                showCreateResponsibility: !localData.showCreateResponsibility,
-                showCreateNeed: false,
-              },
-            })}
+            onButtonClick={() =>
+                client.writeData({
+                  data: {
+                    showCreateResponsibility: !localData.showCreateResponsibility,
+                    showCreateNeed: false,
+                  },
+                })
+              }
           />
-          <Collapse isOpen={localData.showCreateResponsibility}>
-            <CreateResponsibility />
-          </Collapse>
+          {localData.showCreateResponsibility && <CreateResponsibility />}
           <Query query={GET_NEED_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
             {({ loading, error, data }) => {
-              if (loading) return <WrappedLoader />;
-              if (error) return `Error! ${error.message}`;
-              if (!data.need) return null;
-              return (
-                <ResponsibilitiesList
-                  responsibilities={data.need.fulfilledBy}
-                  selectedResponsibilityId={match.params.responsibilityId}
-                />
-              );
-            }}
+                if (loading) return <WrappedLoader />;
+                if (error) return `Error! ${error.message}`;
+                if (!data.need) return null;
+                return (
+                  <ResponsibilitiesList
+                    responsibilities={data.need.fulfilledBy}
+                    selectedResponsibilityId={match.params.responsibilityId}
+                  />
+                );
+              }}
           </Query>
         </div>
-      )}
+        )}
     </Query>
   );
 }));
