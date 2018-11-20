@@ -19,7 +19,7 @@ const SearchResults = ({
         })}
       >
         <TypeBadge nodeType={item.__typename} />
-        {item.title}
+        {item.title || item.name}
       </ListGroupItem>
     ))}
   </ListGroup>
