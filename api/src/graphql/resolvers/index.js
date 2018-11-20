@@ -134,11 +134,6 @@ const resolvers = {
       (obj, { title, needId }, { user, driver }) =>
         createResponsibility(driver, { title, needId }, user.email),
     ),
-    // createInfo: combineResolvers(
-    //  isAuthenticated,
-    //  (obj, { title, realityId }, { user, driver }) =>
-    //    createInfo(driver, { title, realityId }, user.email),
-    // ),
     createViewer: combineResolvers(
       isAuthenticated,
       (obj, args, { user, driver }) => createViewer(driver, user.email),
