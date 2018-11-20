@@ -107,24 +107,51 @@ query LocalGraphPersonFields($email: String!) {
     guidesNeeds {
       nodeId
       title
-      description
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
     }
     realizesNeeds {
       nodeId
-      title
-      description
+     title
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
     }
     guidesResponsibilities {
       nodeId
       title
-      description
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
     }
     realizesResponsibilities {
       nodeId
       title
-      description
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
     }
-
   }
 }
 `;
@@ -218,7 +245,6 @@ class LocalGraph extends Component {
           if (nodeType === 'Need') node = data.need;
           else if (nodeType === 'Responsibility') node = data.responsibility;
           else node = data.person;
-          console.log(node);
 
           if (!node) return null;
           let graphData;

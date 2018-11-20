@@ -49,8 +49,8 @@ function pushNode(graph, originNode, node, relation, direction) {
       label: relation,
     });
   }
-  pushNode(graph, node, node.guide, 'Guides', 'OUT');
-  pushNode(graph, node, node.realizer, 'Realizes', 'OUT');
+  // pushNode(graph, node, node.guide, 'Guides', 'OUT');
+  // pushNode(graph, node, node.realizer, 'Realizes', 'OUT');
 
   return graph;
 }
@@ -98,10 +98,27 @@ function getPersonGraph(originNode = {}) {
     edges: [],
   };
 
-  pushNode(graph, originNode, originNode.guidesNeeds, 'Guides', 'OUT');
-  pushNode(graph, originNode, originNode.realizesNeeds, 'Realizes', 'OUT');
-  pushNode(graph, originNode, originNode.guidesResponsibilities, 'Realizes', 'OUT');
-  console.log('graph', graph);
+  function addNodesToSubsequentNodes(userId, nodes, role, relation, direction) {
+    for (let i = 0; i < nodes.length; i += 1) {
+      if (nodes[i][role] && userId !== nodes[i][role].nodeId) {
+        pushNode(graph, nodes[i], nodes[i][role], relation, direction, 'IN');
+      }
+    }
+  }
+
+  pushNode(graph, originNode, originNode.guidesNeeds, 'Guides', 'IN');
+  addNodesToSubsequentNodes(originNode.nodeId, originNode.guidesNeeds, 'realizer', 'Realizes');
+
+  pushNode(graph, originNode, originNode.realizesNeeds, 'Realizes', 'IN');
+  addNodesToSubsequentNodes(originNode.nodeId, originNode.realizesNeeds, 'guide', 'Guides');
+
+  pushNode(graph, originNode, originNode.guidesResponsibilities, 'Guides', 'IN');
+  addNodesToSubsequentNodes(originNode.nodeId, originNode.guidesResponsibilities, 'realizer', 'Realizes');
+
+  pushNode(graph, originNode, originNode.realizesResponsibilities, 'Realizes', 'IN');
+  addNodesToSubsequentNodes(originNode.nodeId, originNode.realizesResponsibilities, 'guide', 'Guides');
+
+
   return graph;
 }
 
