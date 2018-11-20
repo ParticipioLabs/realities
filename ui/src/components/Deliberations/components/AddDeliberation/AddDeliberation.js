@@ -1,20 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
-import { FormGroup, Label } from 'reactstrap';
-import InfoForm from '@/components/InfoForm';
-import TypeBadge from '@/components/TypeBadge';
+import { FormGroup, Label, Input } from 'reactstrap';
+import NormalizeUrl from 'normalize-url';
+import ValidUrl from 'valid-url';
 
 const ADD_REALITY_HAS_DELIBERATION = gql`
-  mutation AddDeliberation_addHasDeliberationMutation(
+  mutation AddRealityHasDeliberation_addHasDeliberationMutation(
     $from: _RealityInput!
     $to: _InfoInput!
   ) {
-    addHasDeliberation(from: $from, to: $to) {
+    addRealityHasDeliberation(from: $from, to: $to) {
       from {
         nodeId
-        hasDeliberation {
+        deliberations {
           nodeId
           title
           url
@@ -23,142 +24,85 @@ const ADD_REALITY_HAS_DELIBERATION = gql`
     }
   }
 `;
-//minimal reading list, integrating participio
 
-//const ADD_NEED_DEPENDS_ON_RESPONSIBILITIES = gql`
-//  mutation AddDeliberation_addNeedDependsOnResponsibilitiesMutation(
-//    $from: _NeedInput!
-//    $to: _ResponsibilityInput!
-//  ) {
-//    addNeedDependsOnResponsibilities(from: $from, to: $to) {
-//      from {
-//        nodeId
-//        dependsOnResponsibilities {
-//          nodeId
-//          title
-//          fulfills {
-//            nodeId
-//          }
-//        }
-//      }
-//    }
-//  }
-//`;
-//
-//const ADD_RESPONSIBILITY_DEPENDS_ON_NEEDS = gql`
-//  mutation AddDeliberation_addResponsibilityDependsOnNeedsMutation(
-//    $from: _ResponsibilityInput!
-//    $to: _NeedInput!
-//  ) {
-//    addResponsibilityDependsOnNeeds(from: $from, to: $to) {
-//      from {
-//        nodeId
-//        dependsOnNeeds {
-//          nodeId
-//          title
-//        }
-//      }
-//    }
-//  }
-//`;
-//
-//const ADD_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES = gql`
-//  mutation AddDeliberation_addResponsibilityDependsOnResponsibilitiesMutation(
-//    $from: _ResponsibilityInput!
-//    $to: _ResponsibilityInput!
-//  ) {
-//    addResponsibilityDependsOnResponsibilities(from: $from, to: $to) {
-//      from {
-//        nodeId
-//        dependsOnResponsibilities {
-//          nodeId
-//          title
-//          fulfills {
-//            nodeId
-//          }
-//        }
-//      }
-//    }
-//  }
-//`;
+const InvalidUrlText = styled.span`
+  color: #ff0000;
+  font-weight: bold;
+`;
 
-const AddDeliberation = ({ nodeType, nodeId }) => {
-  const ADD_NEED_DEPENDENCY = nodeType === 'Need'
-    ? ADD_NEED_DEPENDS_ON_NEEDS
-    : ADD_RESPONSIBILITY_DEPENDS_ON_NEEDS;
-  const ADD_RESPONSIBILITY_DEPENDENCY = nodeType === 'Need'
-    ? ADD_NEED_DEPENDS_ON_RESPONSIBILITIES
-    : ADD_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES;
-  return (
-    <Mutation mutation={ADD_NEED_DEPENDENCY}>
-      {(addNeedDeliberation, { loading: loadingAddNeed }) => (
-        <Mutation mutation={ADD_RESPONSIBILITY_DEPENDENCY}>
-          {(addResponsibilityDeliberation, { loading: loadingAddResponsibility }) => (
-            <FormGroup>
-              <Label for="editDetailsTitle">
-                Add dependency
-              </Label>
-              <InfoForm
-                placeholder="Search needs and responsibilities"
-                disabled={loadingAddNeed || loadingAddResponsibility}
-                searchQuery={gql`
-                  query AddDeliberation_searchNeedsAndResponsibilities($term: String!) {
-                    needs(search: $term) {
-                      nodeId
-                      title
-                    }
-                    responsibilities(search: $term) {
-                      nodeId
-                      title
-                    }
+class AddDeliberation extends React.Component {
+  state = {
+    inputValue: '',
+    invalidUrl: false,
+  };
+  // normalizeUrl(url) {
+  //  return NormalizeUrl(url);
+  // }
+  render() {
+    const { nodeId } = this.props;
+    return (
+      <Mutation mutation={ADD_REALITY_HAS_DELIBERATION}>
+        { addDeliberation => (
+          <FormGroup>
+            <Label for="editDeliberationUrl">
+              Add a deliberation {this.state.invalidUrl && (
+              <InvalidUrlText>
+                Invalid URL!
+              </InvalidUrlText>
+            )}
+            </Label>
+
+
+            <Input
+              placeholder="Enter full url"
+              type="url"
+              required
+              id="editDeliberationUrl"
+              value={this.state.inputValue}
+              onKeyPress={(e) => {
+                // Submit form if user hits Enter
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (!this.state.inputValue.replace(/\s+/g, '')) { return; }
+
+                  // TODO: URL normalization can be improved if we know the particular
+                  // provider, e.g. loomio.com talk links have a specific format and we
+                  // could (should) clip off extraneous http vars.  Therefore, this code
+                  // might be better somewhere else.
+                  // URLs should be sanitized on the backend, also, to avoid certain attacks.
+                  try {
+                    const validated = ValidUrl.isUri(this.state.inputValue);
+                    this.setState({ inputValue: NormalizeUrl(validated, { stripHash: false }) });
+                    this.setState({ invalidUrl: false });
+                  } catch (err) {
+                    console.log(err);
+                    this.setState({ invalidUrl: true });
+                    return;
                   }
-                `}
-                queryDataToResultsArray={data => [
-                  ...(data.needs || []),
-                  ...(data.responsibilities || []),
-                ]}
-                itemToString={i => (i && i.title) || ''}
-                itemToResult={i => (
-                  <span>
-                    <TypeBadge nodeType={i.__typename} />
-                    {i.title}
-                  </span>
-                )}
-                onChange={(node, { reset, clearSelection }) => {
-                  clearSelection();
-                  reset();
-                  if (node.__typename === 'Need') {
-                    addNeedDeliberation({
-                      variables: {
-                        from: { nodeId },
-                        to: { nodeId: node.nodeId },
-                      },
-                    });
-                  } else {
-                    addResponsibilityDeliberation({
-                      variables: {
-                        from: { nodeId },
-                        to: { nodeId: node.nodeId },
-                      },
-                    });
-                  }
-                }}
-              />
-            </FormGroup>
-          )}
-        </Mutation>
-      )}
-    </Mutation>
-  );
-};
+
+                addDeliberation({
+                  variables: {
+                    from: { nodeId },
+                    to: { url: this.state.inputValue },
+                 },
+                });
+                this.setState({ inputValue: '' });
+              }
+              }}
+              onChange={e => this.setState({ inputValue: e.target.value })}
+            />
+          </FormGroup>
+        )}
+      </Mutation>
+    );
+  }
+}
 
 AddDeliberation.propTypes = {
-  nodeType: PropTypes.string,
   nodeId: PropTypes.string,
 };
 
 AddDeliberation.defaultProps = {
-  nodeType: 'Info',
   nodeId: '',
 };
 

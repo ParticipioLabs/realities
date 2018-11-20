@@ -69,7 +69,7 @@ const InfoForm = ({
       <Button
         size="sm"
         type="submit"
-        disabled={!urlValue & !titleValue || isSubmitting}
+        disabled={(!urlValue && !titleValue) || isSubmitting}
       >
         Save
       </Button>

@@ -5,18 +5,16 @@ import withAuth from '@/components/withAuth';
 import AddDeliberation from './components/AddDeliberation';
 import DeliberationList from './components/DeliberationList';
 
-const Deliberations = ({
+const Deliberations = withAuth(withRouter(({
   auth,
   history,
   nodeType,
   nodeId,
   deliberations,
   showAddRemove,
-}) => {
-  console.log({deliberations})
-  return (
+}) => (
   <div>
-    {auth.isLoggedIn  && (
+    {auth.isLoggedIn && showAddRemove && (
       <AddDeliberation nodeType={nodeType} nodeId={nodeId} />
     )}
     <DeliberationList
@@ -27,7 +25,7 @@ const Deliberations = ({
       showRemove={auth.isLoggedIn && showAddRemove}
     />
   </div>
-)};
+)));
 
 Deliberations.propTypes = {
   auth: PropTypes.shape({

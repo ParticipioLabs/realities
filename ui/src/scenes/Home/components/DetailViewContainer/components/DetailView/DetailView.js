@@ -41,9 +41,7 @@ const DetailView = ({
   isLoggedIn,
   onClickEdit,
   onClickCancel,
-}) => {
-  console.log({node})
-  return (
+}) => (
   <Card>
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
@@ -73,7 +71,6 @@ const DetailView = ({
           nodeId={node.nodeId}
           deliberations={node.deliberations}
         />
-        <Divider />
         <Dependencies
           showAddRemove
           nodeType={node.__typename}
@@ -90,7 +87,7 @@ const DetailView = ({
       <DetailViewBody node={node} />
     )}
   </Card>
-)};
+);
 
 DetailView.propTypes = {
   node: PropTypes.shape({

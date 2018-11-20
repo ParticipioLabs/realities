@@ -76,7 +76,6 @@ const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
         if (error) return `Error! ${error.message}`;
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
         if (!node) return null;
-        console.log(data);
         return (
           <DetailView
             node={node}

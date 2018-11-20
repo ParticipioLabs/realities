@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "babel-eslint": "^8.0.3",
-    "concurrently": "^3.5.1"
+    "concurrently": "^3.5.1",
+    "normalize-url": "^4.0.0",
+    "valid-url": "^1.0.9"
   }
 }

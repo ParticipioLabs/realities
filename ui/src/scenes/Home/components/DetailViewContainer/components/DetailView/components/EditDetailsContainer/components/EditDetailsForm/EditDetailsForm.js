@@ -8,7 +8,6 @@ import {
   Form,
   FormFeedback,
   FormGroup,
-  FormText,
   Input,
   Label,
   Row,
@@ -45,7 +44,7 @@ const EditDetailsForm = ({
   isSubmitting,
   cancel,
 }) => (
-  <StyledForm onSubmit={handleSubmit}>
+  <StyledForm onSubmit={handleSubmit} noValidate>
     <FormGroup>
       <Label for="editDetailsTitle">
         Title
@@ -129,26 +128,6 @@ const EditDetailsForm = ({
       <FormFeedback>
         {touched.description && errors.description}
       </FormFeedback>
-    </FormGroup>
-    <FormGroup>
-      <Label for="editDetailsDeliberationLink">
-        Deliberation
-      </Label>
-      <Input
-        name="deliberationLink"
-        id="editDetailsDeliberationLink"
-        value={values.deliberationLink}
-        disabled={isSubmitting}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        invalid={touched.deliberationLink && errors.deliberationLink}
-      />
-      <FormFeedback>
-        {touched.deliberationLink && errors.deliberationLink}
-      </FormFeedback>
-      <FormText>
-        Link to further discussion, planning, etc.
-      </FormText>
     </FormGroup>
     <Button
       type="submit"

@@ -7,7 +7,6 @@ import {
   findNodeByRelationshipAndLabel,
   createNeed,
   createResponsibility,
-  createInfo,
   createViewer,
   updateReality,
   updateInfo,
@@ -15,7 +14,7 @@ import {
   softDeleteNode,
   addDependency,
   removeDependency,
-  addDeliberation,
+  addRealityHasDeliberation,
   removeDeliberation,
   searchPersons,
   searchRealities,
@@ -135,11 +134,11 @@ const resolvers = {
       (obj, { title, needId }, { user, driver }) =>
         createResponsibility(driver, { title, needId }, user.email),
     ),
-    createInfo: combineResolvers(
-      isAuthenticated,
-      (obj, { title, realityId }, { user, driver }) =>
-        createInfo(driver, { title, realityId }, user.email),
-    ),
+    // createInfo: combineResolvers(
+    //  isAuthenticated,
+    //  (obj, { title, realityId }, { user, driver }) =>
+    //    createInfo(driver, { title, realityId }, user.email),
+    // ),
     createViewer: combineResolvers(
       isAuthenticated,
       (obj, args, { user, driver }) => createViewer(driver, user.email),
@@ -192,7 +191,7 @@ const resolvers = {
     ),
     addRealityHasDeliberation: combineResolvers(
       isAuthenticated,
-      (obj, { from, to }, { driver }) => addDeliberation(driver, { from, to }),
+      (obj, { from, to }, { driver }) => addRealityHasDeliberation(driver, { from, to }),
     ),
     removeNeedDependsOnNeeds: combineResolvers(
       isAuthenticated,

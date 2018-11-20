@@ -5,6 +5,10 @@ import { ListGroup, ListGroupItem } from 'reactstrap';
 import TypeBadge from '@/components/TypeBadge';
 import RemoveDeliberation from './components/RemoveDeliberation';
 
+const StyledListGroup = styled(ListGroup)`
+  margin-bottom: 2em;
+`;
+
 const StyledListGroupItem = styled(ListGroupItem)`
   position: relative;
   ${props => props.showremove && 'padding-right: 6em;'}
@@ -16,33 +20,49 @@ const RemoveWrapper = styled.span`
   right: 0.54em;
 `;
 
+const AnchorUrl = styled.a`
+  display: block;
+  text-decoration: none;
+  :hover { text-decoration: none; }
+  :active { text-decoration: none; }
+  :visited { text-decoration: none; }
+`;
+
+// <AnchorUrl href={url} key={nodeId} target="_blank">
+// </AnchorUrl>
+
+//
+
 const Deliberations = ({ deliberations, showRemove }) => (
-  <ListGroup>
+  <StyledListGroup>
     {deliberations.map(({
       node: {
         __typename,
         nodeId,
         title,
-        url
+        url,
       },
-      onClick,
     }) => (
-      <a href={url} target="_blank"><StyledListGroupItem
+      <StyledListGroupItem
         key={nodeId}
+        href={url}
         tag="div"
         action
         showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
       >
-        <TypeBadge nodeType={__typename} />
-        {title}
+        <AnchorUrl href={url} target="_blank">
+          <TypeBadge nodeType={__typename} />
+          {title || url}
+        </AnchorUrl>
         {showRemove && (
           <RemoveWrapper>
-            <RemoveDeliberation nodeType={__typename} nodeId={nodeId} />
+            <RemoveDeliberation nodeType={__typename} nodeId={nodeId} url={url} />
           </RemoveWrapper>
         )}
-      </StyledListGroupItem></a>
+
+      </StyledListGroupItem>
     ))}
-  </ListGroup>
+  </StyledListGroup>
 );
 
 Deliberations.propTypes = {

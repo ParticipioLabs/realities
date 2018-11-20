@@ -62,7 +62,7 @@ const DetailViewBody = ({ node }) => (
         nodeType={node.__typename}
         nodeId={node.nodeId}
         deliberations={[
-          ...(node.deliberations || [])
+          ...(node.deliberations || []),
         ]}
       />
     </CardSection>
