@@ -150,7 +150,6 @@ export function addRealityHasDeliberation(driver, { from, to }) {
     infoUrl: to.url,
     infoId: uuidv4(),
   };
-  console.log(queryParams)
   // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
   const query = `
     MATCH (reality {nodeId: {realityId}})
@@ -162,7 +161,6 @@ export function addRealityHasDeliberation(driver, { from, to }) {
     MERGE (reality)-[:HAS_DELIBERATION]->(info)
     RETURN reality as from, info as to
   `;
-  console.log(query);
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
 }
 
@@ -270,20 +268,6 @@ export function removeDependency(driver, { from, to }) {
   const query = `
     MATCH (from {nodeId: {fromId}})-[r:DEPENDS_ON]->(to {nodeId: {toId}})
     DELETE r
-    RETURN from, to
-  `;
-  return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
-}
-
-export function addDeliberation(driver, { from, to }) {
-  const queryParams = {
-    fromId: from.nodeId,
-    toId: to.nodeId,
-  };
-  const query = `
-    MATCH (from {nodeId: {fromId}})
-    MATCH (to {nodeId: {toId}})
-    MERGE (from)-[:HAS_DELIBERATION]->(to)
     RETURN from, to
   `;
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);

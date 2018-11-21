@@ -3,9 +3,14 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
-import { FormGroup, Label, Input } from 'reactstrap';
-import NormalizeUrl from 'normalize-url';
-import ValidUrl from 'valid-url';
+import { FormGroup, Label } from 'reactstrap';
+// TODO: fix normalize-url import
+// import NormalizeUrl from 'normalize-url';
+import { Formik } from 'formik';
+import * as yup from 'yup';
+import { withRouter } from 'react-router-dom';
+import InfoForm from '@/components/InfoForm';
+import { FaChainBroken } from 'react-icons/lib/fa';
 
 const ADD_REALITY_HAS_DELIBERATION = gql`
   mutation AddRealityHasDeliberation_addHasDeliberationMutation(
@@ -25,78 +30,70 @@ const ADD_REALITY_HAS_DELIBERATION = gql`
   }
 `;
 
+
 const InvalidUrlText = styled.span`
   color: #ff0000;
   font-weight: bold;
 `;
 
-class AddDeliberation extends React.Component {
-  state = {
-    inputValue: '',
-    invalidUrl: false,
-  };
-  // normalizeUrl(url) {
-  //  return NormalizeUrl(url);
-  // }
-  render() {
-    const { nodeId } = this.props;
-    return (
-      <Mutation mutation={ADD_REALITY_HAS_DELIBERATION}>
-        { addDeliberation => (
-          <FormGroup>
-            <Label for="editDeliberationUrl">
-              Add a deliberation {this.state.invalidUrl && (
-              <InvalidUrlText>
-                Invalid URL!
-              </InvalidUrlText>
-            )}
-            </Label>
+const AddDeliberation = withRouter(({ nodeId }) => (
+  <Mutation
+    mutation={ADD_REALITY_HAS_DELIBERATION}
 
+  >
+    {createDeliberation => (
+      <FormGroup>
 
-            <Input
-              placeholder="Enter full url"
-              type="url"
-              required
-              id="editDeliberationUrl"
-              value={this.state.inputValue}
-              onKeyPress={(e) => {
-                // Submit form if user hits Enter
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (!this.state.inputValue.replace(/\s+/g, '')) { return; }
-
-                  // TODO: URL normalization can be improved if we know the particular
-                  // provider, e.g. loomio.com talk links have a specific format and we
-                  // could (should) clip off extraneous http vars.  Therefore, this code
-                  // might be better somewhere else.
-                  // URLs should be sanitized on the backend, also, to avoid certain attacks.
-                  try {
-                    const validated = ValidUrl.isUri(this.state.inputValue);
-                    this.setState({ inputValue: NormalizeUrl(validated, { stripHash: false }) });
-                    this.setState({ invalidUrl: false });
-                  } catch (err) {
-                    console.log(err);
-                    this.setState({ invalidUrl: true });
-                    return;
-                  }
-
-                addDeliberation({
-                  variables: {
-                    from: { nodeId },
-                    to: { url: this.state.inputValue },
-                 },
-                });
-                this.setState({ inputValue: '' });
-              }
-              }}
-              onChange={e => this.setState({ inputValue: e.target.value })}
-            />
-          </FormGroup>
+        <Formik
+          initialValues={{ url: '' }}
+          validationSchema={yup.object().shape({
+            url: yup.string().required('URL is required').url('Invalid URL'),
+          })}
+          onSubmit={(values, { resetForm }) => {
+            // TODO: fix normalize-url import
+            // normalizedUrl = NormalizeUrl(values.url, { stripHash: true });
+            // createDeliberation({
+            //   variables: { from: { nodeId: nodeId }, to: { url: normalizedUrl } }
+            // })
+            // .then(({ data }) => {
+            createDeliberation({ variables: { from: { nodeId }, to: { url: values.url } } })
+              .then(() => {
+              resetForm();
+            });
+          }}
+        >
+          {({
+            values,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            isSubmitting,
+            errors,
+            touched,
+            }) => (
+              <div>
+                <Label for="editDeliberationUrl">
+                  Add a deliberation {touched.url && errors.url &&
+                    <InvalidUrlText>
+                      <FaChainBroken /> {errors.url}
+                    </InvalidUrlText>}
+                </Label>
+                <InfoForm
+                  inputName="url"
+                  placeholder="Enter a deliberation URL..."
+                  value={values.url}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                  handleSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                />
+              </div>
+          )}
+        </Formik>
+      </FormGroup>
         )}
-      </Mutation>
-    );
-  }
-}
+  </Mutation>
+));
 
 AddDeliberation.propTypes = {
   nodeId: PropTypes.string,

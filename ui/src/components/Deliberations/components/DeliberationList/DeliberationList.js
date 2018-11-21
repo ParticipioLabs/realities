@@ -20,52 +20,42 @@ const RemoveWrapper = styled.span`
   right: 0.54em;
 `;
 
-const AnchorUrl = styled.a`
-  display: block;
-  text-decoration: none;
-  :hover { text-decoration: none; }
-  :active { text-decoration: none; }
-  :visited { text-decoration: none; }
-`;
+const DeliberationList = ({ deliberations, showRemove }) => {
+  const handleClick = (url) => {
+    const win = window.open(url, '_blank');
+    win.focus();
+  };
+  return (
+    <StyledListGroup>
+      {deliberations.map(({
+        node: {
+          __typename,
+          nodeId,
+          title,
+          url,
+          },
+        }) => (
+          <StyledListGroupItem
+            key={nodeId}
+            tag="div"
+            action
+            onClick={() => handleClick(url)}
+            showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
+          >
+            <TypeBadge nodeType={__typename} />
+            {title || url}
+            {showRemove && (
+              <RemoveWrapper>
+                <RemoveDeliberation nodeType={__typename} nodeId={nodeId} url={url} />
+              </RemoveWrapper>
+            )}
+          </StyledListGroupItem>
+        ))}
+    </StyledListGroup>
+  );
+};
 
-// <AnchorUrl href={url} key={nodeId} target="_blank">
-// </AnchorUrl>
-
-//
-
-const Deliberations = ({ deliberations, showRemove }) => (
-  <StyledListGroup>
-    {deliberations.map(({
-      node: {
-        __typename,
-        nodeId,
-        title,
-        url,
-      },
-    }) => (
-      <StyledListGroupItem
-        key={nodeId}
-        href={url}
-        tag="div"
-        action
-        showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
-      >
-        <AnchorUrl href={url} target="_blank">
-          <TypeBadge nodeType={__typename} />
-          {title || url}
-        </AnchorUrl>
-        {showRemove && (
-          <RemoveWrapper>
-            <RemoveDeliberation nodeType={__typename} nodeId={nodeId} url={url} />
-          </RemoveWrapper>
-        )}
-
-      </StyledListGroupItem>
-    ))}
-  </StyledListGroup>
-);
-
-Deliberations.propTypes = {
+DeliberationList.propTypes = {
   deliberations: PropTypes.arrayOf(PropTypes.shape({
     node: PropTypes.shape({
       __typename: PropTypes.string,
@@ -77,9 +67,9 @@ Deliberations.propTypes = {
   showRemove: PropTypes.bool,
 };
 
-Deliberations.defaultProps = {
+DeliberationList.defaultProps = {
   deliberations: [],
   showRemove: false,
 };
 
-export default Deliberations;
+export default DeliberationList;

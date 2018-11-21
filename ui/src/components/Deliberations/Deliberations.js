@@ -7,7 +7,6 @@ import DeliberationList from './components/DeliberationList';
 
 const Deliberations = withAuth(withRouter(({
   auth,
-  history,
   nodeType,
   nodeId,
   deliberations,
@@ -20,7 +19,6 @@ const Deliberations = withAuth(withRouter(({
     <DeliberationList
       deliberations={deliberations.map(info => ({
         node: info,
-        onClick: () => history.push(`${info.url}`),
       }))}
       showRemove={auth.isLoggedIn && showAddRemove}
     />

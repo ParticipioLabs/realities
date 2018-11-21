@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
-  Button,
   Form,
   FormGroup,
   Input,
 } from 'reactstrap';
+
 
 const Wrapper = styled.div`
   margin-bottom: 1rem;
@@ -17,12 +17,9 @@ const StyledFormGroup = styled(FormGroup)`
 `;
 
 const InfoForm = ({
-  titleInputName,
-  titlePlaceholder,
-  titleValue,
-  urlInputName,
-  urlPlaceholder,
-  urlValue,
+  inputName,
+  placeholder,
+  value,
   handleChange,
   handleBlur,
   handleSubmit,
@@ -32,28 +29,10 @@ const InfoForm = ({
     <Form onSubmit={handleSubmit}>
       <StyledFormGroup>
         <Input
-          name={titleInputName}
-          type="textarea"
-          rows={1}
-          placeholder={titlePlaceholder}
-          value={titleValue}
-          disabled={isSubmitting}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onKeyPress={(e) => {
-            // Submit form if user hits Enter
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
-        />
-        <Input
-          name={urlInputName}
-          type="textarea"
-          rows={1}
-          placeholder={urlPlaceholder}
-          value={urlValue}
+          name={inputName}
+          type="input"
+          placeholder={placeholder}
+          value={value}
           disabled={isSubmitting}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -66,24 +45,14 @@ const InfoForm = ({
           }}
         />
       </StyledFormGroup>
-      <Button
-        size="sm"
-        type="submit"
-        disabled={(!urlValue && !titleValue) || isSubmitting}
-      >
-        Save
-      </Button>
     </Form>
   </Wrapper>
 );
 
 InfoForm.propTypes = {
-  titleInputName: PropTypes.string,
-  titlePlaceholder: PropTypes.string,
-  titleValue: PropTypes.string,
-  urlInputName: PropTypes.string,
-  urlPlaceholder: PropTypes.string,
-  urlValue: PropTypes.string,
+  inputName: PropTypes.string,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
   handleChange: PropTypes.func,
   handleBlur: PropTypes.func,
   handleSubmit: PropTypes.func,
@@ -91,12 +60,9 @@ InfoForm.propTypes = {
 };
 
 InfoForm.defaultProps = {
-  titleInputName: '',
-  titlePlaceholder: 'Enter text...',
-  titleValue: '',
-  urlInputName: '',
-  urlPlaceholder: 'Enter text...',
-  urlValue: '',
+  inputName: '',
+  placeholder: 'Enter text...',
+  value: '',
   handleChange: () => null,
   handleBlur: () => null,
   handleSubmit: () => null,

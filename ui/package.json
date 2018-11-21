@@ -59,6 +59,7 @@
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "mime": "^2.0.3",
+    "normalize-url": "^4.0.0",
     "object-assign": "4.1.1",
     "popper.js": "^1.12.9",
     "postcss-flexbugs-fixes": "3.2.0",
