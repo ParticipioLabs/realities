@@ -1,4 +1,13 @@
-export const updatedRealityEmail = ({
+const descriptionUpdated = (newDescription, oldDescription) => {
+  if (newDescription) {
+    return `
+    BoB
+    `;
+  }
+  return false;
+};
+
+export const updatedRealityEmailTemplate = ({
   nodeId,
   title,
   description,
@@ -33,6 +42,7 @@ export const updatedRealityEmail = ({
     <tr style="font-size: 16px;">
       <td style="text-align:center;">
         <b>Title:</b> ${title}<br />
+        <b>${descriptionUpdated('hi')}</b><br />
         <b>Description:</b> ${description}<br />
         <b>Realizer:</b> ${realizerEmail}<br />
         <b>Guide:</b> ${guideEmail}

@@ -1,7 +1,13 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
-import sendEmail from '../../email/sendEmail';
-import { updatedRealityEmail } from '../../email/templates';
+
+function runQueryAndGetData(session, query, params) {
+  return session.run(query, params).then((result) => {
+    session.close();
+    if (!result.records) return null;
+    return result;
+  });
+}
 
 function runQueryAndGetRecords(session, query, params) {
   return session.run(query, params).then((result) => {
@@ -74,11 +80,15 @@ function getRelationshipQuery(relationship, label, direction) {
     direction && direction.toUpperCase() === 'IN'
       ? `<-[:${relationship.toUpperCase()}]-`
       : `-[:${relationship.toUpperCase()}]->`;
-  return `
-    MATCH ({nodeId: {nodeId}})${relationshipFragment}(n:${label})
+  const labelFragment =
+    label === ''
+      ? '(n)'
+      : `(n:${label})`;
+  const query = `
+    MATCH ({nodeId: {nodeId}})${relationshipFragment}${labelFragment}
     WHERE NOT EXISTS(n.deleted)
-    RETURN n ORDER BY n.created DESC
-  `;
+    RETURN n ORDER BY n.created DESC`;
+  return query;
 }
 
 export function findNodesByRelationshipAndLabel(
@@ -158,26 +168,9 @@ export function createViewer(driver, userEmail) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function updateReality(driver, args, user, obj) {
+export function updateReality(driver, args) {
   // Use cypher FOREACH hack to only set realizer
   // if the Person node could be found
-
-  const emails = [args.guideEmail]; // .filter(email => email !== user.email);
-  if (args.guideEmail !== args.realizerEmail) emails.push(args.realizerEmail);
-
-  if (emails.length) {
-    const message = {
-      to: emails,
-      from: {
-        email: process.env.FROM_EMAIL || 'realities@theborderland.se',
-        name: process.env.FROM_NAME || 'Realities',
-      },
-      subject: 'A reality has been updated',
-      text: 'text missing for now',
-      html: updatedRealityEmail(args),
-    };
-    sendEmail(message);
-  }
 
   const query = `
     MATCH (reality {nodeId: {nodeId}})
@@ -270,4 +263,29 @@ export function searchRealities(driver, label, term) {
     RETURN n
   `;
   return runQueryAndGetRecords(driver.session(), query, { term });
+}
+
+export function getPeopleTwoStepsFromNode(driver, { nodeId }) {
+  const query = `
+    MATCH (n {nodeId:'${nodeId}'})-[*0..2]-(p:Person) 
+    WITH collect(distinct p) as pe
+    UNWIND pe as people
+    RETURN people
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { nodeId });
+}
+
+export function getRealityData(driver, { nodeId }) {
+  const query = `
+  MATCH (n {nodeId:'${nodeId}'})
+  MATCH (n)<-[:GUIDES*0..1]-(gu:Person)
+  OPTIONAL MATCH (re:Person)-[:REALIZES*0..1]->(n)
+  RETURN 
+  labels(n) as reality_labels,
+  n.description as reality_description, 
+  n.title as reality_title, 
+  gu.email as reality_guideEmail,
+  re.email as reality_realizerEmail
+  `;
+  return runQueryAndGetData(driver.session(), query, { nodeId });
 }

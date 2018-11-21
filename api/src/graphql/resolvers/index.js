@@ -15,8 +15,10 @@ import {
   removeDependency,
   searchPersons,
   searchRealities,
+  getRealityData,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
+import mailService from '../../email/mailService';
 
 const resolvers = {
   // root entry point to GraphQL service
@@ -109,10 +111,22 @@ const resolvers = {
     ),
     createViewer: combineResolvers(isAuthenticated, (obj, args, { user, driver }) =>
       createViewer(driver, user.email)),
-    updateNeed: combineResolvers(isAuthenticated, (obj, args, { driver, user }) =>
-      updateReality(driver, args, user, obj)),
+    updateNeed: combineResolvers(isAuthenticated, async (obj, args, { driver, user }) => {
+      const realityData = await getRealityData(driver, args);
+      const updatedReality = await updateReality(driver, args, user);
+      if (updatedReality) {
+        mailService.updatedMail(
+          driver,
+          user,
+          args,
+          realityData,
+          updatedReality,
+        );
+      }
+      return updatedReality;
+    }),
     updateResponsibility: combineResolvers(isAuthenticated, (obj, args, { driver, user }) =>
-      updateReality(driver, args, user, obj)),
+      updateReality(driver, args, user)),
     updateViewerName: combineResolvers(isAuthenticated, (obj, { name }, { user, driver }) =>
       updateViewerName(driver, { name }, user.email)),
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
