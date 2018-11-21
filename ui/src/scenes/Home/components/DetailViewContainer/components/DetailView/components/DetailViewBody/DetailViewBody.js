@@ -9,6 +9,7 @@ import {
 } from 'reactstrap';
 import Dependencies from '@/components/Dependencies';
 import LocalGraph from './components/LocalGraph';
+import { RedDot } from '@/components/styledElements';
 
 const LabelSpan = styled.span`
   font-weight: bold;
@@ -45,6 +46,7 @@ const DetailViewBody = ({ node }) => (
           ? `${node.realizer.name} (${node.realizer.email})`
           : node.realizer.email
       )}
+      {!node.realizer && <RedDot />}
     </CardText>
 
     <CardText>
