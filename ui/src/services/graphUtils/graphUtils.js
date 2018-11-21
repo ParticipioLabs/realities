@@ -96,12 +96,12 @@ function getPersonGraph(originNode = {}) {
     edges: [],
   };
 
-  function pushNodesToSubsequentNodes(userNodeId, nodes, role, relation, direction) {
+  function pushNodesToSubsequentNodes(userNodeId, nodes, role, relation) {
     nodes.forEach((node) => {
       // The following check is to prevent duplicate edges between a
       // need/responsibility and a person.
       if (node[role] && node[role].nodeId !== userNodeId) {
-        pushNode(graph, node, node[role], relation, direction, 'IN');
+        pushNode(graph, node, node[role], relation, 'IN');
       }
       // If node is a responsibility, add node for the need it fulfills and
       // for every responsibility that depends on it.
