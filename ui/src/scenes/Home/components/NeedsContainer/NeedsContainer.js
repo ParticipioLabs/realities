@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
-import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { GET_NEEDS } from '@/services/queries';
 import withAuth from '@/components/withAuth';
@@ -27,29 +26,29 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           text="Needs"
           color={colors.need}
           showButton={auth.isLoggedIn}
-          onButtonClick={() => client.writeData({
-            data: {
-              showCreateNeed: !localData.showCreateNeed,
-              showCreateResponsibility: false,
-            },
-          })}
+          onButtonClick={() =>
+              client.writeData({
+                data: {
+                  showCreateNeed: !localData.showCreateNeed,
+                  showCreateResponsibility: false,
+                },
+              })
+            }
         />
-        <Collapse isOpen={localData.showCreateNeed}>
-          <CreateNeed />
-        </Collapse>
+        {localData.showCreateNeed && <CreateNeed />}
         <Query query={GET_NEEDS}>
           {({ loading, error, data }) => {
-            if (loading) return <WrappedLoader />;
-            if (error) return `Error! ${error.message}`;
-            const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-            if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
-              return <Redirect to={`/${firstNeedId}`} />;
-            }
-            return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
-          }}
+              if (loading) return <WrappedLoader />;
+              if (error) return `Error! ${error.message}`;
+              const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
+              if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
+                return <Redirect to={`/${firstNeedId}`} />;
+              }
+              return <NeedsList needs={data.needs} selectedNeedId={match.params.needId} />;
+            }}
         </Query>
       </div>
-    )}
+      )}
   </Query>
 )));
 

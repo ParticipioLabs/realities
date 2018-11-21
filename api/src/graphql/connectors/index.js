@@ -204,24 +204,6 @@ export function updateReality(driver, args) {
   return runQueryAndGetRecord(driver.session(), query, args);
 }
 
-export function updateInfo(driver, { title }, infoUrl) {
-  // Use cypher FOREACH hack to only set realizer
-  // if the Info node could be found
-  const queryParams = {
-    url: infoUrl,
-    infoId: uuidv4(),
-    title,
-  };
-  const query = `
-    MATCH (info {url: {url}})
-    FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
-      SET info += {nodeId:{}, created:timestamp()})
-    SET info.title = {title}
-    RETURN info
-  `;
-  return runQueryAndGetRecord(driver.session(), query, queryParams);
-}
-
 export function updateViewerName(driver, { name }, userEmail) {
   const queryParams = {
     name,
@@ -314,15 +296,6 @@ export function searchPersons(driver, term) {
 }
 
 export function searchRealities(driver, label, term) {
-  const query = `
-    MATCH (n:${label})
-    WHERE toLower(n.title) CONTAINS toLower({term}) AND NOT EXISTS(n.deleted)
-    RETURN n
-  `;
-  return runQueryAndGetRecords(driver.session(), query, { term });
-}
-
-export function searchInfos(driver, label, term) {
   const query = `
     MATCH (n:${label})
     WHERE toLower(n.title) CONTAINS toLower({term}) AND NOT EXISTS(n.deleted)

@@ -31,6 +31,7 @@ const ListForm = ({
         <Input
           name={inputName}
           type="textarea"
+          autoFocus
           rows={3}
           placeholder={placeholder}
           value={value}
