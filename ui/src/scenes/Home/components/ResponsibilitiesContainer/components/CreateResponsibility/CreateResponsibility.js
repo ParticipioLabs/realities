@@ -26,19 +26,25 @@ const CreateResponsibility = withRouter(({ match, history }) => (
         query: GET_NEED_RESPONSIBILITIES,
         variables: { needId: match.params.needId },
       });
-      cache.writeQuery({
-        query: GET_NEED_RESPONSIBILITIES,
-        variables: { needId: match.params.needId },
-        data: {
-          need: {
-            __typename: 'Need',
-            nodeId: match.params.needId,
-            fulfilledBy: need.fulfilledBy
-              ? [createResponsibility].concat(need.fulfilledBy)
-              : [createResponsibility],
+
+      const alreadyExists =
+        need.fulfilledBy.filter(resp => resp.nodeId === createResponsibility.nodeId).length > 0;
+
+      if (!alreadyExists) {
+        cache.writeQuery({
+          query: GET_NEED_RESPONSIBILITIES,
+          variables: { needId: match.params.needId },
+          data: {
+            need: {
+              __typename: 'Need',
+              nodeId: match.params.needId,
+              fulfilledBy: need.fulfilledBy
+                ? [createResponsibility].concat(need.fulfilledBy)
+                : [createResponsibility],
+            },
           },
-        },
-      });
+        });
+      }
     }}
   >
     {createResponsibility => (
