@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import { GET_NEEDS } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
@@ -15,6 +14,23 @@ import NeedsList from './components/NeedsList';
 const GET_SHOW_CREATE_NEED = gql`
   query NeedsContainer_showCreateNeed {
     showCreateNeed @client
+  }
+`;
+
+const GET_NEEDS = gql`
+  query Needs {
+    needs {
+      nodeId
+      title
+      fulfilledBy {
+        nodeId
+        title
+        realizer {
+          nodeId
+          name
+        }
+      }
+    }
   }
 `;
 

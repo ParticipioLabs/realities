@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
@@ -14,6 +13,22 @@ import ResponsibilitiesList from './components/ResponsibilitiesList';
 const GET_SHOW_CREATE_RESPONSIBILITY = gql`
   query ResponsibilitiesContainer_showCreateResponsibility {
     showCreateResponsibility @client
+  }
+`;
+
+const GET_NEED_RESPONSIBILITIES = gql`
+  query NeedResponsibilities($needId: ID!) {
+    need(nodeId: $needId) {
+      nodeId
+      fulfilledBy {
+        nodeId
+        title
+        realizer {
+          nodeId
+          name
+        }
+      }
+    }
   }
 `;
 

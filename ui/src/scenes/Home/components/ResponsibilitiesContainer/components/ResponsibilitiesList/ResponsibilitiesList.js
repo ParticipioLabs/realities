@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
+import { RedDot } from '@/components/styledElements';
 
 const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
 const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
   &:focus {
     outline: none;
   }
@@ -19,6 +22,13 @@ const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
     color: white;
   }
 `;
+
+const renderMissingRealizerRedDot = (responsibility) => {
+  if (!responsibility.realizer) {
+    return <RedDot />;
+  }
+  return '';
+};
 
 const ResponsibilitiesList = withRouter(({
   responsibilities,
@@ -38,6 +48,7 @@ const ResponsibilitiesList = withRouter(({
           onClick={() => history.push(`/${match.params.needId}/${responsibility.nodeId}`)}
         >
           {responsibility.title}
+          {renderMissingRealizerRedDot(responsibility)}
         </ResponsibilitiesListGroupItem>
       ))}
     </ResponsibilitiesListGroup>

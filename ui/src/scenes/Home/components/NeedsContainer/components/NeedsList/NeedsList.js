@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
+import { RedDot } from '@/components/styledElements';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
 const NeedsListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
   &:focus {
     outline: none;
   }
@@ -19,6 +22,31 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     color: white;
   }
 `;
+
+const FlexDiv = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const RightMarginSpan = styled.span`
+  margin-right: 10px;
+`;
+
+const renderMissingRealizersAmount = (need) => {
+  let count = 0;
+  need.fulfilledBy.forEach((responsibility) => {
+    if (!responsibility.realizer) count += 1;
+  });
+
+  if (count > 0) {
+    return (
+      <FlexDiv>
+        <RightMarginSpan>{count}x</RightMarginSpan> <RedDot />
+      </FlexDiv>
+    );
+  }
+  return '';
+};
 
 const NeedsList = withRouter(({
   needs,
@@ -36,7 +64,9 @@ const NeedsList = withRouter(({
           active={need.nodeId === selectedNeedId}
           onClick={() => history.push(`/${need.nodeId}`)}
         >
+
           {need.title}
+          {renderMissingRealizersAmount(need)}
         </NeedsListGroupItem>
       ))}
     </NeedsListGroup>
