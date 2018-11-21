@@ -160,6 +160,10 @@ const resolvers = {
       isAuthenticated,
       (obj, { from, to }, { driver }) => addRealityHasDeliberation(driver, { from, to }),
     ),
+    removeRealityHasDeliberation: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver }) => removeDeliberation(driver, { from, to }),
+    ),
     removeNeedDependsOnNeeds: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
