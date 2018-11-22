@@ -66,7 +66,8 @@ class DeleteNodeContainer extends Component {
               query: GET_RESPONSIBILITIES,
               variables: { needId },
               data: {
-                responsibilities: responsibilities.filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
+                responsibilities: responsibilities
+                  .filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
               },
             });
             this.props.history.push(`/${needId}`);

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
@@ -82,7 +81,9 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                         // console.log('Responsibility Created!', responsibilityCreated, prev);
 
                         // if the new responsibility is not on the current need, do nothing
-                        if (responsibilityCreated.fulfills.nodeId !== match.params.needId) return prev;
+                        if (responsibilityCreated.fulfills.nodeId !== match.params.needId) {
+                          return prev;
+                        }
 
                         // item will already exist in cache if it was added by the current client
                         const alreadyExists = prev.responsibilities
@@ -102,11 +103,12 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                       document: REALITIES_DELETE_SUBSCRIPTION,
                       updateQuery: (prev, { subscriptionData }) => {
                         if (!subscriptionData.data) return prev;
-                  
+
                         const { realityDeleted } = subscriptionData.data;
-                    
+
                         return {
-                          responsibilities: prev.responsibilities.filter(item => item.nodeId !== realityDeleted.nodeId),
+                          responsibilities: prev.responsibilities
+                            .filter(item => item.nodeId !== realityDeleted.nodeId),
                         };
                       },
                     });
