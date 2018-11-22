@@ -24,14 +24,29 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
     realityUpdated {
       nodeId
       title
-      guide {
-        email
-      }
-      realizer {
-        email
-      }
       description
       deliberationLink
+      guide {
+        nodeId
+        email
+        name
+      }
+      realizer {
+        nodeId
+        email
+        name
+      }
+      dependsOnNeeds {
+        nodeId
+        title
+      }
+      dependsOnResponsibilities {
+        nodeId
+        title
+        fulfills {
+          nodeId
+        }
+      }
     }
   }
 `;
