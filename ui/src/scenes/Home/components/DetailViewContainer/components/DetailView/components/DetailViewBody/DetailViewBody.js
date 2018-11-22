@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from 'reactstrap';
 import Dependencies from '@/components/Dependencies';
-import LocalGraph from './components/LocalGraph';
 import { RedDot } from '@/components/styledElements';
+import LocalGraph from './components/LocalGraph';
 
 const LabelSpan = styled.span`
   font-weight: bold;
