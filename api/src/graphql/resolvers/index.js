@@ -140,12 +140,23 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      (obj, args, { driver }) => updateReality(driver, args),
-      // TODO: Trigger NEED_UPDATED here
+      (obj, args, { driver }) => {
+        const resultPromise = updateReality(driver, args);
+        resultPromise.then((need) => {
+          pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        });
+        return resultPromise;
+      },
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, args, { driver }) => updateReality(driver, args),
+      (obj, args, { driver }) => {
+        const resultPromise = updateReality(driver, args);
+        resultPromise.then((responsibility) => {
+          pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        });
+        return resultPromise;
+      },
     ),
     updateViewerName: combineResolvers(
       isAuthenticated,

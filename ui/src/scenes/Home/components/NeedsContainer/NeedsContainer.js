@@ -94,8 +94,15 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
                   document: REALITIES_UPDATE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
-                    console.log('Need Change!', prev);
-                    return prev;
+
+                    const { realityUpdated } = subscriptionData.data;
+
+                    return {
+                      needs: prev.needs.map((item) => {
+                        if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
+                        return item;
+                      }),
+                    };
                   },
                 });
               }}
