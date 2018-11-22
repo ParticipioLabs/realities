@@ -1,3 +1,4 @@
+import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
 import {
   findNodesByLabel,
@@ -158,7 +159,10 @@ const resolvers = {
     ),
     addRealityHasDeliberation: combineResolvers(
       isAuthenticated,
-      (obj, { from, to }, { driver }) => addRealityHasDeliberation(driver, { from, to }),
+      (obj, { from, to }, { driver }) => {
+        const normalizedTo = { url: NormalizeUrl(to.url, { stripHash: true }) };
+        return addRealityHasDeliberation(driver, { from, to: normalizedTo });
+      },
     ),
     removeRealityHasDeliberation: combineResolvers(
       isAuthenticated,

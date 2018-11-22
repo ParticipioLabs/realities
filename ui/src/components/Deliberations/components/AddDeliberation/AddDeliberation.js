@@ -4,8 +4,6 @@ import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 import { FormGroup, Label } from 'reactstrap';
-// TODO: fix normalize-url import
-// import NormalizeUrl from 'normalize-url';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
@@ -50,12 +48,6 @@ const AddDeliberation = withRouter(({ nodeId }) => (
             url: yup.string().required('URL is required').url('Invalid URL'),
           })}
           onSubmit={(values, { resetForm }) => {
-            // TODO: fix normalize-url import
-            // normalizedUrl = NormalizeUrl(values.url, { stripHash: true });
-            // createDeliberation({
-            //   variables: { from: { nodeId: nodeId }, to: { url: normalizedUrl } }
-            // })
-            // .then(({ data }) => {
             createDeliberation({ variables: { from: { nodeId }, to: { url: values.url } } })
               .then(() => {
               resetForm();
