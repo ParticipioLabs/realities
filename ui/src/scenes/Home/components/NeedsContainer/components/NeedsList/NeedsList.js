@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
+import _ from 'lodash';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
 import { RedDot } from '@/components/styledElements';
@@ -23,26 +24,21 @@ const NeedsListGroupItem = styled(ListGroupItem)`
   }
 `;
 
-const FlexDiv = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
 const RightMarginSpan = styled.span`
   margin-right: 10px;
 `;
 
 const renderMissingRealizersAmount = (need) => {
-  let count = 0;
-  need.fulfilledBy.forEach((responsibility) => {
-    if (!responsibility.realizer) count += 1;
-  });
+  let realizersMissing = [];
+  if (need.fulfilledBy) {
+    realizersMissing = need.fulfilledBy.filter(resp => !resp.realizer);
+  }
 
-  if (count > 0) {
+  if (realizersMissing.length > 0) {
     return (
-      <FlexDiv>
-        <RightMarginSpan>{count}x</RightMarginSpan> <RedDot />
-      </FlexDiv>
+      <div>
+        <RightMarginSpan>{realizersMissing.length}x</RightMarginSpan> <RedDot />
+      </div>
     );
   }
   return '';
@@ -82,6 +78,14 @@ NeedsList.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
+  need: PropTypes.arrayOf(PropTypes.shape({
+    nodeId: PropTypes.string,
+    title: PropTypes.string,
+    realizer: PropTypes.shape({
+      nodeId: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  })),
 };
 
 NeedsList.defaultProps = {
@@ -90,6 +94,7 @@ NeedsList.defaultProps = {
   history: {
     push: () => null,
   },
+  need: [],
 };
 
 export default NeedsList;
