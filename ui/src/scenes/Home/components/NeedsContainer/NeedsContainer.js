@@ -84,11 +84,9 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
                   document: REALITIES_DELETE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
-                    const newNeed = subscriptionData.data.realityDeleted;
-                    console.log('Need Removed!', newNeed, prev, subscriptionData.data.realityDeleted.nodeId);
+                    const { realityDeleted } = subscriptionData.data;
                     return {
-                      needs: _.filter(prev.needs, (item =>
-                        item.nodeId !== subscriptionData.data.realityDeleted.nodeId)),
+                      needs: prev.needs.filter((item => item.nodeId !== realityDeleted.nodeId)),
                     };
                   },
                 });
