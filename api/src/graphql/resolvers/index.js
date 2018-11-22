@@ -124,20 +124,18 @@ const resolvers = {
   Mutation: {
     createNeed: combineResolvers(
       isAuthenticated,
-      (obj, { title }, { user, driver }) => {
-        const resultPromise = createNeed(driver, { title }, user.email);
-        resultPromise.then(need => pubsub.publish(NEED_CREATED, { needCreated: need }));
-        return resultPromise;
+      async (obj, { title }, { user, driver }) => {
+        const need = await createNeed(driver, { title }, user.email);
+        pubsub.publish(NEED_CREATED, { needCreated: need });
+        return need;
       },
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, { title, needId }, { user, driver }) => {
-        const resultPromise = createResponsibility(driver, { title, needId }, user.email);
-        resultPromise.then((responsibility) => {
-          pubsub.publish(RESPONSIBILITY_CREATED, { responsibilityCreated: responsibility });
-        });
-        return resultPromise;
+      async (obj, { title, needId }, { user, driver }) => {
+        const responsibility = await createResponsibility(driver, { title, needId }, user.email);
+        pubsub.publish(RESPONSIBILITY_CREATED, { responsibilityCreated: responsibility });
+        return responsibility;
       },
     ),
     createViewer: combineResolvers(
@@ -146,22 +144,18 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      (obj, args, { driver }) => {
-        const resultPromise = updateReality(driver, args);
-        resultPromise.then((need) => {
-          pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
-        });
-        return resultPromise;
+      async (obj, args, { driver }) => {
+        const need = updateReality(driver, args);
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        return need;
       },
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, args, { driver }) => {
-        const resultPromise = updateReality(driver, args);
-        resultPromise.then((responsibility) => {
-          pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
-        });
-        return resultPromise;
+      async (obj, args, { driver }) => {
+        const responsibility = await updateReality(driver, args);
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        return responsibility;
       },
     ),
     updateViewerName: combineResolvers(
@@ -171,19 +165,19 @@ const resolvers = {
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
     softDeleteNeed: combineResolvers(
       isAuthenticated,
-      (obj, { nodeId }, { driver }) => {
-        const resultPromise = softDeleteNode(driver, { nodeId });
-        resultPromise.then(reality => pubsub.publish(REALITY_DELETED, { realityDeleted: reality }));
-        return resultPromise;
+      async (obj, { nodeId }, { driver }) => {
+        const need = await softDeleteNode(driver, { nodeId });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: need });
+        return need;
       },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, { nodeId }, { driver }) => {
-        const resultPromise = softDeleteNode(driver, { nodeId });
-        resultPromise.then(reality => pubsub.publish(REALITY_DELETED, { realityDeleted: reality }));
-        return resultPromise;
+      async (obj, { nodeId }, { driver }) => {
+        const responsibility = await softDeleteNode(driver, { nodeId });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: responsibility });
+        return responsibility;
       },
     ),
     addNeedDependsOnNeeds: combineResolvers(
