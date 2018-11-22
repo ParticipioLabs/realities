@@ -19,6 +19,8 @@ const typeDefs = `
     need(nodeId: ID!): Need
     responsibilities(nodeId: ID, search: String): [Responsibility]
     responsibility(nodeId: ID!): Responsibility
+    infos(search: String): [Info]
+    info(url: String!): [Info]
   }
 
   type Mutation {
@@ -79,6 +81,23 @@ const typeDefs = `
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
     ): _ResponsibilityDependsOnResponsibilitiesPayload
+    createInfo(
+      title: String
+      url: String!
+    ): Info
+    updateInfo(
+      url: String!
+      title: String!
+    ): Info
+    softDeleteInfo(url: String!): Info
+    addRealityHasDeliberation(
+      from: _RealityInput!
+      to: _InfoInput!
+    ): _RealityHasDeliberationPayload
+    removeRealityHasDeliberation(
+      from: _RealityInput!
+      to: _InfoInput!
+    ): _RealityHasDeliberationPayload
   }
 
   type Person {
@@ -105,6 +124,7 @@ const typeDefs = `
     dependsOnResponsibilities: [Responsibility]
     needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
+    deliberations: [Info]
   }
 
   type Need implements Reality {
@@ -121,6 +141,7 @@ const typeDefs = `
     dependsOnResponsibilities: [Responsibility]
     needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
+    deliberations: [Info]
   }
 
   type Responsibility implements Reality {
@@ -137,6 +158,16 @@ const typeDefs = `
     dependsOnResponsibilities: [Responsibility]
     needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
+    deliberations: [Info]
+  }
+
+  type Info {
+    nodeId: ID!
+    url: String!
+    title: String
+    isDeliberationFor: [Reality]
+    created: String
+    deleted: String
   }
 
   input _NeedInput {
@@ -145,6 +176,14 @@ const typeDefs = `
 
   input _ResponsibilityInput {
     nodeId: ID!
+  }
+
+  input _RealityInput {
+    nodeId: ID!
+  }
+
+  input _InfoInput {
+    url: String!
   }
 
   type _NeedDependsOnNeedsPayload {
@@ -165,6 +204,11 @@ const typeDefs = `
   type _ResponsibilityDependsOnResponsibilitiesPayload {
     from: Responsibility
     to: Responsibility
+  }
+
+  type _RealityHasDeliberationPayload {
+    from: Reality
+    to: Info
   }
 `;
 

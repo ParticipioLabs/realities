@@ -53,12 +53,12 @@ We use [Auth0](https://auth0.com/) for Authentication and Authorization. When a 
 
 Realities uses a Neo4j database. You need to run Neo4j on your machine or connect to a remote database (for example a free 1000 node sandbox at http://graphenedb.com). Running a local Neo4j database is very easy, just go to https://neo4j.com/download/ and follow the instructions.
 
-Set up your connection variables to Neo4j in `api/.env`. With Neo4j running locally, these variables should work for default setups:
+Set up your connection variables to Neo4j in `api/.env`. With Neo4j running locally, these variables should work for default setups (set `DB_PASSWORD` to the password you entered when creating the Neo4j database):
 
 ```
-GRAPHENEDB_URL=bolt://127.0.0.1:7687
-GRAPHENEDB_NAME=''
-GRAPHENEDB_KEY=''
+DB_URL=bolt://127.0.0.1:7687
+DB_USERNAME=neo4j
+DB_PASSWORD=
 ```
 
 Make sure you're running the versions of node and npm specified in the api and ui package.json files (node 8.9.x and npm 5.5.x), then...

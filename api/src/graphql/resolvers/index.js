@@ -1,3 +1,4 @@
+import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
 import { PubSub } from 'apollo-server';
 
@@ -15,6 +16,8 @@ import {
   softDeleteNode,
   addDependency,
   removeDependency,
+  addRealityHasDeliberation,
+  removeDeliberation,
   searchPersons,
   searchRealities,
 } from '../connectors';
@@ -103,6 +106,9 @@ const resolvers = {
     },
     responsibilitiesThatDependOnThis({ nodeId }, args, { driver }) {
       return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
+    },
+    deliberations({ nodeId }, args, { driver }) {
+      return findNodesByRelationshipAndLabel(driver, nodeId, 'HAS_DELIBERATION', 'Info');
     },
   },
   Need: {
@@ -195,6 +201,17 @@ const resolvers = {
     addResponsibilityDependsOnResponsibilities: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
+    ),
+    addRealityHasDeliberation: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver }) => {
+        const normalizedTo = { url: NormalizeUrl(to.url, { stripHash: true }) };
+        return addRealityHasDeliberation(driver, { from, to: normalizedTo });
+      },
+    ),
+    removeRealityHasDeliberation: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver }) => removeDeliberation(driver, { from, to }),
     ),
     removeNeedDependsOnNeeds: combineResolvers(
       isAuthenticated,

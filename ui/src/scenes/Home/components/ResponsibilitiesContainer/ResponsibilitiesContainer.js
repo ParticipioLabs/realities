@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
-import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { GET_RESPONSIBILITIES } from '@/services/queries';
 import { REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
@@ -42,16 +41,16 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
             text="Responsibilities"
             color={colors.responsibility}
             showButton={auth.isLoggedIn && !!match.params.needId}
-            onButtonClick={() => client.writeData({
-              data: {
-                showCreateResponsibility: !localData.showCreateResponsibility,
-                showCreateNeed: false,
-              },
-            })}
+            onButtonClick={() =>
+                client.writeData({
+                  data: {
+                    showCreateResponsibility: !localData.showCreateResponsibility,
+                    showCreateNeed: false,
+                  },
+                })
+              }
           />
-          <Collapse isOpen={localData.showCreateResponsibility}>
-            <CreateResponsibility />
-          </Collapse>
+          {localData.showCreateResponsibility && <CreateResponsibility />}
           <Query
             query={GET_RESPONSIBILITIES}
             variables={{ needId: match.params.needId }}
@@ -133,7 +132,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
             }}
           </Query>
         </div>
-      )}
+        )}
     </Query>
   );
 }));

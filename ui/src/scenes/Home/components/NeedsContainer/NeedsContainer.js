@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
-import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { GET_NEEDS } from '@/services/queries';
 import { REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
@@ -37,16 +36,16 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           text="Needs"
           color={colors.need}
           showButton={auth.isLoggedIn}
-          onButtonClick={() => client.writeData({
-            data: {
-              showCreateNeed: !localData.showCreateNeed,
-              showCreateResponsibility: false,
-            },
-          })}
+          onButtonClick={() =>
+              client.writeData({
+                data: {
+                  showCreateNeed: !localData.showCreateNeed,
+                  showCreateResponsibility: false,
+                },
+              })
+            }
         />
-        <Collapse isOpen={localData.showCreateNeed}>
-          <CreateNeed />
-        </Collapse>
+        {localData.showCreateNeed && <CreateNeed />}
         <Query query={GET_NEEDS}>
           {({
               subscribeToMore,
@@ -110,7 +109,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           }}
         </Query>
       </div>
-    )}
+      )}
   </Query>
 )));
 
