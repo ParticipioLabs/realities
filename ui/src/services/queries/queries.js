@@ -11,14 +11,11 @@ export const GET_NEEDS = gql`
   }
 `;
 
-export const GET_NEED_RESPONSIBILITIES = gql`
-  query NeedResponsibilities($needId: ID!) {
-    need(nodeId: $needId) {
+export const GET_RESPONSIBILITIES = gql`
+  query Responsibilities($needId: ID!) {
+    responsibilities(nodeId: $needId) {
       nodeId
-      fulfilledBy {
-        nodeId
-        title
-      }
+      title
     }
   }
 `;

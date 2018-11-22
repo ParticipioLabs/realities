@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
-import { GET_NEEDS, GET_NEED_RESPONSIBILITIES } from '@/services/queries';
+import { GET_NEEDS, GET_RESPONSIBILITIES } from '@/services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 
 const SOFT_DELETE_NEED = gql`
@@ -58,21 +58,15 @@ class DeleteNodeContainer extends Component {
             this.props.history.push('/');
           } else {
             const needId = data.softDeleteResponsibility.fulfills.nodeId;
-            const { need } = cache.readQuery({
-              query: GET_NEED_RESPONSIBILITIES,
+            const { responsibilities } = cache.readQuery({
+              query: GET_RESPONSIBILITIES,
               variables: { needId },
             });
             cache.writeQuery({
-              query: GET_NEED_RESPONSIBILITIES,
+              query: GET_RESPONSIBILITIES,
               variables: { needId },
               data: {
-                need: {
-                  __typename: 'Need',
-                  nodeId: needId,
-                  fulfilledBy: need
-                    .fulfilledBy
-                    .filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
-                },
+                responsibilities: responsibilities.filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
               },
             });
             this.props.history.push(`/${needId}`);

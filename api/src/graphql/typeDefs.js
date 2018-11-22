@@ -17,7 +17,7 @@ const typeDefs = `
     person(email: String!): Person
     needs(search: String): [Need]
     need(nodeId: ID!): Need
-    responsibilities(search: String): [Responsibility]
+    responsibilities(nodeId: ID, search: String): [Responsibility]
     responsibility(nodeId: ID!): Responsibility
   }
 

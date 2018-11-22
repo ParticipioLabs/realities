@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { Collapse } from 'reactstrap';
 import { Query } from 'react-apollo';
-import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
+import { GET_RESPONSIBILITIES } from '@/services/queries';
 import { REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
@@ -54,7 +54,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
             <CreateResponsibility />
           </Collapse>
           <Query
-            query={GET_NEED_RESPONSIBILITIES}
+            query={GET_RESPONSIBILITIES}
             variables={{ needId: match.params.needId }}
             fetchPolicy="cache-and-network"
           >
@@ -64,12 +64,12 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
               error,
               data,
             }) => {
-              if (loading && !data.need) return <WrappedLoader />;
+              if (loading && !data.responsibilities) return <WrappedLoader />;
               if (error) return `Error! ${error.message}`;
-              if (!data.need) return null;
+              if (!data.responsibilities) return null;
               return (
                 <ResponsibilitiesList
-                  responsibilities={data.need.fulfilledBy}
+                  responsibilities={data.responsibilities}
                   selectedResponsibilityId={match.params.responsibilityId}
                   subscribeToResponsibilitiesEvents={() => {
                     subscribeToMore({
@@ -82,19 +82,19 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                         // console.log('Responsibility Created!', responsibilityCreated, prev);
 
                         // if the new responsibility is not on the current need, do nothing
-                        if (responsibilityCreated.fulfills.nodeId !== prev.need.nodeId) return prev;
+                        if (responsibilityCreated.fulfills.nodeId !== match.params.needId) return prev;
 
                         // item will already exist in cache if it was added by the current client
-                        const alreadyExists = prev.need.fulfilledBy
+                        const alreadyExists = prev.responsibilities
                           .filter(resp => resp.nodeId === responsibilityCreated.nodeId)
                           .length > 0;
 
                         if (alreadyExists) return prev;
                         return {
-                            need: {
-                              ...prev.need,
-                              fulfilledBy: [responsibilityCreated, ...prev.need.fulfilledBy],
-                            },
+                            responsibilities: [
+                              responsibilityCreated,
+                              ...prev.responsibilities,
+                            ],
                         };
                       },
                     });
@@ -102,14 +102,12 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
                       document: REALITIES_DELETE_SUBSCRIPTION,
                       updateQuery: (prev, { subscriptionData }) => {
                         if (!subscriptionData.data) return prev;
-                        const result = Object.assign({}, prev);
-
-                        result.need.fulfilledBy = _.filter(prev.need.fulfilledBy, (item =>
-                              item.nodeId !== subscriptionData.data.realityDeleted));
-
-                        console.log('Responsibility Removed!', subscriptionData.data.realityDeleted.nodeId, prev, result);
-
-                        return result;
+                  
+                        const { realityDeleted } = subscriptionData.data;
+                    
+                        return {
+                          responsibilities: prev.responsibilities.filter(item => item.nodeId !== realityDeleted.nodeId),
+                        };
                       },
                     });
                     subscribeToMore({
