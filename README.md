@@ -4,7 +4,7 @@ A tool for tribal decentralised organisations. [Read more about the concept behi
 
 ## Wanna talk about it?
 
-To discuss and learn more about the overall concepts behind the Realities Platform, [head over to the Edgeryders platform](https://edgeryders.eu/c/workspaces/participio), where Realities is being developed as part of the Particip.io project.
+To discuss and learn more about the overall concepts behind the Realities Platform, [head over to the Edgeryders platform](https://edgeryders.eu/c/participio), where Realities is being developed as part of the Particip.io project.
 
 To report a bug or suggest a specific improvement or feature, create an issue right here on GitHub.
 
