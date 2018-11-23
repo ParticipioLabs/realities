@@ -5,7 +5,11 @@ import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Query } from 'react-apollo';
 import { GET_NEEDS } from '@/services/queries';
-import { REALITIES_CREATE_SUBSCRIPTION, REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
+import {
+  REALITIES_CREATE_SUBSCRIPTION,
+  REALITIES_DELETE_SUBSCRIPTION,
+  REALITIES_UPDATE_SUBSCRIPTION,
+} from '@/services/subscriptions';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
