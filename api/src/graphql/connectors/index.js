@@ -1,47 +1,51 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
 
+function runQueryAndGetDataRecord(session, query, params) {
+  return session.run(query, params).then((result) => {
+    session.close();
+    if (!result.records) return null;
+    return result.records[0].toObject();
+  });
+}
+
 function runQueryAndGetRecords(session, query, params) {
-  return session.run(query, params)
-    .then((result) => {
-      session.close();
-      if (!result.records) return null;
-      return result.records.map((r) => {
-        const { properties, labels } = r.get(0);
-        return Object.assign({}, properties, { __label: labels[0] });
-      });
+  return session.run(query, params).then((result) => {
+    session.close();
+    if (!result.records) return null;
+    return result.records.map((r) => {
+      const { properties, labels } = r.get(0);
+      return Object.assign({}, properties, { __label: labels[0] });
     });
+  });
 }
 
 function runQueryAndGetRecord(session, query, params) {
-  return runQueryAndGetRecords(session, query, params)
-    .then((records) => {
-      if (!records || records.length !== 1) return null;
-      return records[0];
-    });
+  return runQueryAndGetRecords(session, query, params).then((records) => {
+    if (!records || records.length !== 1) return null;
+    return records[0];
+  });
 }
 
 function runQueryAndGetRecordsWithFields(session, query, params) {
-  return session.run(query, params)
-    .then((result) => {
-      session.close();
-      if (!result.records) return null;
-      return result.records.map((r) => {
-        const pairs = r.keys.map((key) => {
-          const { properties, labels } = r.get(key);
-          return [key, Object.assign({}, properties, { __label: labels[0] })];
-        });
-        return _.fromPairs(pairs);
+  return session.run(query, params).then((result) => {
+    session.close();
+    if (!result.records) return null;
+    return result.records.map((r) => {
+      const pairs = r.keys.map((key) => {
+        const { properties, labels } = r.get(key);
+        return [key, Object.assign({}, properties, { __label: labels[0] })];
       });
+      return _.fromPairs(pairs);
     });
+  });
 }
 
 function runQueryAndGetRecordWithFields(session, query, params) {
-  return runQueryAndGetRecordsWithFields(session, query, params)
-    .then((records) => {
-      if (!records || records.length !== 1) return null;
-      return records[0];
-    });
+  return runQueryAndGetRecordsWithFields(session, query, params).then((records) => {
+    if (!records || records.length !== 1) return null;
+    return records[0];
+  });
 }
 
 export function findNodesByLabel(driver, label) {
@@ -72,14 +76,19 @@ export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyV
 }
 
 function getRelationshipQuery(relationship, label, direction) {
-  const relationshipFragment = direction && direction.toUpperCase() === 'IN'
-    ? `<-[:${relationship.toUpperCase()}]-`
-    : `-[:${relationship.toUpperCase()}]->`;
-  return `
-    MATCH ({nodeId: {nodeId}})${relationshipFragment}(n:${label})
+  const relationshipFragment =
+    direction && direction.toUpperCase() === 'IN'
+      ? `<-[:${relationship.toUpperCase()}]-`
+      : `-[:${relationship.toUpperCase()}]->`;
+  const labelFragment =
+    label === ''
+      ? '(n)'
+      : `(n:${label})`;
+  const query = `
+    MATCH ({nodeId: {nodeId}})${relationshipFragment}${labelFragment}
     WHERE NOT EXISTS(n.deleted)
-    RETURN n ORDER BY n.created DESC
-  `;
+    RETURN n ORDER BY n.created DESC`;
+  return query;
 }
 
 export function findNodesByRelationshipAndLabel(
@@ -182,6 +191,7 @@ export function createViewer(driver, userEmail) {
 export function updateReality(driver, args) {
   // Use cypher FOREACH hack to only set realizer
   // if the Person node could be found
+
   const query = `
     MATCH (reality {nodeId: {nodeId}})
     MATCH (:Person)-[g:GUIDES]->(reality)
@@ -286,4 +296,29 @@ export function searchRealities(driver, label, term) {
     RETURN n
   `;
   return runQueryAndGetRecords(driver.session(), query, { term });
+}
+
+export function getPeopleTwoStepsFromReality(driver, { nodeId }) {
+  const query = `
+    MATCH (n {nodeId:'${nodeId}'})<-[*0..2]-(p:Person) 
+    WITH collect(distinct p) as pe
+    UNWIND pe as people
+    RETURN people
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { nodeId });
+}
+
+export function getRealityData(driver, { nodeId }) {
+  const query = `
+  MATCH (n {nodeId:'${nodeId}'})
+  MATCH (n)<-[:GUIDES*0..1]-(gu:Person)
+  OPTIONAL MATCH (re:Person)-[:REALIZES*0..1]->(n)
+  RETURN 
+  labels(n) as reality_labels,
+  n.description as description, 
+  n.title as title, 
+  gu.email as guideEmail,
+  re.email as realizerEmail
+  `;
+  return runQueryAndGetDataRecord(driver.session(), query, { nodeId });
 }

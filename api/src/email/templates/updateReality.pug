@@ -1,0 +1,197 @@
+//- OVERVIEW
+//-================================
+
+//- Support
+//--------------------------------
+//- Works correctly in all email clients, except for Lotus Notes 4.5 and Lotus Notes 5
+
+//- PARTIAL MIXINS
+//-================================
+
+//- Style Tags
+//--------------------------------
+mixin style-tags
+  style.
+    html {
+      margin:0;
+      padding:0;
+      height:100% !important;
+      margin:0;
+      padding:0;
+      width:100% !important;
+      background-color: #F9F9F9 !important;
+    }
+    
+    body {
+      margin:0;
+      padding:0;
+      height:100% !important;
+      margin:0;
+      padding:0;
+      width:100% !important;
+      background-color: #F9F9F9 !important;
+      -webkit-text-size-adjust:100%;
+      -ms-text-size-adjust:100%;
+      
+      @media only screen and (max-width: 480px) {
+      -webkit-text-size-adjust:none !important;
+      width:100% !important;
+      min-width:100% !important;
+      }
+    }
+    
+  |<!--[if (gte mso 9)|(IE)]>
+  style.
+    .u-textFallback {
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+  |<![endif]-->
+
+
+//- IE Conditional Comment Opening
+//--------------------------------
+mixin ie-open(props)
+  - props = props || {};
+  - table = props.table ? 'width="' + props.table + '"' : '';
+  - cell = props.cell ? 'width="' + props.cell + '"' : '';
+  |<!--[if (gte mso 9)|(IE)]>
+  |<table cellspacing="0" cellpadding="0" border="0" !{table} align="center">
+  |<tr>
+  |<td valign="top" !{cell}>
+  |<![endif]-->
+
+
+//- IE Conditional Comment Seperator
+//--------------------------------
+mixin ie-col(props)
+  - props = props || {};
+  - cell = props.cell ? 'width="' + props.cell + '"' : '';
+  |<!--[if (gte mso 9)|(IE)]>
+  |</td>
+  |<td valign="top" !{cell}>
+  |<![endif]-->
+
+
+//- IE Conditional Comment Closing Partial
+//--------------------------------
+mixin ie-close(props)
+  - props = props || {};
+  |<!--[if (gte mso 9)|(IE)]>
+  |</td>
+  |</tr>
+  |</table>
+  |<![endif]-->
+
+//- Header
+//--------------------------------
+mixin header
+  tr
+    td(style="padding: 15px 20px")
+      a(href="https://realities.theborderland.se/")
+        img(src="https://raw.githubusercontent.com/Edgeryders-Participio/participio-graphics/master/realities_logo_capitalized.png" alt="Daily Digest Mailer" width="400" style="border-style: none; outline: none")
+        
+//- Super Heading
+//--------------------------------
+mixin super-heading(realityName, userEmail)
+  tr
+    td(style="font-size: 0; background-color: #ef9322; text-align: center; padding: 16px 0")
+      +ie-open(({cell: 300}))
+      div(style="display: inline-block;")
+        table(cellspacing="0" cellpadding="0" border="0" width="300"): tr: td(class="u-textFallback" style="text-align: left; font-size: 19px; color: white; padding: 7px 20px; font-family: Montserrat, Arial, sans-serif; line-height: 1.4") Your reality<br> <b>#{realityName}</b><br>has been updated
+      +ie-col(({cell: 300}))
+      div(style="display: inline-block;")
+        table(cellspacing="0" cellpadding="0" border="0" width="300"): tr: td(class="u-textFallback" style="text-align: right; font-size: 14px; color: white; padding: 7px 20px; font-family: Montserrat, Arial, sans-serif; line-height: 1.7") <br>Who made the change: <br> #{userEmail}
+      +ie-close
+    
+
+//-Intro Block
+//--------------------------------
+mixin intro-block
+  tr
+    td(style="font-size: 0; background-color: white; text-align: center; padding: 15px 0 35px")
+      +ie-open(({cell: 600}))
+      div(style="display: inline-block; vertical-align: top")
+        table(cellspacing="0" cellpadding="0" border="0" width="600"): tr: td(class="u-textFallback" style="line-height: 1.4; text-align: left; font-size: 15px; color: #666666; padding: 15px 20px; font-family: Montserrat, Arial, sans-serif") <p>There has been a shift in the fabric of Realities, and something has changed for a Need or Responsibility you are linked to. When this change was made, the person making it thought that it was important enough to let you know. So what monkey did they let out of the bag this time? See more details below about what has changed.</p>
+
+
+//- Item Order
+//--------------------------------
+mixin item-order(type, oldText, newText)
+  tr
+    td(style="border-top: 1px solid #EDEDED; background-color: white; font-size: 0; padding: 30px 0 20px 60px;")
+      +ie-open(({cell: 600}))
+      div(style="display: inline-block; vertical-align: top;")
+        table(cellspacing="0" cellpadding="0" border="0" valign="top"): tr
+          td(class="u-textFallback" style="line-height: 1.4; padding: 0 20px 10px 0; color: #666666; text-align: left; font-size: 14px; font-family: Montserrat, Arial, sans-serif;") <b>#{type} has been updated</b>
+        table(cellspacing="0" cellpadding="0" border="0" valign="top"): tr
+          td(class="u-textFallback" style="line-height: 1.4; padding: 0 20px 10px 0; color: #C0C0C0; text-align: left; font-size: 14px; font-family: Montserrat, Arial, sans-serif;") <b>It used to be: </b><br>#{oldText}
+        table(cellspacing="0" cellpadding="0" border="0" valign="top"): tr
+          td(class="u-textFallback" style="line-height: 1.4; padding: 0 20px 10px 0; color: #666666; text-align: left; font-size: 14px; font-family: Montserrat, Arial, sans-serif;") <b>Now it is:</b><br>#{newText}
+      +ie-close
+
+
+//- Thank You Message
+//--------------------------------
+mixin thank-you
+  tr
+    td(style="border-top: 1px solid #CCCCCC; background-color: #EDEDED; padding: 30px 20px;")
+      table(cellspacing="0" cellpadding="0" border="0" width="100%")
+        tr: td(class="u-textFallback" style="font-family: Montserrat, Arial, sans-serif; color: #666666; font-size: 14px; line-height: 1.5; text-align: center; ") What is it that separates dream from reality?  
+        tr: td(class="u-textFallback" style="font-family: Montserrat, Arial, sans-serif; color: #666666; font-size: 14px; line-height: 1.5; text-align: center; ") Can you define the thin line that split the two? 
+        tr: td(class="u-textFallback" style="font-family: Montserrat, Arial, sans-serif; color: #666666; font-size: 14px; line-height: 1.5; text-align: center; ") What does that border consist of? 
+
+
+
+//- MARKUP
+//-================================   
+
+//- Pseudo Header
+//--------------------------------
+html
+  body
+    meta(content="telephone=no" name="format-detection")
+    link(href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet")
+    +style-tags
+    
+    
+    //- Entire Email Wrapper
+    //--------------------------------
+    table(cellspacing="0" cellpadding="0" border="0" width="100%")
+      tr: td
+      
+      
+      //- Open Centered Content Wrapper
+      //--------------------------------
+      tr: td(style="padding: 0 20px")
+        +ie-open({table: 602})
+        table(cellspacing="0" cellpadding="0" border="0" width="100%" align="center" style="max-width: 602px")
+        
+        
+          //- Logo Header
+          //--------------------------------
+          +header
+          
+          //- First Content Block
+          //--------------------------------
+          tr: td
+            table(cellspacing="0" cellpadding="0" border="0" width="100%" style="border: 1px solid #CCCCCC")
+              +super-heading(realityName, userEmail)
+              +intro-block
+              if title
+                +item-order('Title', title.old, title.new)
+              if description
+                +item-order('Description', description.old, description.new)
+              if guide
+                +item-order('Guide', guide.old, guide.new)
+              if realizer
+                +item-order('Realizer', realizer.old, realizer.new)
+              +thank-you
+            
+          //- Spacing Cell
+          //--------------------------------
+          tr: td(height="30") &nbsp;
+
+        //- Close Centered Content Wrapper
+        //--------------------------------
+        +ie-close
+        
