@@ -6,8 +6,7 @@ const typeDefs = `
   }
 
   type Subscription {
-    needCreated: Need
-    responsibilityCreated: Responsibility
+    realityCreated: Reality
     realityDeleted: Reality
     realityUpdated: Reality
   }

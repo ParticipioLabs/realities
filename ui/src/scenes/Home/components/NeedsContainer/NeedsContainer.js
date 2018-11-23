@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Query } from 'react-apollo';
 import { GET_NEEDS } from '@/services/queries';
-import { REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
+import { REALITIES_CREATE_SUBSCRIPTION, REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
@@ -16,15 +16,6 @@ import NeedsList from './components/NeedsList';
 const GET_SHOW_CREATE_NEED = gql`
   query NeedsContainer_showCreateNeed {
     showCreateNeed @client
-  }
-`;
-
-const NEEDS_CREATE_SUBSCRIPTION = gql`
-  subscription NeedsContainer_needCreated {
-    needCreated {
-     title
-     nodeId
-    }
   }
 `;
 
@@ -66,17 +57,19 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
               selectedNeedId={match.params.needId}
               subscribeToNeedsEvents={() => {
                 subscribeToMore({
-                  document: NEEDS_CREATE_SUBSCRIPTION,
+                  document: REALITIES_CREATE_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev;
-                    const { needCreated } = subscriptionData.data;
+                    const { realityCreated } = subscriptionData.data;
+
+                    if (realityCreated.__typename !== 'Need') return prev;
 
                     const alreadyExists = prev.needs
-                      .filter(need => need.nodeId === needCreated.nodeId)
+                      .filter(need => need.nodeId === realityCreated.nodeId)
                       .length > 0;
 
                     if (alreadyExists) return prev;
-                    return { needs: [needCreated, ...prev.needs] };
+                    return { needs: [realityCreated, ...prev.needs] };
                   },
                 });
                 subscribeToMore({

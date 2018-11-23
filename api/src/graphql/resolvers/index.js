@@ -25,16 +25,14 @@ import { isAuthenticated } from '../authorization';
 
 const pubsub = new PubSub();
 
-const NEED_CREATED = 'NEED_CREATED';
-const RESPONSIBILITY_CREATED = 'RESPONSIBILITY_CREATED';
+const REALITY_CREATED = 'REALITY_CREATED';
 const REALITY_DELETED = 'REALITY_DELETED';
 const REALITY_UPDATED = 'REALITY_UPDATED';
 
 const resolvers = {
   // root entry point to GraphQL service
   Subscription: {
-    needCreated: { subscribe: () => pubsub.asyncIterator([NEED_CREATED]) },
-    responsibilityCreated: { subscribe: () => pubsub.asyncIterator([RESPONSIBILITY_CREATED]) },
+    realityCreated: { subscribe: () => pubsub.asyncIterator([REALITY_CREATED]) },
     realityDeleted: { subscribe: () => pubsub.asyncIterator([REALITY_DELETED]) },
     realityUpdated: { subscribe: () => pubsub.asyncIterator([REALITY_UPDATED]) },
   },
@@ -126,7 +124,7 @@ const resolvers = {
       isAuthenticated,
       async (obj, { title }, { user, driver }) => {
         const need = await createNeed(driver, { title }, user.email);
-        pubsub.publish(NEED_CREATED, { needCreated: need });
+        pubsub.publish(REALITY_CREATED, { realityCreated: need });
         return need;
       },
     ),
@@ -134,7 +132,7 @@ const resolvers = {
       isAuthenticated,
       async (obj, { title, needId }, { user, driver }) => {
         const responsibility = await createResponsibility(driver, { title, needId }, user.email);
-        pubsub.publish(RESPONSIBILITY_CREATED, { responsibilityCreated: responsibility });
+        pubsub.publish(REALITY_CREATED, { realityCreated: responsibility });
         return responsibility;
       },
     ),

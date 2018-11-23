@@ -2,6 +2,20 @@
 
 import gql from 'graphql-tag';
 
+export const REALITIES_CREATE_SUBSCRIPTION = gql`
+  subscription ResponsibilitiesContainer_realityCreated {
+    realityCreated {
+      title
+      nodeId
+      ... on Responsibility {
+        fulfills {
+          nodeId
+        }
+      }
+    }
+  }
+`;
+
 export const REALITIES_DELETE_SUBSCRIPTION = gql`
   subscription Realities {
     realityDeleted {

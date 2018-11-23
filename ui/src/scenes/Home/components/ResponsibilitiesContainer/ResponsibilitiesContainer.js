@@ -4,7 +4,11 @@ import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
 import { GET_RESPONSIBILITIES } from '@/services/queries';
-import { REALITIES_DELETE_SUBSCRIPTION, REALITIES_UPDATE_SUBSCRIPTION } from '@/services/subscriptions';
+import {
+  REALITIES_CREATE_SUBSCRIPTION,
+  REALITIES_DELETE_SUBSCRIPTION,
+  REALITIES_UPDATE_SUBSCRIPTION,
+} from '@/services/subscriptions';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
@@ -15,18 +19,6 @@ import ResponsibilitiesList from './components/ResponsibilitiesList';
 const GET_SHOW_CREATE_RESPONSIBILITY = gql`
   query ResponsibilitiesContainer_showCreateResponsibility {
     showCreateResponsibility @client
-  }
-`;
-
-const RESPONSIBILITES_CREATE_SUBSCRIPTION = gql`
-  subscription ResponsibilitiesContainer_responsibilityCreated {
-    responsibilityCreated {
-      title
-      nodeId
-      fulfills {
-        nodeId
-      }
-    }
   }
 `;
 
@@ -62,74 +54,71 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
               error,
               data,
             }) => {
-              if (loading && !data.responsibilities) return <WrappedLoader />;
-              if (error) return `Error! ${error.message}`;
-              if (!data.responsibilities) return null;
-              return (
-                <ResponsibilitiesList
-                  responsibilities={data.responsibilities}
-                  selectedResponsibilityId={match.params.responsibilityId}
-                  subscribeToResponsibilitiesEvents={() => {
-                    subscribeToMore({
-                      document: RESPONSIBILITES_CREATE_SUBSCRIPTION,
-                      updateQuery: (prev, { subscriptionData }) => {
-                        if (!subscriptionData.data) return prev;
+                if (loading && !data.responsibilities) return <WrappedLoader />;
+                if (error) return `Error! ${error.message}`;
+                if (!data.responsibilities) return null;
+                return (
+                  <ResponsibilitiesList
+                    responsibilities={data.responsibilities}
+                    selectedResponsibilityId={match.params.responsibilityId}
+                    subscribeToResponsibilitiesEvents={() => {
+                      subscribeToMore({
+                        document: REALITIES_CREATE_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData, variables }) => {
+                          if (!subscriptionData.data) return prev;
 
-                        const { responsibilityCreated } = subscriptionData.data;
+                          const { realityCreated } = subscriptionData.data;
 
-                        // console.log('Responsibility Created!', responsibilityCreated, prev);
+                          // do nothing if the reality is not a responsibility or
+                          // if it does not belong to this need
+                          if (
+                            realityCreated.__typename !== 'Responsibility' ||
+                            realityCreated.fulfills.nodeId !== variables.needId
+                          ) { return prev; }
 
-                        // if the new responsibility is not on the current need, do nothing
-                        if (responsibilityCreated.fulfills.nodeId !== match.params.needId) {
-                          return prev;
-                        }
+                          // item will already exist in cache if it was added by the current client
+                          const alreadyExists = prev.responsibilities
+                            .filter(resp => resp.nodeId === realityCreated.nodeId)
+                            .length > 0;
 
-                        // item will already exist in cache if it was added by the current client
-                        const alreadyExists = prev.responsibilities
-                          .filter(resp => resp.nodeId === responsibilityCreated.nodeId)
-                          .length > 0;
+                          if (alreadyExists) return prev;
+                          return {
+                            responsibilities: [realityCreated, ...prev.responsibilities],
+                          };
+                        },
+                      });
+                      subscribeToMore({
+                        document: REALITIES_DELETE_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData }) => {
+                          if (!subscriptionData.data) return prev;
 
-                        if (alreadyExists) return prev;
-                        return {
-                            responsibilities: [
-                              responsibilityCreated,
-                              ...prev.responsibilities,
-                            ],
-                        };
-                      },
-                    });
-                    subscribeToMore({
-                      document: REALITIES_DELETE_SUBSCRIPTION,
-                      updateQuery: (prev, { subscriptionData }) => {
-                        if (!subscriptionData.data) return prev;
+                          const { realityDeleted } = subscriptionData.data;
 
-                        const { realityDeleted } = subscriptionData.data;
+                          return {
+                            responsibilities: prev.responsibilities
+                              .filter(item => item.nodeId !== realityDeleted.nodeId),
+                          };
+                        },
+                      });
+                      subscribeToMore({
+                        document: REALITIES_UPDATE_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData }) => {
+                          if (!subscriptionData.data) return prev;
 
-                        return {
-                          responsibilities: prev.responsibilities
-                            .filter(item => item.nodeId !== realityDeleted.nodeId),
-                        };
-                      },
-                    });
-                    subscribeToMore({
-                      document: REALITIES_UPDATE_SUBSCRIPTION,
-                      updateQuery: (prev, { subscriptionData }) => {
-                        if (!subscriptionData.data) return prev;
+                          const { realityUpdated } = subscriptionData.data;
 
-                        const { realityUpdated } = subscriptionData.data;
-
-                        return {
-                          responsibilities: prev.responsibilities.map((item) => {
-                            if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
-                            return item;
-                          }),
-                        };
-                      },
-                    });
-                  }}
-                />
-              );
-            }}
+                          return {
+                            responsibilities: prev.responsibilities.map((item) => {
+                              if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
+                              return item;
+                            }),
+                          };
+                        },
+                      });
+                    }}
+                  />
+                );
+              }}
           </Query>
         </div>
         )}
