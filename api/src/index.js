@@ -73,7 +73,6 @@ const server = new ApolloServer({
   schema,
   subscriptions: {
     onConnect: async (connectionParams) => {
-      //  console.log('Client connecting', connectionParams);
       if (connectionParams.authToken) {
         return verifyToken(connectionParams.authToken)
           .then(user => ({ user }));
@@ -99,9 +98,6 @@ server.installSubscriptionHandlers(httpServer);
 app.use(express.static(path.resolve(__dirname, '../../ui/build')));
 app.use((req, res) => res.sendFile(path.resolve(__dirname, '../../ui/build/index.html')));
 
-// // Wrap the Express server
-// const ws = createServer(server);
-//
 httpServer.listen(API_PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
   console.log(`View GraphQL Playground at http://localhost:${API_PORT}/graphql`);
