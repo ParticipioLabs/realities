@@ -51,9 +51,9 @@ const resolvers = {
     need(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(obj, { search, nodeId }, { driver }) {
+    responsibilities(obj, { search, fulfillsNeedId }, { driver }) {
       if (search) return searchRealities(driver, 'Responsibility', search);
-      if (nodeId) return findNodesByRelationshipAndLabel(driver, nodeId, 'FULFILLS', 'Responsibility', 'IN');
+      if (fulfillsNeedId) return findNodesByRelationshipAndLabel(driver, fulfillsNeedId, 'FULFILLS', 'Responsibility', 'IN');
       return findNodesByLabel(driver, 'Responsibility');
     },
     responsibility(obj, { nodeId }, { driver }) {

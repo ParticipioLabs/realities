@@ -21,7 +21,7 @@ export const GET_NEEDS = gql`
 
 export const GET_RESPONSIBILITIES = gql`
   query Responsibilities($needId: ID!) {
-    responsibilities(nodeId: $needId) {
+    responsibilities(fulfillsNeedId: $needId) {
       nodeId
       title
       realizer {
