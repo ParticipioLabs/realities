@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const RedDot = styled.span`
+const RealizersMissingIcon = styled.span`
   display: inline-block;
   margin-top: 8px;
   height: 10px;
@@ -9,4 +9,4 @@ const RedDot = styled.span`
   background-color: #d10404;
 `;
 
-export default RedDot;
+export default RealizersMissingIcon;

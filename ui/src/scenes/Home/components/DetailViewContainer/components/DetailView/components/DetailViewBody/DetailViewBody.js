@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from 'reactstrap';
 import Dependencies from '@/components/Dependencies';
-import { RedDot } from '@/components/styledElements';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 import LocalGraph from './components/LocalGraph';
 
 const LabelSpan = styled.span`
@@ -46,7 +46,7 @@ const DetailViewBody = ({ node }) => (
           ? `${node.realizer.name} (${node.realizer.email})`
           : node.realizer.email
       )}
-      {!node.realizer && <RedDot />}
+      {!node.realizer && <RealizersMissingIcon />}
     </CardText>
 
     <CardText>

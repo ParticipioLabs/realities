@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
-import { RedDot } from '@/components/styledElements';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 
 const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
@@ -23,9 +23,9 @@ const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
   }
 `;
 
-const renderMissingRealizerRedDot = (responsibility) => {
+const renderMissingRealizerIcon = (responsibility) => {
   if (!responsibility.realizer) {
-    return <RedDot />;
+    return <RealizersMissingIcon />;
   }
   return '';
 };
@@ -48,7 +48,7 @@ const ResponsibilitiesList = withRouter(({
           onClick={() => history.push(`/${match.params.needId}/${responsibility.nodeId}`)}
         >
           {responsibility.title}
-          {renderMissingRealizerRedDot(responsibility)}
+          {renderMissingRealizerIcon(responsibility)}
         </ResponsibilitiesListGroupItem>
       ))}
     </ResponsibilitiesListGroup>

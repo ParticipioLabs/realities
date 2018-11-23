@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import _ from 'lodash';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
-import { RedDot } from '@/components/styledElements';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
@@ -37,7 +36,7 @@ const renderMissingRealizersAmount = (need) => {
   if (realizersMissing.length > 0) {
     return (
       <div>
-        <RightMarginSpan>{realizersMissing.length}x</RightMarginSpan> <RedDot />
+        <RightMarginSpan>{realizersMissing.length}x</RightMarginSpan> <RealizersMissingIcon />
       </div>
     );
   }
