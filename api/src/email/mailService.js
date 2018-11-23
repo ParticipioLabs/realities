@@ -9,6 +9,7 @@ const sendMail = message =>
     sgMail
       .send(message)
       .then(() => {
+        console.log('Email sent!')
         resolve('Email sent successfully');
       })
       .catch((error) => {
@@ -23,8 +24,6 @@ export const sendUpdateMail = async (
   oldRealityData,
   updatedRealityData) => {
   const realityData = {
-    nodeId: args.nodeId,
-    realitiesUser: user,
     description: (oldRealityData.description === updatedRealityData.description
       ? false
       : { new: updatedRealityData.description, old: oldRealityData.description }),
@@ -38,6 +37,9 @@ export const sendUpdateMail = async (
       ? false
       : { new: args.realizerEmail, old: oldRealityData.realizerEmail }),
   };
+  if (Object.values(realityData).every(item => item === false)) {
+    return false;
+  }
   const template = pug.compileFile('src/email/templates/updateReality.pug');
   const emailHtml = template({
     realityName: oldRealityData.title,
