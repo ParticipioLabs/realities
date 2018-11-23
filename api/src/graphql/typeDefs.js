@@ -6,7 +6,10 @@ const typeDefs = `
 
   type Query {
     persons(search: String): [Person]
-    person(email: String!): Person
+    person(
+      email: String
+      nodeId: ID
+    ): Person
     needs(search: String): [Need]
     need(nodeId: ID!): Need
     responsibilities(search: String): [Responsibility]
