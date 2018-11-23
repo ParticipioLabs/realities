@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
 
-function runQueryAndGetData(session, query, params) {
+function runQueryAndGetDataRecord(session, query, params) {
   return session.run(query, params).then((result) => {
     session.close();
     if (!result.records) return null;
-    return result;
+    return result.records[0].toObject();
   });
 }
 
@@ -265,9 +265,9 @@ export function searchRealities(driver, label, term) {
   return runQueryAndGetRecords(driver.session(), query, { term });
 }
 
-export function getPeopleTwoStepsFromNode(driver, { nodeId }) {
+export function getPeopleTwoStepsFromReality(driver, { nodeId }) {
   const query = `
-    MATCH (n {nodeId:'${nodeId}'})-[*0..2]-(p:Person) 
+    MATCH (n {nodeId:'${nodeId}'})<-[*0..2]-(p:Person) 
     WITH collect(distinct p) as pe
     UNWIND pe as people
     RETURN people
@@ -282,10 +282,10 @@ export function getRealityData(driver, { nodeId }) {
   OPTIONAL MATCH (re:Person)-[:REALIZES*0..1]->(n)
   RETURN 
   labels(n) as reality_labels,
-  n.description as reality_description, 
-  n.title as reality_title, 
-  gu.email as reality_guideEmail,
-  re.email as reality_realizerEmail
+  n.description as description, 
+  n.title as title, 
+  gu.email as guideEmail,
+  re.email as realizerEmail
   `;
-  return runQueryAndGetData(driver.session(), query, { nodeId });
+  return runQueryAndGetDataRecord(driver.session(), query, { nodeId });
 }
