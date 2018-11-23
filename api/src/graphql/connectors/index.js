@@ -164,6 +164,23 @@ export function addRealityHasDeliberation(driver, { from, to }) {
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
 }
 
+export function createInfo(driver, { title }, infoUrl) {
+  const queryParams = {
+    title,
+    url: infoUrl,
+    infoId: uuidv4(),
+  };
+  // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
+  const query = `
+    MERGE (info:Info {url: {url}})
+    FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
+      SET info += {nodeId:{infoId}, created:timestamp(), title: {title}})
+    SET info.title = {title}
+    RETURN info
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
+}
+
 export function createViewer(driver, userEmail) {
   const queryParams = {
     email: userEmail,

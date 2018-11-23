@@ -1,5 +1,7 @@
+
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
+import loomio from '../../fetch/loomio';
 import {
   findNodesByLabel,
   findNodeByLabelAndId,
@@ -106,6 +108,7 @@ const resolvers = {
     },
   },
   Mutation: {
+    fetchLoomio: () => loomio('discussions'),
     createNeed: combineResolvers(
       isAuthenticated,
       (obj, { title }, { user, driver }) => createNeed(driver, { title }, user.email),
