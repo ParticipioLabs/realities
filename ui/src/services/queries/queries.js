@@ -34,3 +34,16 @@ export const GET_NEED_RESPONSIBILITIES = gql`
     }
   }
 `;
+
+export const GET_REALITY_INFOS = gql`
+  query RealityInfos($realityId: ID!) {
+    reality(nodeId: $realityId) {
+      nodeId
+      fulfilledBy {
+        nodeId
+        title
+        url
+      }
+    }
+  }
+`;

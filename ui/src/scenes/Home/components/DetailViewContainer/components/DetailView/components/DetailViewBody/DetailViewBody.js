@@ -9,7 +9,9 @@ import {
 } from 'reactstrap';
 import Dependencies from '@/components/Dependencies';
 import RealizersMissingIcon from '@/components/RealizersMissingIcon';
+import Deliberations from '@/components/Deliberations';
 import LocalGraph from './components/LocalGraph';
+
 
 const LabelSpan = styled.span`
   font-weight: bold;
@@ -56,10 +58,16 @@ const DetailViewBody = ({ node }) => (
       {node.description}
     </CardText>
 
-    <CardText>
-      <LabelSpan>Deliberation:</LabelSpan>
-      <a href={node.deliberationLink} target="_blank">{node.deliberationLink}</a>
-    </CardText>
+    <CardSection>
+      <LabelSpan>Deliberations:</LabelSpan>
+      <Deliberations
+        nodeType={node.__typename}
+        nodeId={node.nodeId}
+        deliberations={[
+          ...(node.deliberations || []),
+        ]}
+      />
+    </CardSection>
 
     <CardSection>
       <LabelSpan>Depends on:</LabelSpan>
@@ -99,6 +107,12 @@ DetailViewBody.propTypes = {
       email: PropTypes.string,
       name: PropTypes.string,
     }),
+    hasDeliberations: PropTypes.arrayOf(PropTypes.shape({
+      __typename: PropTypes.string,
+      nodeId: PropTypes.string,
+      title: PropTypes.string,
+      url: PropTypes.string,
+    })),
     dependsOnNeeds: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
@@ -131,6 +145,7 @@ DetailViewBody.defaultProps = {
       email: '',
       name: '',
     },
+    hasDeliberations: [],
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
