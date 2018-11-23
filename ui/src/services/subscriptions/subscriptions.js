@@ -75,6 +75,11 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
           nodeId
         }
       }
+      deliberations {
+        nodeId
+        url
+        title
+      }
     }
   }
 `;
