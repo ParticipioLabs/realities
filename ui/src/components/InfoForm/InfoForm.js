@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
-  Button,
   Form,
   FormGroup,
   Input,
 } from 'reactstrap';
+
 
 const Wrapper = styled.div`
   margin-bottom: 1rem;
@@ -16,7 +16,7 @@ const StyledFormGroup = styled(FormGroup)`
   margin-bottom: 0.5rem;
 `;
 
-const ListForm = ({
+const InfoForm = ({
   inputName,
   placeholder,
   value,
@@ -30,9 +30,7 @@ const ListForm = ({
       <StyledFormGroup>
         <Input
           name={inputName}
-          type="textarea"
-          autoFocus
-          rows={3}
+          type="input"
           placeholder={placeholder}
           value={value}
           disabled={isSubmitting}
@@ -47,18 +45,11 @@ const ListForm = ({
           }}
         />
       </StyledFormGroup>
-      <Button
-        size="sm"
-        type="submit"
-        disabled={!value || isSubmitting}
-      >
-        Save
-      </Button>
     </Form>
   </Wrapper>
 );
 
-ListForm.propTypes = {
+InfoForm.propTypes = {
   inputName: PropTypes.string,
   placeholder: PropTypes.string,
   value: PropTypes.string,
@@ -68,7 +59,7 @@ ListForm.propTypes = {
   isSubmitting: PropTypes.bool,
 };
 
-ListForm.defaultProps = {
+InfoForm.defaultProps = {
   inputName: '',
   placeholder: 'Enter text...',
   value: '',
@@ -78,4 +69,4 @@ ListForm.defaultProps = {
   isSubmitting: false,
 };
 
-export default ListForm;
+export default InfoForm;

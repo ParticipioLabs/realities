@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
 const NeedsListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
   &:focus {
     outline: none;
   }
@@ -19,6 +22,26 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     color: white;
   }
 `;
+
+const RightMarginSpan = styled.span`
+  margin-right: 10px;
+`;
+
+const renderMissingRealizersAmount = (need) => {
+  let realizersMissing = [];
+  if (need.fulfilledBy) {
+    realizersMissing = need.fulfilledBy.filter(resp => !resp.realizer);
+  }
+
+  if (realizersMissing.length > 0) {
+    return (
+      <div>
+        <RightMarginSpan>{realizersMissing.length}x</RightMarginSpan> <RealizersMissingIcon />
+      </div>
+    );
+  }
+  return '';
+};
 
 const NeedsList = withRouter(({
   needs,
@@ -36,7 +59,9 @@ const NeedsList = withRouter(({
           active={need.nodeId === selectedNeedId}
           onClick={() => history.push(`/${need.nodeId}`)}
         >
+
           {need.title}
+          {renderMissingRealizersAmount(need)}
         </NeedsListGroupItem>
       ))}
     </NeedsListGroup>
@@ -52,6 +77,14 @@ NeedsList.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
+  need: PropTypes.arrayOf(PropTypes.shape({
+    nodeId: PropTypes.string,
+    title: PropTypes.string,
+    realizer: PropTypes.shape({
+      nodeId: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  })),
 };
 
 NeedsList.defaultProps = {
@@ -60,6 +93,7 @@ NeedsList.defaultProps = {
   history: {
     push: () => null,
   },
+  need: [],
 };
 
 export default NeedsList;

@@ -23,25 +23,25 @@ const Dependencies = ({ dependencies, showRemove }) => (
         __typename,
         nodeId,
         title,
-      },
+        },
       onClick,
-    }) => (
-      <StyledListGroupItem
-        key={nodeId}
-        tag="div"
-        href="#"
-        action
-        onClick={onClick}
-        showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
-      >
-        <TypeBadge nodeType={__typename} />
-        {title}
-        {showRemove && (
-          <RemoveWrapper>
-            <RemoveDependency nodeType={__typename} nodeId={nodeId} />
-          </RemoveWrapper>
-        )}
-      </StyledListGroupItem>
+      }) => (
+        <StyledListGroupItem
+          key={nodeId}
+          tag="div"
+          href="#"
+          action
+          onClick={onClick}
+          showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
+        >
+          <TypeBadge nodeType={__typename} />
+          {title}
+          {showRemove && (
+            <RemoveWrapper>
+              <RemoveDependency nodeType={__typename} nodeId={nodeId} />
+            </RemoveWrapper>
+          )}
+        </StyledListGroupItem>
     ))}
   </ListGroup>
 );
