@@ -4,11 +4,11 @@ import gql from 'graphql-tag';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import { GET_NEEDS } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
 import WrappedLoader from '@/components/WrappedLoader';
+import { GET_NEEDS } from '@/services/queries';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 

@@ -13,6 +13,14 @@ const CREATE_NEED = gql`
     createNeed(title: $title) {
       nodeId
       title
+      fulfilledBy {
+        nodeId
+        title
+        realizer {
+          nodeId
+          name
+        }
+      }
     }
   }
 `;

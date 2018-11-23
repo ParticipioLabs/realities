@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
 import WrappedLoader from '@/components/WrappedLoader';
+import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
