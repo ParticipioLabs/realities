@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
 const NeedsListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
   &:focus {
     outline: none;
   }
@@ -19,6 +22,26 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     color: white;
   }
 `;
+
+const RightMarginSpan = styled.span`
+  margin-right: 10px;
+`;
+
+const renderMissingRealizersAmount = (need) => {
+  let realizersMissing = [];
+  if (need.fulfilledBy) {
+    realizersMissing = need.fulfilledBy.filter(resp => !resp.realizer);
+  }
+
+  if (realizersMissing.length > 0) {
+    return (
+      <div>
+        <RightMarginSpan>{realizersMissing.length}x</RightMarginSpan> <RealizersMissingIcon />
+      </div>
+    );
+  }
+  return '';
+};
 
 class NeedsList extends Component {
   componentDidMount() {
@@ -40,6 +63,7 @@ class NeedsList extends Component {
               onClick={() => history.push(`/${need.nodeId}`)}
             >
               {need.title}
+              {renderMissingRealizersAmount(need)}
             </NeedsListGroupItem>
           ))}
         </NeedsListGroup>

@@ -7,6 +7,20 @@ export const REALITIES_CREATE_SUBSCRIPTION = gql`
     realityCreated {
       title
       nodeId
+      realizer {
+        nodeId
+        name
+      }
+      ... on Need {
+        fulfilledBy {
+          nodeId
+          title
+          realizer {
+            nodeId
+            name
+          }
+        }
+      }
       ... on Responsibility {
         fulfills {
           nodeId

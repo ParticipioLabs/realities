@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 
 const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
 const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
   &:focus {
     outline: none;
   }
@@ -20,6 +23,12 @@ const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
   }
 `;
 
+const renderMissingRealizerIcon = (responsibility) => {
+  if (!responsibility.realizer) {
+    return <RealizersMissingIcon />;
+  }
+  return '';
+};
 class ResponsibilitiesList extends Component {
   componentDidMount() {
     this.props.subscribeToResponsibilitiesEvents();
@@ -45,6 +54,7 @@ class ResponsibilitiesList extends Component {
               onClick={() => history.push(`/${match.params.needId}/${responsibility.nodeId}`)}
             >
               {responsibility.title}
+              {renderMissingRealizerIcon(responsibility)}
             </ResponsibilitiesListGroupItem>
           ))}
         </ResponsibilitiesListGroup>
