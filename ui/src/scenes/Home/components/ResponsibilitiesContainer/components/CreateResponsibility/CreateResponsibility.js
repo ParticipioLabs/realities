@@ -13,6 +13,10 @@ const CREATE_RESPONSIBILITY = gql`
     createResponsibility(title: $title, needId: $needId) {
       nodeId
       title
+      realizer {
+        nodeId
+        name
+      }
     }
   }
 `;

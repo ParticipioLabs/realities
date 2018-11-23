@@ -7,28 +7,13 @@ import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
 import WrappedLoader from '@/components/WrappedLoader';
+import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
 const GET_SHOW_CREATE_RESPONSIBILITY = gql`
   query ResponsibilitiesContainer_showCreateResponsibility {
     showCreateResponsibility @client
-  }
-`;
-
-const GET_NEED_RESPONSIBILITIES = gql`
-  query NeedResponsibilities($needId: ID!) {
-    need(nodeId: $needId) {
-      nodeId
-      fulfilledBy {
-        nodeId
-        title
-        realizer {
-          nodeId
-          name
-        }
-      }
-    }
   }
 `;
 
