@@ -3,13 +3,13 @@ import pug from 'pug';
 import { getPeopleTwoStepsFromReality } from '../graphql/connectors';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const appUrl = process.env.APP_URL;
 
 const sendMail = message =>
   new Promise((resolve, reject) => {
     sgMail
       .send(message)
       .then(() => {
-        console.log('Email sent!')
         resolve('Email sent successfully');
       })
       .catch((error) => {
@@ -42,6 +42,7 @@ export const sendUpdateMail = async (
   }
   const template = pug.compileFile('src/email/templates/updateReality.pug');
   const emailHtml = template({
+    realityUrl: appUrl + updatedRealityData.nodeId,
     realityName: oldRealityData.title,
     description: realityData.description,
     title: realityData.title,
