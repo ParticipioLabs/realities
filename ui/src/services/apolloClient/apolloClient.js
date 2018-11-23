@@ -4,12 +4,18 @@ import { withClientState } from 'apollo-link-state';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { ApolloLink, split } from 'apollo-link';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import auth from '@/services/auth';
 import { resolvers, defaults } from './localState';
+import introspectionQueryResultData from './fragmentTypes.json';
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData,
+});
 
 const cache = new InMemoryCache({
   dataIdFromObject: object => `${object.__typename}:${object.nodeId}`,
+  fragmentMatcher,
 });
 
 const stateLink = withClientState({ cache, resolvers, defaults });
