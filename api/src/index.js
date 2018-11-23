@@ -7,6 +7,9 @@ import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 import neo4jDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
+import { scheduler as loomioScheduler } from './fetch/loomio';
+
+loomioScheduler();
 
 const { NODE_ENV, PORT } = process.env;
 const API_PORT = NODE_ENV && NODE_ENV.includes('prod') ? PORT || 3000 : 3100;

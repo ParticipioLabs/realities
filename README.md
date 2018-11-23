@@ -52,7 +52,14 @@ Set up your connection variables to Neo4j in `api/.env`. With Neo4j running loca
 DB_URL=bolt://127.0.0.1:7687
 DB_USERNAME=neo4j
 DB_PASSWORD=
+
+LOOMIO_API_BASE=https://talk.theborderland.se/api/v1
+LOOMIO_SITE_BASE=https://talk.theborderland.se
+LOOMIO_CRON_SCHEDULE='5 * * * *'
 ```
+The LOOMIO* variables are used for accessing the Loomio API to download discussions.
+The LOOMIO_CHRON_SCHEDULE is in standard cron format, starting with minutes. The example above
+runs the download every hour at hh:05.
 
 Make sure you're running the versions of node and npm specified in the api and ui package.json files (node 8.9.x and npm 5.5.x), then...
 

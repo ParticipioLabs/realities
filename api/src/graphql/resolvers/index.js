@@ -1,7 +1,7 @@
 
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
-import loomio from '../../fetch/loomio';
+import { loomio } from '../../fetch/loomio';
 import {
   findNodesByLabel,
   findNodeByLabelAndId,

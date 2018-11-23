@@ -48,6 +48,7 @@
     "mime": "^2.0.3",
     "mocha": "^4.0.1",
     "neo4j-driver": "^1.6.3",
+    "node-cron": "^2.0.3",
     "nodemon": "^1.12.4",
     "normalize-url": "^4.0.0",
     "path": "^0.12.7",
