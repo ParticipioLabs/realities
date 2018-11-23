@@ -81,7 +81,7 @@ const DetailView = ({
           ]}
         />
         <Divider />
-        <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
+        <DeleteNodeContainer node={node} />
       </CardBody>
     ) : (
       <DetailViewBody node={node} />

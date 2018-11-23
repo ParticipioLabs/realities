@@ -17,14 +17,14 @@ const DeleteNodeButton = ({
   confirmationModalIsOpen,
   onToggleConfirmationModal,
   onConfirmSoftDelete,
-  loading,
+  disabled,
   error,
 }) => (
   <Wrapper>
     <Button
       color="danger"
       onClick={onToggleConfirmationModal}
-      disabled={loading}
+      disabled={disabled}
     >
       Delete {nodeType.toLowerCase()}
     </Button>
@@ -44,7 +44,7 @@ const DeleteNodeButton = ({
         <Button
           color="danger"
           onClick={onConfirmSoftDelete}
-          disabled={loading}
+          disabled={disabled}
         >
           Yes, delete this {nodeType.toLowerCase()}
         </Button>
@@ -61,7 +61,7 @@ DeleteNodeButton.propTypes = {
   confirmationModalIsOpen: PropTypes.bool,
   onToggleConfirmationModal: PropTypes.func,
   onConfirmSoftDelete: PropTypes.func,
-  loading: PropTypes.bool,
+  disabled: PropTypes.bool,
   error: PropTypes.string,
 };
 
@@ -70,7 +70,7 @@ DeleteNodeButton.defaultProps = {
   confirmationModalIsOpen: false,
   onToggleConfirmationModal: () => null,
   onConfirmSoftDelete: () => null,
-  loading: false,
+  disabled: false,
   error: '',
 };
 

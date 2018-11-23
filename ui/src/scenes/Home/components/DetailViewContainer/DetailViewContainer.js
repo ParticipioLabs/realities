@@ -14,6 +14,11 @@ const createDetailViewQuery = nodeType => gql`
       title
       description
       deliberationLink
+      ${nodeType === 'need' ? `
+        fulfilledBy {
+          nodeId
+        }
+      ` : ''}
       guide {
         nodeId
         email
@@ -97,7 +102,7 @@ DetailViewContainer.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       needId: PropTypes.string,
-      resposibilityId: PropTypes.string,
+      responsibilityId: PropTypes.string,
     }),
   }),
 };

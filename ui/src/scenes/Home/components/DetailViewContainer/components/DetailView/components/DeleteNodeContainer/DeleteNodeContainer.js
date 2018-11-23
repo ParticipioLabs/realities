@@ -41,13 +41,14 @@ class DeleteNodeContainer extends Component {
   };
 
   render() {
+    const { node } = this.props;
     return (
       <Mutation
-        mutation={this.props.nodeType === 'Need' ? SOFT_DELETE_NEED : SOFT_DELETE_RESPONSIBILITY}
+        mutation={node.__typename === 'Need' ? SOFT_DELETE_NEED : SOFT_DELETE_RESPONSIBILITY}
         update={(cache, { data }) => {
           this.setState({ confirmationModalIsOpen: false });
           cache.writeData({ data: { showDetailedEditView: false } });
-          if (this.props.nodeType === 'Need') {
+          if (node.__typename === 'Need') {
             const { needs } = cache.readQuery({ query: GET_NEEDS });
             cache.writeQuery({
               query: GET_NEEDS,
@@ -79,32 +80,47 @@ class DeleteNodeContainer extends Component {
           }
         }}
       >
-        {(softDeleteNode, { loading, error }) => (
-          <DeleteNodeButton
-            nodeType={this.props.nodeType}
-            confirmationModalIsOpen={this.state.confirmationModalIsOpen}
-            onToggleConfirmationModal={this.toggleConfirmationModal}
-            onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId: this.props.nodeId } })}
-            loading={loading}
-            error={error}
-          />
-        )}
+        {(softDeleteNode, { loading, error }) => {
+          let isNeedandHasResponsibilities = false;
+          if (node.__typename === 'Need') {
+            isNeedandHasResponsibilities = node.fulfilledBy.length > 0;
+          }
+
+          return (
+            <DeleteNodeButton
+              nodeType={node.__typename}
+              confirmationModalIsOpen={this.state.confirmationModalIsOpen}
+              onToggleConfirmationModal={this.toggleConfirmationModal}
+              onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId: node.nodeId } })}
+              disabled={loading || isNeedandHasResponsibilities}
+              error={error}
+            />
+          );
+        }}
       </Mutation>
     );
   }
 }
 
 DeleteNodeContainer.propTypes = {
-  nodeType: PropTypes.string,
-  nodeId: PropTypes.string,
+  node: PropTypes.shape({
+    __typename: PropTypes.string,
+    nodeId: PropTypes.string,
+    fulfilledBy: PropTypes.arrayOf(PropTypes.shape({
+      nodeId: PropTypes.string,
+    })),
+  }),
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
 };
 
 DeleteNodeContainer.defaultProps = {
-  nodeType: 'Need',
-  nodeId: '',
+  node: {
+    __typename: 'need',
+    nodeId: '',
+    fulfilledBy: [],
+  },
   history: {
     push: () => null,
   },
