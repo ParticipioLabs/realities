@@ -3,7 +3,7 @@
 import gql from 'graphql-tag';
 
 export const REALITIES_CREATE_SUBSCRIPTION = gql`
-  subscription ResponsibilitiesContainer_realityCreated {
+  subscription realityCreated {
     realityCreated {
       title
       nodeId
@@ -17,7 +17,7 @@ export const REALITIES_CREATE_SUBSCRIPTION = gql`
 `;
 
 export const REALITIES_DELETE_SUBSCRIPTION = gql`
-  subscription Realities {
+  subscription realityDeleted {
     realityDeleted {
       nodeId
       title
@@ -34,7 +34,7 @@ export const REALITIES_DELETE_SUBSCRIPTION = gql`
 `;
 
 export const REALITIES_UPDATE_SUBSCRIPTION = gql`
-  subscription Realities {
+  subscription realityUpdated {
     realityUpdated {
       nodeId
       title
