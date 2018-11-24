@@ -71,6 +71,7 @@ const GET_NEED = gql`
   }
   ${NEED_FRAGMENT}
   ${RESPONSIBILITY_FRAGMENT}
+
 `;
 
 const GET_RESPONSIBILITY = gql`
@@ -96,6 +97,89 @@ const GET_RESPONSIBILITY = gql`
   }
   ${NEED_FRAGMENT}
   ${RESPONSIBILITY_FRAGMENT}
+`;
+
+const NEED_ON_PERSON_FRAGMENT = gql`
+  fragment NeedOnPerson on Need {
+    nodeId
+    title
+    guide {
+      nodeId
+      name
+    }
+    realizer {
+      nodeId
+      name
+    }
+    fulfilledBy {
+      nodeId
+      title
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
+    }
+  }
+`;
+const RESPONSIBILITY_ON_PERSON_FRAGMENT = gql`
+  fragment ResponsibilityOnPerson on Responsibility {
+    nodeId
+    title
+    dependsOnResponsibilities {
+      nodeId
+      title
+      guide {
+        nodeId
+        name
+      }
+    }
+    guide {
+      nodeId
+      name
+    }
+    realizer {
+      nodeId
+      name
+    }
+    fulfills {
+      nodeId
+      title
+      guide {
+        nodeId
+        name
+      }
+      realizer {
+        nodeId
+        name
+      }
+    }
+  }
+`;
+const GET_PERSON = gql`
+  query LocalGraphPersonFields($nodeId: ID!) {
+    person(nodeId: $nodeId) {
+      nodeId
+      name
+      guidesNeeds {
+        ...NeedOnPerson
+      }
+      realizesNeeds {
+        ...NeedOnPerson
+      }
+      guidesResponsibilities {
+        ...ResponsibilityOnPerson
+      }
+      realizesResponsibilities {
+        ...ResponsibilityOnPerson
+      }
+    }
+  }
+${NEED_ON_PERSON_FRAGMENT}
+${RESPONSIBILITY_ON_PERSON_FRAGMENT}
 `;
 
 const graphOptions = {
@@ -155,10 +239,20 @@ class LocalGraph extends Component {
   render() {
     const { nodeType, nodeId } = this.props;
     const { selectedNode } = this.state;
+
+    let gqlQuery;
+    if (nodeType === 'Need') {
+      gqlQuery = GET_NEED;
+    } else if (nodeType === 'Responsibility') {
+      gqlQuery = GET_RESPONSIBILITY;
+    } else {
+      gqlQuery = GET_PERSON;
+    }
+
     return (
       <Query
-        query={nodeType === 'Need' ? GET_NEED : GET_RESPONSIBILITY}
-        variables={{ nodeId }}
+        query={gqlQuery}
+        variables={{ nodeId, nodeType }}
       >
         {({
           loading,
@@ -171,10 +265,17 @@ class LocalGraph extends Component {
           // The next line is a temporary hack to make up for a bug in Apollo where
           // the query returns an empty data object sometimes:
           // https://github.com/apollographql/apollo-client/issues/3267
-          if (!data.need && !data.responsibility) refetch();
-          const node = nodeType === 'Need' ? data.need : data.responsibility;
+          if (!data.need && !data.responsibility && !data.person) refetch();
+
+          let node;
+          if (nodeType === 'Need') node = data.need;
+          else if (nodeType === 'Responsibility') node = data.responsibility;
+          else node = data.person;
+
           if (!node) return null;
-          const graphData = graphUtils.getSubGraph(node);
+          let graphData;
+          if (nodeType === 'Person') graphData = graphUtils.getPersonGraph(node);
+          else graphData = graphUtils.getSubGraph(node);
           return (
             <div>
               <div id="localGraphWrapper">

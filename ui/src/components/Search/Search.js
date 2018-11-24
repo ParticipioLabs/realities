@@ -23,6 +23,9 @@ const Search = withRouter(({ history }) => (
           case 'Responsibility':
             history.push(`/${node.fulfills.nodeId}/${node.nodeId}`);
             break;
+          case 'Person':
+            history.push(`/profile/${node.nodeId}`);
+            break;
           default:
             history.push('/');
         }

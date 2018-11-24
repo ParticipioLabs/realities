@@ -41,8 +41,13 @@ const resolvers = {
       if (search) return searchPersons(driver, search);
       return findNodesByLabel(driver, 'Person');
     },
-    person(obj, { email }, { driver }) {
-      return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
+    person(obj, { nodeId, email }, { driver }) {
+      if (email) return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
+      if (nodeId) return findNodeByLabelAndId(driver, 'Person', nodeId);
+      const errorMessage =
+        'Field "person" arguments "email" of type "String" and "nodeId" of type "ID" ' +
+        'were both undefined. Please provide at least one.';
+      return new Error(errorMessage);
     },
     needs(obj, { search }, { driver }) {
       if (search) return searchRealities(driver, 'Need', search);
