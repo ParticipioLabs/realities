@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
@@ -43,32 +43,37 @@ const renderMissingRealizersAmount = (need) => {
   return '';
 };
 
-const NeedsList = withRouter(({
-  needs,
-  selectedNeedId,
-  history,
-}) => (
-  <div>
-    <NeedsListGroup>
-      {needs.map(need => (
-        <NeedsListGroupItem
-          key={need.nodeId}
-          tag="button"
-          href="#"
-          action
-          active={need.nodeId === selectedNeedId}
-          onClick={() => history.push(`/${need.nodeId}`)}
-        >
+class NeedsList extends Component {
+  componentDidMount() {
+    this.props.subscribeToNeedsEvents();
+  }
 
-          {need.title}
-          {renderMissingRealizersAmount(need)}
-        </NeedsListGroupItem>
-      ))}
-    </NeedsListGroup>
-  </div>
-));
+  render() {
+    const { needs, selectedNeedId, history } = this.props;
+    return (
+      <div>
+        <NeedsListGroup>
+          {needs.map(need => (
+            <NeedsListGroupItem
+              key={need.nodeId}
+              tag="button"
+              href="#"
+              action
+              active={need.nodeId === selectedNeedId}
+              onClick={() => history.push(`/${need.nodeId}`)}
+            >
+              {need.title}
+              {renderMissingRealizersAmount(need)}
+            </NeedsListGroupItem>
+          ))}
+        </NeedsListGroup>
+      </div>
+    );
+  }
+}
 
 NeedsList.propTypes = {
+  subscribeToNeedsEvents: PropTypes.func.isRequired,
   needs: PropTypes.arrayOf(PropTypes.shape({
     nodeId: PropTypes.string,
     title: PropTypes.string,
@@ -77,14 +82,6 @@ NeedsList.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
-  need: PropTypes.arrayOf(PropTypes.shape({
-    nodeId: PropTypes.string,
-    title: PropTypes.string,
-    realizer: PropTypes.shape({
-      nodeId: PropTypes.string,
-      name: PropTypes.string,
-    }),
-  })),
 };
 
 NeedsList.defaultProps = {
@@ -93,7 +90,6 @@ NeedsList.defaultProps = {
   history: {
     push: () => null,
   },
-  need: [],
 };
 
-export default NeedsList;
+export default withRouter(NeedsList);
