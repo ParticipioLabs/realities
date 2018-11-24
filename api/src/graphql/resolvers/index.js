@@ -18,7 +18,7 @@ import {
   removeDeliberation,
   searchPersons,
   searchRealities,
-  getRealityData,
+  getEmailData,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 import { sendUpdateMail } from '../../email/mailService';
@@ -108,53 +108,67 @@ const resolvers = {
     },
   },
   Mutation: {
-    createNeed: combineResolvers(isAuthenticated, (obj, { title }, { user, driver }) =>
-      createNeed(driver, { title }, user.email)),
+    createNeed: combineResolvers(
+      isAuthenticated,
+      (obj, { title }, { user, driver }) => createNeed(driver, { title }, user.email),
+    ),
     createResponsibility: combineResolvers(
       isAuthenticated,
       (obj, { title, needId }, { user, driver }) =>
         createResponsibility(driver, { title, needId }, user.email),
     ),
-    createViewer: combineResolvers(isAuthenticated, (obj, args, { user, driver }) =>
-      createViewer(driver, user.email)),
-    updateNeed: combineResolvers(isAuthenticated, async (obj, args, { driver, user }) => {
-      const realityData = await getRealityData(driver, args);
-      const updatedReality = await updateReality(driver, args, user);
-      if (updatedReality) {
-        sendUpdateMail(
-          driver,
-          user,
-          args,
-          realityData,
-          updatedReality,
+    createViewer: combineResolvers(
+      isAuthenticated,
+      (obj, args, { user, driver }) => createViewer(driver, user.email),
+    ),
+    updateNeed: combineResolvers(
+      isAuthenticated, 
+      async (obj, args, { driver, user }) => {
+        const getEmailData = await getRealityData(driver, args);
+        const updatedReality = await updateReality(driver, args, user);
+        if (updatedReality) {
+          sendUpdateMail(
+            driver,
+            user,
+            args,
+            getEmailData,
+            updatedReality,
         );
       }
       return updatedReality;
     }),
     updateResponsibility: combineResolvers(isAuthenticated, async (obj, args, { driver, user }) => {
-      const realityData = await getRealityData(driver, args);
+      const getEmailData = await getRealityData(driver, args);
       const updatedReality = await updateReality(driver, args, user);
       if (updatedReality) {
         sendUpdateMail(
           driver,
           user,
           args,
-          realityData,
+          getEmailData,
           updatedReality,
         );
       }
       return updatedReality;
     }),
-    updateViewerName: combineResolvers(isAuthenticated, (obj, { name }, { user, driver }) =>
-      updateViewerName(driver, { name }, user.email)),
+    updateViewerName: combineResolvers(
+      isAuthenticated,
+      (obj, { name }, { user, driver }) => updateViewerName(driver, { name }, user.email),
+    ),
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
-    softDeleteNeed: combineResolvers(isAuthenticated, (obj, { nodeId }, { driver }) =>
-      softDeleteNode(driver, { nodeId })),
+    softDeleteNeed: combineResolvers(
+      isAuthenticated,
+      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+    ),
     // TODO: Check if responsibility is free of dependents before soft deleting
-    softDeleteResponsibility: combineResolvers(isAuthenticated, (obj, { nodeId }, { driver }) =>
-      softDeleteNode(driver, { nodeId })),
-    addNeedDependsOnNeeds: combineResolvers(isAuthenticated, (obj, { from, to }, { driver }) =>
-      addDependency(driver, { from, to })),
+    softDeleteResponsibility: combineResolvers(
+      isAuthenticated,
+      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+    ),
+    addNeedDependsOnNeeds: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
+    ),
     addNeedDependsOnResponsibilities: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
