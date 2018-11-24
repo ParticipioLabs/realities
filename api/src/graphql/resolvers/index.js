@@ -122,30 +122,31 @@ const resolvers = {
       (obj, args, { user, driver }) => createViewer(driver, user.email),
     ),
     updateNeed: combineResolvers(
-      isAuthenticated, 
+      isAuthenticated,
       async (obj, args, { driver, user }) => {
-        const getEmailData = await getRealityData(driver, args);
+        const emailData = await getEmailData(driver, args);
         const updatedReality = await updateReality(driver, args, user);
         if (updatedReality) {
           sendUpdateMail(
             driver,
             user,
             args,
-            getEmailData,
+            emailData,
             updatedReality,
-        );
-      }
-      return updatedReality;
-    }),
+          );
+        }
+        return updatedReality;
+      },
+    ),
     updateResponsibility: combineResolvers(isAuthenticated, async (obj, args, { driver, user }) => {
-      const getEmailData = await getRealityData(driver, args);
+      const emailData = await getEmailData(driver, args);
       const updatedReality = await updateReality(driver, args, user);
       if (updatedReality) {
         sendUpdateMail(
           driver,
           user,
           args,
-          getEmailData,
+          emailData,
           updatedReality,
         );
       }

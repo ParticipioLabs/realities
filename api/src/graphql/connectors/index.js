@@ -7,7 +7,7 @@ function runQueryAndGetDataRecord(session, query, params) {
       session.close();
       if (!result.records) return null;
       return result.records[0].toObject();
-  });
+    });
 }
 
 function runQueryAndGetRecords(session, query, params) {
