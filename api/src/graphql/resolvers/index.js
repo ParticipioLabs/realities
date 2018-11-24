@@ -10,6 +10,7 @@ import {
   createResponsibility,
   createViewer,
   updateReality,
+  changeFulfills,
   updateViewerName,
   softDeleteNode,
   addDependency,
@@ -126,6 +127,10 @@ const resolvers = {
     updateResponsibility: combineResolvers(
       isAuthenticated,
       (obj, args, { driver }) => updateReality(driver, args),
+    ),
+    changeFulfills: combineResolvers(
+      isAuthenticated,
+      (obj, { responsibilityId, needId }, { driver }) => changeFulfills(driver, { responsibilityId, needId }),
     ),
     updateViewerName: combineResolvers(
       isAuthenticated,
