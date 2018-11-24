@@ -317,12 +317,14 @@ export function getEmailData(driver, { nodeId }) {
     MATCH (n {nodeId:'${nodeId}'})
     MATCH (n)<-[:GUIDES*0..1]-(gu:Person)
     OPTIONAL MATCH (re:Person)-[:REALIZES*0..1]->(n)
+    OPTIONAL MATCH (n)-[:FULFILLS]->(need)
     RETURN 
     labels(n) as reality_labels,
     n.description as description, 
     n.title as title, 
     gu.email as guideEmail,
-    re.email as realizerEmail
+    re.email as realizerEmail,
+    need.nodeId as linkedNeedId
   `;
   return runQueryAndGetDataRecord(driver.session(), query, { nodeId });
 }
