@@ -3,62 +3,112 @@ import axios from 'axios';
 import { createInfo } from '../graphql/connectors';
 import driver from '../db/neo4jDriver';
 
+// TODO: Check encoding, make sure it's UTF-8?
 const loomioApi = axios.create({
   baseURL: process.env.LOOMIO_API_BASE,
   timeout: 10000,
   headers: { 'User-Agent': 'Realities Agent', 'Accept-Encoding': 'gzip' },
 });
 
-// Set max number of results to ridiculously high number.
-const defaultParams = { params: { per: 100000 } };
+// Set max results to ridiculously high number.
+const defaultParams = { per: 100000 };
 
 // Running without Loomio is okay, but suppress the errors.
 const checkEnvVars = () => {
-  const valid = (
-    process.env.LOOMIO_API_BASE &&
-    process.env.LOOMIO_SITE_BASE &&
-    process.env.LOOMIO_CRON_SCHEDULE
-  );
-  if (!valid) {
-    console.log('ERROR: Missing LOOMIO vars in .env file');
+  const loomioVars = [
+    'LOOMIO_API_BASE',
+    'LOOMIO_SITE_BASE',
+    'LOOMIO_CRON_SCHEDULE',
+  ];
+  const errors = [];
+  loomioVars.forEach((s) => {
+    const v = process.env[s];
+    if (typeof v === 'undefined') {
+      errors.push(`WARNING: Missing LOOMIO var "${s}" in .env file`);
+    } else if (!v) {
+      errors.push(`WARNING: Empty LOOMIO var "${s} in .env file`);
+    }
+  });
+  if (errors.length) {
+    errors.forEach((e) => { console.log(e); });
     return false;
   }
-  return valid;
-};
-
-// For Loomio resourceType can be either 'discussions' or 'groups'
-export const loomio = (resourceType) => {
-  if (!checkEnvVars()) { return 'ERROR: Missing LOOMIO vars in .env file'; }
-  const url = `${resourceType}.json`;
-  // Conveniently, the prefix happens to be the first letter of the resourceType.
-  const pathPrefix = resourceType[0];
-  console.log(`Getting ${resourceType} from Loomio API`);
-
-  loomioApi.get(url, defaultParams)
-    .then((response) => {
-      const { discussions: objects } = response.data;
-      console.log(`Downloaded ${objects.length} ${resourceType}`);
-      objects.forEach((obj) => {
-        const { key, title } = obj;
-        const objUrl = `${process.env.LOOMIO_SITE_BASE}/${pathPrefix}/${key}`;
-        // console.log(title, discussionUrl);
-        try {
-          createInfo(driver, { title }, objUrl);
-        } catch (e) {
-          console.log(e);
-        }
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
   return true;
 };
 
+// For Loomio resourceName can be either 'discussions' or 'groups'
+const loomio = async (resourceName, pathPrefix, fieldName, params) => {
+  const url = `${resourceName}.json`;
+  const allParams = { params };
+
+  console.log(`Getting ${resourceName} from Loomio API`);
+  const result = [];
+  try {
+    const response = await loomioApi.get(url, allParams);
+    const objects = response.data[resourceName];
+    console.info(`Downloaded ${objects.length} ${resourceName} ${params.since}`);
+
+    for (let i = 0; i < objects.length; i += 1) {
+      const { key } = objects[i];
+      const fieldValue = objects[i][fieldName];
+      const objUrl = `${process.env.LOOMIO_SITE_BASE}/${pathPrefix}/${key}`;
+      let info = '';
+      try {
+        /* eslint-disable no-await-in-loop */
+        info = await createInfo(driver, { title: fieldValue }, objUrl);
+      } catch (err) {
+        console.log(err);
+      }
+      result.push(info.title);
+    }
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      // console.log(error.response.data);
+      console.error('Response Error status', error.response.status);
+      console.error('Response Error headers', error.response.headers);
+      console.error('Error', error.message);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.error('Request Error:', error.message);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error('Error:', error.message);
+    }
+  }
+  return result;
+};
+
+const fetchDiscussions = (params) => {
+  if (!checkEnvVars()) { return []; }
+  const { resourceName, pathPrefix, fieldName } = {
+    resourceName: 'discussions', pathPrefix: 'd', fieldName: 'title',
+  };
+  const allParams = Object.assign({}, params, defaultParams);
+  return loomio(resourceName, pathPrefix, fieldName, allParams);
+};
+export const initLoomioDiscussions = () => fetchDiscussions({});
+
+const fetchGroups = (params) => {
+  if (!checkEnvVars()) { return []; }
+  const { resourceName, pathPrefix, fieldName } = {
+    resourceName: 'groups', pathPrefix: 'g', fieldName: 'name',
+  };
+  const allParams = Object.assign(params, defaultParams);
+  return loomio(resourceName, pathPrefix, fieldName, allParams);
+};
+export const initLoomioGroups = () => fetchGroups({});
+
 export const scheduler = () => {
-  if (!checkEnvVars()) { return; }
-  console.log(`Starting Loomio API scheduler: ${process.env.LOOMIO_CRON_SCHEDULE}`);
+  if (!checkEnvVars()) { return ''; }
+  console.info(`Starting Loomio API scheduler: ${process.env.LOOMIO_CRON_SCHEDULE}`);
+  const yesterday = new Date(Math.round(Date.now()) - (24 * 3600 * 1000)).toISOString();
   cron.schedule(process.env.LOOMIO_CRON_SCHEDULE, () => {
-    loomio('discussions');
+    fetchDiscussions({ since: yesterday });
+    fetchGroups({ since: yesterday });
   });
+  return '';
 };

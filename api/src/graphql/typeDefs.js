@@ -16,7 +16,8 @@ const typeDefs = `
   }
 
   type Mutation {
-    fetchLoomio: String
+    initLoomioDiscussions: [String]
+    initLoomioGroups: [String]
     createNeed(title: String!): Need
     createResponsibility(
       title: String!

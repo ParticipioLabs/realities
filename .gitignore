@@ -3,10 +3,14 @@
 .idea
 *~
 *.bak
+*.swp
 
 # Dependencies
 node_modules/
 /yarn.lock
+
+# Build directories
+build/
 
 # Misc
 *.log
