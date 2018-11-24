@@ -160,8 +160,8 @@ const RESPONSIBILITY_ON_PERSON_FRAGMENT = gql`
   }
 `;
 const GET_PERSON = gql`
-  query LocalGraphPersonFields($email: String!) {
-    person(email: $email) {
+  query LocalGraphPersonFields($nodeId: ID!) {
+    person(nodeId: $nodeId) {
       nodeId
       name
       guidesNeeds {
@@ -237,7 +237,7 @@ class LocalGraph extends Component {
   };
 
   render() {
-    const { nodeType, nodeId, email } = this.props;
+    const { nodeType, nodeId } = this.props;
     const { selectedNode } = this.state;
 
     let gqlQuery;
@@ -252,7 +252,7 @@ class LocalGraph extends Component {
     return (
       <Query
         query={gqlQuery}
-        variables={{ nodeId, nodeType, email }}
+        variables={{ nodeId, nodeType }}
       >
         {({
           loading,
@@ -312,13 +312,11 @@ class LocalGraph extends Component {
 LocalGraph.propTypes = {
   nodeType: PropTypes.string,
   nodeId: PropTypes.string,
-  email: PropTypes.string,
 };
 
 LocalGraph.defaultProps = {
   nodeType: '',
   nodeId: '',
-  email: '',
 };
 
 export default LocalGraph;

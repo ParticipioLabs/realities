@@ -1,58 +1,77 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Container, Row, Col } from 'reactstrap';
+import { withRouter } from 'react-router-dom';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
 import LocalGraph from '@/components/LocalGraph';
+import WrappedLoader from '@/components/WrappedLoader';
 
-const UserProfile = ({ location }) => {
-  const {
-    email, name, nodeId, __typename,
-  } = location.state.node;
-  if (!email) {
-    return (
-      <Container>
-        <Row>
-          <Col lg={{ size: 3, offset: 5 }} sm={{ size: 3, offset: 5 }}>
-            No user profile found.
-          </Col>
-        </Row>
-      </Container>
-    );
+const GET_PERSON = gql`
+  query UserProfile_getPerson($nodeId: ID!) {
+    person(nodeId:$nodeId){
+      name
+      __typename
+    }
   }
+`;
+
+const UserProfile = withRouter(({ match }) => {
+  const { personId } = match.params;
   return (
-    <Container>
-      <Row>
-        <Col xs={{ size: 8, offset: 3 }} sm={{ size: 6, offset: 4 }} lg={{ size: 4, offset: 5 }} >
-          {name}&apos;s Profile
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <LocalGraph email={email} nodeId={nodeId} nodeType={__typename} />
-        </Col>
-      </Row>
-    </Container>
+    <Query
+      query={GET_PERSON}
+      variables={{ nodeId: personId }}
+    >
+      {({
+      loading,
+      data,
+    }) => {
+      if (loading) return <WrappedLoader />;
+      if (!data.person) {
+        return (
+          <Container>
+            <Row>
+              <Col lg={{ size: 3, offset: 5 }} sm={{ size: 3, offset: 5 }}>
+                No user profile found.
+              </Col>
+            </Row>
+          </Container>
+        );
+      }
+
+      return (
+        <Container>
+          <Row>
+            <Col
+              xs={{ size: 8, offset: 3 }}
+              sm={{ size: 6, offset: 4 }}
+              lg={{ size: 4, offset: 5 }}
+            >
+              {data.person.name}&apos;s Profile
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <LocalGraph nodeId={personId} nodeType={data.person.__typename} />
+            </Col>
+          </Row>
+        </Container>
+      );
+    }}
+    </Query>
   );
-};
+});
 
 UserProfile.propTypes = {
-  location: PropTypes.shape({
-    state: PropTypes.shape({
-      email: PropTypes.string,
-      name: PropTypes.string,
-      nodeId: PropTypes.string,
-      __typename: PropTypes.string,
-    }),
+  match: PropTypes.shape({
+    personId: PropTypes.string,
   }),
 };
 
 UserProfile.defaultProps = {
-  location: {
-    state: {
-      email: '',
-      name: '',
-      nodeId: '',
-      __typename: '',
-    },
+  match: {
+    personId: '',
   },
 };
 
