@@ -23,6 +23,7 @@ export const sendUpdateMail = async (
   args,
   oldRealityData,
   updatedRealityData) => {
+  console.log('POWER OF GREYSKULL');
   const realityData = {
     description: (oldRealityData.description === updatedRealityData.description
       ? false

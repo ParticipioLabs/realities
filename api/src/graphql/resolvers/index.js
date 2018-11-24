@@ -23,6 +23,8 @@ import {
 import { isAuthenticated } from '../authorization';
 import { sendUpdateMail } from '../../email/mailService';
 
+const notify = (process.env.EMAIL_NOTIFICATIONS === 'enabled');
+
 const resolvers = {
   // root entry point to GraphQL service
   Query: {
@@ -126,7 +128,7 @@ const resolvers = {
       async (obj, args, { driver, user }) => {
         const emailData = await getEmailData(driver, args);
         const updatedReality = await updateReality(driver, args, user);
-        if (updatedReality) {
+        if (updatedReality && notify) {
           sendUpdateMail(
             driver,
             user,
@@ -141,7 +143,7 @@ const resolvers = {
     updateResponsibility: combineResolvers(isAuthenticated, async (obj, args, { driver, user }) => {
       const emailData = await getEmailData(driver, args);
       const updatedReality = await updateReality(driver, args, user);
-      if (updatedReality) {
+      if (updatedReality && notify) {
         sendUpdateMail(
           driver,
           user,

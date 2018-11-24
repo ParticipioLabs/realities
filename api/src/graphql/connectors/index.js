@@ -1,7 +1,10 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
 
-function runQueryAndGetDataRecord(session, query, params) {
+// This fist connector works differently than the rest.
+// It does not get Nodes, but data records that can be from a calculation.
+// Because of this, it does not assign a __label propery.
+function runQueryAndGetRawData(session, query, params) {
   return session.run(query, params)
     .then((result) => {
       session.close();
@@ -326,5 +329,5 @@ export function getEmailData(driver, { nodeId }) {
     re.email as realizerEmail,
     need.nodeId as linkedNeedId
   `;
-  return runQueryAndGetDataRecord(driver.session(), query, { nodeId });
+  return runQueryAndGetRawData(driver.session(), query, { nodeId });
 }
