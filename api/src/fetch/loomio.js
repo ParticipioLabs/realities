@@ -24,29 +24,29 @@ const checkEnvVars = () => {
   loomioVars.forEach((s) => {
     const v = process.env[s];
     if (typeof v === 'undefined') {
-      errors.push(`WARNING: Missing LOOMIO var "${s}" in .env file`);
+      errors.push(`WARNING: Missing variable "${s}" in .env file`);
     } else if (!v) {
-      errors.push(`WARNING: Empty LOOMIO var "${s} in .env file`);
+      errors.push(`WARNING: Empty variable "${s}" in .env file`);
     }
   });
-  if (errors.length) {
-    errors.forEach((e) => { console.log(e); });
-    return false;
-  }
-  return true;
+  errors.forEach((e) => { console.error(e); });
+  return !errors.length;
 };
 
-// For Loomio resourceName can be either 'discussions' or 'groups'
+// Loomio resourceName can be either 'discussions' or 'groups'.
+// The pathPrefix is 'd' for discussions and 'g' for groups.
+// Discussions have titles and groups have names.
+// The params are passed through to the axio GET request.
 const loomio = async (resourceName, pathPrefix, fieldName, params) => {
   const url = `${resourceName}.json`;
   const allParams = { params };
 
-  console.log(`Getting ${resourceName} from Loomio API`);
+  console.info(`Getting ${resourceName} from Loomio API`);
   const result = [];
   try {
     const response = await loomioApi.get(url, allParams);
     const objects = response.data[resourceName];
-    console.info(`Downloaded ${objects.length} ${resourceName} ${params.since}`);
+    console.info(`Downloaded ${objects.length} ${resourceName} ${params.since ? `since ${params.since}` : ''}`);
 
     for (let i = 0; i < objects.length; i += 1) {
       const { key } = objects[i];
@@ -57,7 +57,7 @@ const loomio = async (resourceName, pathPrefix, fieldName, params) => {
         /* eslint-disable no-await-in-loop */
         info = await createInfo(driver, { title: fieldValue }, objUrl);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
       result.push(info.title);
     }
@@ -105,7 +105,7 @@ export const initLoomioGroups = () => fetchGroups({});
 export const scheduler = () => {
   if (!checkEnvVars()) { return ''; }
   console.info(`Starting Loomio API scheduler: ${process.env.LOOMIO_CRON_SCHEDULE}`);
-  const yesterday = new Date(Math.round(Date.now()) - (24 * 3600 * 1000)).toISOString();
+  const yesterday = new Date(Date.now() - (24 * 3600 * 1000)).toISOString();
   cron.schedule(process.env.LOOMIO_CRON_SCHEDULE, () => {
     fetchDiscussions({ since: yesterday });
     fetchGroups({ since: yesterday });

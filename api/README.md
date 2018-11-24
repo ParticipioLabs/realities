@@ -39,3 +39,34 @@ The GraphQL schema is defined using a set of tools from Apollo named [graphql-to
 ### Inspect the GraphQL API easily using GraphiQL
 
 When the back-end is running, explore the API using GraphiQL at [http://localhost:3100/graphiql](http://localhost:3100/graphiql). 
+
+### Loomio Interface (optional)
+
+[Loomio](https://loomio.com/) is a web site that hosts discussion groups.  Realities accesses the [Loomio API](https://help.loomio.org/en/dev_manual/using_the_api/)
+to enhance the user experience when adding Deliberation links to a `Need` or `Responsibility`, and to allow graphing of
+connections between those nodes.
+
+To activate the Loomio connection, add the following parameters to your .env file:
+
+```
+LOOMIO_API_BASE=https://your-loomio-domain.com/api/v1
+LOOMIO_SITE_BASE=https://your-loomio-domain.com
+LOOMIO_CRON_SCHEDULE='5 * * * *'
+```
+
+There are two ways Loomio discussions and groups are added to the database.
+
+1. The system should be initialized with *all* currently existing discussions and groups, like this:
+```
+cd api
+npm run init-loomio
+```
+1. The system regularly downloads new discussions and groups using a cron-like scheduler.  It retrieves anything created
+in the last 24 hours.  Therefore, the scheduler should be set to anything less than 24 hours.  The syntax of the
+scheduler follows the standard cron syntax.
+Example:
+```
+LOOMIO_CRON_SCHEDULE='5 * * * *' // Update once per hour, at hh:05
+or
+LOOMIO_CRON_SCHEDULE='*/10 * * * *' // Update every 10 minutes
+```

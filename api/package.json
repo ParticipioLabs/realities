@@ -9,6 +9,7 @@
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
     "test": "mocha",
+    "init-loomio": "npx babel-node --silent --presets es2015 scripts/initLoomio.js",
     "build": "better-npm-run build",
     "serve": "better-npm-run serve"
   },
@@ -56,5 +57,9 @@
     "uuid": "^3.3.2",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
   }
 }
