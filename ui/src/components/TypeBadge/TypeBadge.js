@@ -7,6 +7,7 @@ import colors from '@/styles/colors';
 const StyledBadge = styled(Badge)`
   background-color: ${props => props.badgecolor};
   margin-right: .5em;
+  min-width: 1.8em;
 `;
 
 const TypeBadge = ({ nodeType }) => (

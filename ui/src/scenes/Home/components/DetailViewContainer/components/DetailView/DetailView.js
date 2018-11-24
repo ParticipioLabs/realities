@@ -6,6 +6,7 @@ import { FaPencil, FaTimesCircle } from 'react-icons/lib/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
 import Dependencies from '@/components/Dependencies';
+import Deliberations from '@/components/Deliberations';
 import EditDetailsContainer from './components/EditDetailsContainer';
 import DeleteNodeContainer from './components/DeleteNodeContainer';
 import DetailViewBody from './components/DetailViewBody';
@@ -64,6 +65,12 @@ const DetailView = ({
       <CardBody>
         <EditDetailsContainer node={node} />
         <Divider />
+        <Deliberations
+          showAddRemove
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          deliberations={node.deliberations}
+        />
         <Dependencies
           showAddRemove
           nodeType={node.__typename}
@@ -88,7 +95,11 @@ DetailView.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
-    deliberationLink: PropTypes.string,
+    deliberations: PropTypes.arrayOf(PropTypes.shape({
+      __typename: PropTypes.string,
+      nodeId: PropTypes.string,
+      title: PropTypes.string,
+    })),
     guide: PropTypes.shape({
       nodeId: PropTypes.string,
       email: PropTypes.string,
@@ -124,7 +135,7 @@ DetailView.defaultProps = {
     nodeId: '',
     title: '',
     description: '',
-    deliberationLink: '',
+    deliberations: [],
     guide: {
       nodeId: '',
       email: '',

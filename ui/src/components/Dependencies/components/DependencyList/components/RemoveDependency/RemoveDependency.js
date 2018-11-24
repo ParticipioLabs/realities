@@ -120,7 +120,7 @@ RemoveDependency.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       needId: PropTypes.string,
-      resposibilityId: PropTypes.string,
+      responsibilityId: PropTypes.string,
     }),
   }),
   nodeType: PropTypes.string,

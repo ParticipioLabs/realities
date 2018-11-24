@@ -7,6 +7,14 @@ export const GET_NEEDS = gql`
     needs {
       nodeId
       title
+      fulfilledBy {
+        nodeId
+        title
+        realizer {
+          nodeId
+          name
+        }
+      }
     }
   }
 `;
@@ -18,6 +26,23 @@ export const GET_NEED_RESPONSIBILITIES = gql`
       fulfilledBy {
         nodeId
         title
+        realizer {
+          nodeId
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const GET_REALITY_INFOS = gql`
+  query RealityInfos($realityId: ID!) {
+    reality(nodeId: $realityId) {
+      nodeId
+      fulfilledBy {
+        nodeId
+        title
+        url
       }
     }
   }
