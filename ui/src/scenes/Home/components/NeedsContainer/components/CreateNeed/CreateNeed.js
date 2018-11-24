@@ -31,10 +31,14 @@ const CreateNeed = withRouter(({ history }) => (
     update={(cache, { data: { createNeed } }) => {
       cache.writeData({ data: { showCreateNeed: false } });
       const { needs } = cache.readQuery({ query: GET_NEEDS });
-      cache.writeQuery({
-        query: GET_NEEDS,
-        data: { needs: [createNeed].concat(needs) },
-      });
+
+      const alreadyExists = needs.filter(need => need.nodeId === createNeed.nodeId).length > 0;
+      if (!alreadyExists) {
+        cache.writeQuery({
+          query: GET_NEEDS,
+          data: { needs: [createNeed, ...needs] },
+        });
+      }
     }}
   >
     {createNeed => (

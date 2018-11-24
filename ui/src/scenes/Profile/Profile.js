@@ -10,10 +10,12 @@ import {
 } from 'reactstrap';
 import withAuth from '@/components/withAuth';
 import UpdateViewerName from './components/UpdateViewerName';
+import UserGraph from './components/UserGraph';
 
 const Profile = withAuth(({ auth }) => {
   if (!auth.isLoggedIn) return <Redirect to="/" />;
   return (
+
     <Container fluid>
       <Row>
         <Col lg={{ size: 6, offset: 3 }}>
@@ -21,11 +23,13 @@ const Profile = withAuth(({ auth }) => {
             <CardBody>
               <h1>Profile</h1>
               <UpdateViewerName />
+              <UserGraph email={auth.email} />
             </CardBody>
           </Card>
         </Col>
       </Row>
     </Container>
+
   );
 });
 

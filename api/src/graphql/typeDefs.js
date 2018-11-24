@@ -2,14 +2,24 @@ const typeDefs = `
   schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
+  }
+
+  type Subscription {
+    realityCreated: Reality
+    realityDeleted: Reality
+    realityUpdated: Reality
   }
 
   type Query {
     persons(search: String): [Person]
-    person(email: String!): Person
+    person(
+      email: String
+      nodeId: ID
+    ): Person
     needs(search: String): [Need]
     need(nodeId: ID!): Need
-    responsibilities(search: String): [Responsibility]
+    responsibilities(fulfillsNeedId: ID, search: String): [Responsibility]
     responsibility(nodeId: ID!): Responsibility
     infos(search: String): [Info]
     info(url: String!): [Info]

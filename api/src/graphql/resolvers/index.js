@@ -33,6 +33,12 @@ const REALITY_CREATED = 'REALITY_CREATED';
 const REALITY_DELETED = 'REALITY_DELETED';
 const REALITY_UPDATED = 'REALITY_UPDATED';
 
+const pubsub = new PubSub();
+
+const REALITY_CREATED = 'REALITY_CREATED';
+const REALITY_DELETED = 'REALITY_DELETED';
+const REALITY_UPDATED = 'REALITY_UPDATED';
+
 const resolvers = {
   // root entry point to GraphQL service
   Subscription: {
