@@ -54,7 +54,7 @@ export const sendUpdateMail = async (
   const emails = people.map(person => (person.email))
     .filter(email => email !== user.email)
     .filter((v, i, a) => a.indexOf(v) === i);
-  if (emails.length) {
+  if (emails.length > 0) {
     const message = {
       to: emails,
       from: {
