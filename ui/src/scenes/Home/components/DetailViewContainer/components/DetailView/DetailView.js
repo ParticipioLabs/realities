@@ -10,6 +10,7 @@ import Deliberations from '@/components/Deliberations';
 import EditDetailsContainer from './components/EditDetailsContainer';
 import DeleteNodeContainer from './components/DeleteNodeContainer';
 import DetailViewBody from './components/DetailViewBody';
+import ChangeFulfills from './components/ChangeFulfills';
 
 const DetailViewCardHeader = styled(CardHeader)`
   background-color: ${props => props.color};
@@ -80,6 +81,7 @@ const DetailView = ({
             ...(node.dependsOnResponsibilities || []),
           ]}
         />
+        {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
         <Divider />
         <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
       </CardBody>

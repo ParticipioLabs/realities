@@ -164,7 +164,8 @@ const resolvers = {
     ),
     changeFulfills: combineResolvers(
       isAuthenticated,
-      (obj, { responsibilityId, needId }, { driver }) => changeFulfills(driver, { responsibilityId, needId }),
+      (obj, { responsibilityId, needId }, { driver }) =>
+        changeFulfills(driver, { responsibilityId, needId }),
     ),
     updateViewerName: combineResolvers(
       isAuthenticated,
