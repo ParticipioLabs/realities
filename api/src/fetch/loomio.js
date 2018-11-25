@@ -105,8 +105,8 @@ export const initLoomioGroups = () => fetchGroups({});
 export const scheduler = () => {
   if (!checkEnvVars()) { return ''; }
   console.info(`Starting Loomio API scheduler: ${process.env.LOOMIO_CRON_SCHEDULE}`);
-  const yesterday = new Date(Date.now() - (24 * 3600 * 1000)).toISOString();
   cron.schedule(process.env.LOOMIO_CRON_SCHEDULE, () => {
+    const yesterday = new Date(Date.now() - (24 * 3600 * 1000)).toISOString();
     fetchDiscussions({ since: yesterday });
     fetchGroups({ since: yesterday });
   });
