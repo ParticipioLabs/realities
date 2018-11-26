@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { Formik } from 'formik';
-import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
+import { GET_RESPONSIBILITIES } from '@/services/queries';
 import ListForm from '@/components/ListForm';
 
 const CREATE_RESPONSIBILITY = gql`
@@ -13,6 +13,10 @@ const CREATE_RESPONSIBILITY = gql`
     createResponsibility(title: $title, needId: $needId) {
       nodeId
       title
+      realizer {
+        nodeId
+        name
+      }
     }
   }
 `;
@@ -22,23 +26,23 @@ const CreateResponsibility = withRouter(({ match, history }) => (
     mutation={CREATE_RESPONSIBILITY}
     update={(cache, { data: { createResponsibility } }) => {
       cache.writeData({ data: { showCreateResponsibility: false } });
-      const { need } = cache.readQuery({
-        query: GET_NEED_RESPONSIBILITIES,
+      const { responsibilities } = cache.readQuery({
+        query: GET_RESPONSIBILITIES,
         variables: { needId: match.params.needId },
       });
-      cache.writeQuery({
-        query: GET_NEED_RESPONSIBILITIES,
-        variables: { needId: match.params.needId },
-        data: {
-          need: {
-            __typename: 'Need',
-            nodeId: match.params.needId,
-            fulfilledBy: need.fulfilledBy
-              ? [createResponsibility].concat(need.fulfilledBy)
-              : [createResponsibility],
+
+      const alreadyExists =
+        responsibilities.filter(resp => resp.nodeId === createResponsibility.nodeId).length > 0;
+
+      if (!alreadyExists) {
+        cache.writeQuery({
+          query: GET_RESPONSIBILITIES,
+          variables: { needId: match.params.needId },
+          data: {
+            responsibilities: [createResponsibility, ...responsibilities],
           },
-        },
-      });
+        });
+      }
     }}
   >
     {createResponsibility => (

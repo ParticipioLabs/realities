@@ -1,7 +1,9 @@
 
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
+import { PubSub } from 'apollo-server';
 import { initLoomioDiscussions, initLoomioGroups } from '../../fetch/loomio';
+
 import {
   findNodesByLabel,
   findNodeByLabelAndId,
@@ -23,8 +25,19 @@ import {
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
 
+const pubsub = new PubSub();
+
+const REALITY_CREATED = 'REALITY_CREATED';
+const REALITY_DELETED = 'REALITY_DELETED';
+const REALITY_UPDATED = 'REALITY_UPDATED';
+
 const resolvers = {
   // root entry point to GraphQL service
+  Subscription: {
+    realityCreated: { subscribe: () => pubsub.asyncIterator([REALITY_CREATED]) },
+    realityDeleted: { subscribe: () => pubsub.asyncIterator([REALITY_DELETED]) },
+    realityUpdated: { subscribe: () => pubsub.asyncIterator([REALITY_UPDATED]) },
+  },
   Query: {
     persons(obj, { search }, { driver }) {
       if (search) return searchPersons(driver, search);
@@ -40,8 +53,9 @@ const resolvers = {
     need(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(obj, { search }, { driver }) {
+    responsibilities(obj, { search, fulfillsNeedId }, { driver }) {
       if (search) return searchRealities(driver, 'Responsibility', search);
+      if (fulfillsNeedId) return findNodesByRelationshipAndLabel(driver, fulfillsNeedId, 'FULFILLS', 'Responsibility', 'IN');
       return findNodesByLabel(driver, 'Responsibility');
     },
     responsibility(obj, { nodeId }, { driver }) {
@@ -112,12 +126,19 @@ const resolvers = {
     initLoomioGroups: () => initLoomioGroups(),
     createNeed: combineResolvers(
       isAuthenticated,
-      (obj, { title }, { user, driver }) => createNeed(driver, { title }, user.email),
+      async (obj, { title }, { user, driver }) => {
+        const need = await createNeed(driver, { title }, user.email);
+        pubsub.publish(REALITY_CREATED, { realityCreated: need });
+        return need;
+      },
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, { title, needId }, { user, driver }) =>
-        createResponsibility(driver, { title, needId }, user.email),
+      async (obj, { title, needId }, { user, driver }) => {
+        const responsibility = await createResponsibility(driver, { title, needId }, user.email);
+        pubsub.publish(REALITY_CREATED, { realityCreated: responsibility });
+        return responsibility;
+      },
     ),
     createViewer: combineResolvers(
       isAuthenticated,
@@ -125,11 +146,19 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      (obj, args, { driver }) => updateReality(driver, args),
+      async (obj, args, { driver }) => {
+        const need = updateReality(driver, args);
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        return need;
+      },
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, args, { driver }) => updateReality(driver, args),
+      async (obj, args, { driver }) => {
+        const responsibility = await updateReality(driver, args);
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        return responsibility;
+      },
     ),
     updateViewerName: combineResolvers(
       isAuthenticated,
@@ -138,12 +167,20 @@ const resolvers = {
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
     softDeleteNeed: combineResolvers(
       isAuthenticated,
-      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+      async (obj, { nodeId }, { driver }) => {
+        const need = await softDeleteNode(driver, { nodeId });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: need });
+        return need;
+      },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
       isAuthenticated,
-      (obj, { nodeId }, { driver }) => softDeleteNode(driver, { nodeId }),
+      async (obj, { nodeId }, { driver }) => {
+        const responsibility = await softDeleteNode(driver, { nodeId });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: responsibility });
+        return responsibility;
+      },
     ),
     addNeedDependsOnNeeds: combineResolvers(
       isAuthenticated,

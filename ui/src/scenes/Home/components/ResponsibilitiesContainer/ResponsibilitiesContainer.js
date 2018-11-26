@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import { GET_NEED_RESPONSIBILITIES } from '@/services/queries';
+import { GET_RESPONSIBILITIES } from '@/services/queries';
+import {
+  REALITIES_CREATE_SUBSCRIPTION,
+  REALITIES_DELETE_SUBSCRIPTION,
+  REALITIES_UPDATE_SUBSCRIPTION,
+} from '@/services/subscriptions';
 import withAuth from '@/components/withAuth';
 import ListHeader from '@/components/ListHeader';
 import colors from '@/styles/colors';
@@ -38,15 +43,79 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
               }
           />
           {localData.showCreateResponsibility && <CreateResponsibility />}
-          <Query query={GET_NEED_RESPONSIBILITIES} variables={{ needId: match.params.needId }}>
-            {({ loading, error, data }) => {
-                if (loading) return <WrappedLoader />;
+          <Query
+            query={GET_RESPONSIBILITIES}
+            variables={{ needId: match.params.needId }}
+            fetchPolicy="cache-and-network"
+          >
+            {({
+              subscribeToMore,
+              loading,
+              error,
+              data,
+            }) => {
+                if (loading && !data.responsibilities) return <WrappedLoader />;
                 if (error) return `Error! ${error.message}`;
-                if (!data.need) return null;
+                if (!data.responsibilities) return null;
                 return (
                   <ResponsibilitiesList
-                    responsibilities={data.need.fulfilledBy}
+                    responsibilities={data.responsibilities}
                     selectedResponsibilityId={match.params.responsibilityId}
+                    subscribeToResponsibilitiesEvents={() => {
+                      subscribeToMore({
+                        document: REALITIES_CREATE_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData, variables }) => {
+                          if (!subscriptionData.data) return prev;
+
+                          const { realityCreated } = subscriptionData.data;
+
+                          // do nothing if the reality is not a responsibility or
+                          // if it does not belong to this need
+                          if (
+                            realityCreated.__typename !== 'Responsibility' ||
+                            realityCreated.fulfills.nodeId !== variables.needId
+                          ) { return prev; }
+
+                          // item will already exist in cache if it was added by the current client
+                          const alreadyExists = prev.responsibilities
+                            .filter(resp => resp.nodeId === realityCreated.nodeId)
+                            .length > 0;
+
+                          if (alreadyExists) return prev;
+                          return {
+                            responsibilities: [realityCreated, ...prev.responsibilities],
+                          };
+                        },
+                      });
+                      subscribeToMore({
+                        document: REALITIES_DELETE_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData }) => {
+                          if (!subscriptionData.data) return prev;
+
+                          const { realityDeleted } = subscriptionData.data;
+
+                          return {
+                            responsibilities: prev.responsibilities
+                              .filter(item => item.nodeId !== realityDeleted.nodeId),
+                          };
+                        },
+                      });
+                      subscribeToMore({
+                        document: REALITIES_UPDATE_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData }) => {
+                          if (!subscriptionData.data) return prev;
+
+                          const { realityUpdated } = subscriptionData.data;
+
+                          return {
+                            responsibilities: prev.responsibilities.map((item) => {
+                              if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
+                              return item;
+                            }),
+                          };
+                        },
+                      });
+                    }}
                   />
                 );
               }}

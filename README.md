@@ -4,12 +4,19 @@ A tool for tribal decentralised organisations. [Read more about the concept behi
 
 ## Wanna talk about it?
 
-To discuss and learn more about the overall concepts behind the Realities Platform, [head over to the Edgeryders platform](https://edgeryders.eu/c/workspaces/participio), where Realities is being developed as part of the Particip.io project.
+To discuss and learn more about the overall concepts behind the Realities Platform, [head over to the Edgeryders platform](https://edgeryders.eu/c/participio), where Realities is being developed as part of the Particip.io project.
 
 To report a bug or suggest a specific improvement or feature, create an issue right here on GitHub.
 
 If you want to chat to other members of the community and collaborate in real-time, head over to our [Gitter](https://gitter.im/realities).
 
+## Dependencies
+
+  * nodejs 8.9.x
+  * npm 5.5.x
+  * neo4j
+  * neo4j [apoc](https://neo4j-contrib.github.io/neo4j-apoc-procedures/) 
+  
 ## How to contribute
 
 ### Maintain consistency and follow conventions
@@ -42,7 +49,7 @@ We use various libraries on the back-end to set up our GraphQL API. On the front
 
 We use [Auth0](https://auth0.com/) for Authentication and Authorization. When a user signs up or logs in on the front-end, they are taken through a flow where Auth0 creates a [Jason Web Token (JWT)](https://jwt.io/) that is returned to the front-end and stored in the browser's localStorage. We've created [rules in Auth0](https://auth0.com/docs/rules/current) that add the user's email and role (whether they are a Reality Admin or a normal user) securely to the JWT. The front-end sends the JWT to the back-end with every API call in an http header. The back-end validates the JWT, fetches the user's email and role from it and can then determine whether the user has permission to do whatever they are trying to do. 
 
-### Install and run locally
+## Install and run locally
 
 Realities uses a Neo4j database. You need to run Neo4j on your machine or connect to a remote database (for example a free 1000 node sandbox at http://graphenedb.com). Running a local Neo4j database is very easy, just go to https://neo4j.com/download/ and follow the instructions.
 

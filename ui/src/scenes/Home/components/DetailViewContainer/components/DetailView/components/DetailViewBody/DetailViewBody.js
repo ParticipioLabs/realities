@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from 'reactstrap';
 import Dependencies from '@/components/Dependencies';
+import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 import Deliberations from '@/components/Deliberations';
 import LocalGraph from './components/LocalGraph';
 
@@ -47,6 +48,7 @@ const DetailViewBody = ({ node }) => (
           ? `${node.realizer.name} (${node.realizer.email})`
           : node.realizer.email
       )}
+      {!node.realizer && <RealizersMissingIcon />}
     </CardText>
 
     <CardText>

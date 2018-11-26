@@ -7,17 +7,26 @@ export const GET_NEEDS = gql`
     needs {
       nodeId
       title
+      fulfilledBy {
+        nodeId
+        title
+        realizer {
+          nodeId
+          name
+        }
+      }
     }
   }
 `;
 
-export const GET_NEED_RESPONSIBILITIES = gql`
-  query NeedResponsibilities($needId: ID!) {
-    need(nodeId: $needId) {
+export const GET_RESPONSIBILITIES = gql`
+  query Responsibilities($needId: ID!) {
+    responsibilities(fulfillsNeedId: $needId) {
       nodeId
-      fulfilledBy {
+      title
+      realizer {
         nodeId
-        title
+        name
       }
     }
   }
