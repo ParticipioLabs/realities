@@ -41,12 +41,10 @@ const loomio = async (resourceName, pathPrefix, fieldName, params) => {
   const url = `${resourceName}.json`;
   const allParams = { params };
 
-  console.info(`Getting ${resourceName} from Loomio API`);
   const result = [];
   try {
     const response = await loomioApi.get(url, allParams);
     const objects = response.data[resourceName];
-    console.info(`Downloaded ${objects.length} ${resourceName} ${params.since ? `since ${params.since}` : ''}`);
 
     for (let i = 0; i < objects.length; i += 1) {
       const { key } = objects[i];
