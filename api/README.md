@@ -43,7 +43,7 @@ When the back-end is running, explore the API using GraphiQL at [http://localhos
 ### Loomio Interface (optional)
 
 [Loomio](https://loomio.com/) is a web site that hosts discussion groups.  Realities accesses the [Loomio API](https://help.loomio.org/en/dev_manual/using_the_api/)
-to enhance the user experience when adding Deliberation links to a `Need` or `Responsibility`, and to allow graphing of
+to enhance the user experience when adding Deliberation links (`Info` nodes) to a `Need` or `Responsibility`, and to allow graphing of
 connections between those nodes.
 
 To activate the Loomio connection, add the following parameters to your .env file:
@@ -63,7 +63,7 @@ npm run init-loomio
 ```
 1. The system regularly downloads new discussions and groups using a cron-like scheduler.  It retrieves anything created
 in the last 24 hours.  Therefore, the scheduler should be set to anything less than 24 hours.  The syntax of the
-scheduler follows the standard cron syntax.
+scheduler follows the standard [cron syntax](https://en.wikipedia.org/wiki/Cron).
 Example:
 ```
 LOOMIO_CRON_SCHEDULE='5 * * * *' // Update once per hour, at hh:05
