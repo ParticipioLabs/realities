@@ -7,9 +7,7 @@ import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 import neo4jDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
-import { scheduler as loomioScheduler } from './fetch/loomio';
-
-loomioScheduler();
+import startSchedulers from './services/scheduler';
 
 const { NODE_ENV, PORT } = process.env;
 const API_PORT = NODE_ENV && NODE_ENV.includes('prod') ? PORT || 3000 : 3100;
@@ -67,3 +65,6 @@ app.listen(API_PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
   console.log(`View GraphiQL at http://localhost:${API_PORT}/graphiql`);
 });
+
+// Start the schedulers that download data from various APIs.
+startSchedulers();

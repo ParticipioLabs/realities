@@ -9,7 +9,7 @@
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
     "test": "mocha",
-    "init-loomio": "npx babel-node --silent --presets es2015 scripts/initLoomio.js",
+    "init-loomio": "npx babel-node --presets es2015 scripts/initLoomio.js",
     "build": "better-npm-run build",
     "serve": "better-npm-run serve"
   },
