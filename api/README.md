@@ -51,7 +51,7 @@ To activate the Loomio connection, add the following parameters to your .env fil
 ```
 LOOMIO_API_BASE=https://your-loomio-domain.com/api/v1
 LOOMIO_SITE_BASE=https://your-loomio-domain.com
-LOOMIO_CRON_SCHEDULE='5 * * * *'
+LOOMIO_CRON_SCHEDULE='*/10 * * * *'
 ```
 
 There are two ways Loomio discussions and groups are added to the database.
@@ -61,7 +61,7 @@ There are two ways Loomio discussions and groups are added to the database.
 cd api
 npm run init-loomio
 ```
-1. The system regularly downloads new discussions and groups using a cron-like scheduler.  It retrieves anything created
+2. The system regularly downloads new discussions and groups using a cron-like scheduler.  It retrieves anything created
 in the last 24 hours.  Therefore, the scheduler should be set to anything less than 24 hours.  The syntax of the
 scheduler follows the standard [cron syntax](https://en.wikipedia.org/wiki/Cron).
 Example:
