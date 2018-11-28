@@ -37,28 +37,63 @@ const checkEnvVars = () => {
 // The pathPrefix is 'd' for discussions and 'g' for groups.
 // Discussions have titles and groups have names.
 // The params are passed through to the axio GET request.
+//  const loomio = async (resourceName, pathPrefix, fieldName, params) => {
+//    const url = `${resourceName}.json`;
+//    const allParams = { params };
+//
+//    const result = [];
+//    try {
+//      const response = await loomioApi.get(url, allParams);
+//      const objects = response.data[resourceName];
+//
+//      for (let i = 0; i < objects.length; i += 1) {
+//        const { key } = objects[i];
+//        const fieldValue = objects[i][fieldName];
+//        const objUrl = `${process.env.LOOMIO_SITE_BASE}/${pathPrefix}/${key}`;
+//        let info = '';
+//        try {
+//          /* eslint-disable no-await-in-loop */
+//          info = await createInfo(driver, { title: fieldValue }, objUrl);
+//        } catch (err) {
+//          console.error(err);
+//        }
+//        result.push(info.title);
+//      }
+//    } catch (error) {
+//      if (error.response) {
+//        // The request was made and the server responded with a status code
+//        // that falls out of the range of 2xx
+//        // console.log(error.response.data);
+//        console.error('Response Error status', error.response.status);
+//        console.error('Response Error headers', error.response.headers);
+//        console.error('Error', error.message);
+//      } else if (error.request) {
+//        // The request was made but no response was received
+//        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+//        // http.ClientRequest in node.js
+//        console.error('Request Error:', error.message);
+//      } else {
+//        // Something happened in setting up the request that triggered an Error
+//        console.error('Error:', error.message);
+//      }
+//    }
+//    return result;
+//  };
+
 const loomio = async (resourceName, pathPrefix, fieldName, params) => {
   const url = `${resourceName}.json`;
   const allParams = { params };
 
-  const result = [];
+  let resultPromises;
   try {
     const response = await loomioApi.get(url, allParams);
     const objects = response.data[resourceName];
-
-    for (let i = 0; i < objects.length; i += 1) {
-      const { key } = objects[i];
-      const fieldValue = objects[i][fieldName];
+    resultPromises = objects.map((object) => {
+      const { key } = object;
+      const fieldValue = object[fieldName];
       const objUrl = `${process.env.LOOMIO_SITE_BASE}/${pathPrefix}/${key}`;
-      let info = '';
-      try {
-        /* eslint-disable no-await-in-loop */
-        info = await createInfo(driver, { title: fieldValue }, objUrl);
-      } catch (err) {
-        console.error(err);
-      }
-      result.push(info.title);
-    }
+      return createInfo(driver, { title: fieldValue }, objUrl).then(({ title }) => title);
+    });
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -77,7 +112,8 @@ const loomio = async (resourceName, pathPrefix, fieldName, params) => {
       console.error('Error:', error.message);
     }
   }
-  return result;
+
+  return Promise.all(resultPromises);
 };
 
 const fetchDiscussions = (params) => {
@@ -101,12 +137,11 @@ const fetchGroups = (params) => {
 export const initLoomioGroups = () => fetchGroups({});
 
 export const scheduler = () => {
-  if (!checkEnvVars()) { return ''; }
+  if (!checkEnvVars()) { return; }
   console.info(`Starting Loomio API scheduler: ${process.env.LOOMIO_CRON_SCHEDULE}`);
   cron.schedule(process.env.LOOMIO_CRON_SCHEDULE, () => {
     const yesterday = new Date(Date.now() - (24 * 3600 * 1000)).toISOString();
     fetchDiscussions({ since: yesterday });
     fetchGroups({ since: yesterday });
   });
-  return '';
 };

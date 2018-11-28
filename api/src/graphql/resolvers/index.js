@@ -1,8 +1,6 @@
-
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
 import { PubSub } from 'apollo-server';
-import { initLoomioDiscussions, initLoomioGroups } from '../../fetch/loomio';
 
 import {
   findNodesByLabel,
@@ -122,8 +120,6 @@ const resolvers = {
     },
   },
   Mutation: {
-    initLoomioDiscussions: () => initLoomioDiscussions(),
-    initLoomioGroups: () => initLoomioGroups(),
     createNeed: combineResolvers(
       isAuthenticated,
       async (obj, { title }, { user, driver }) => {

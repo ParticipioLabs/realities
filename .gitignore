@@ -6,13 +6,9 @@
 *.swp
 
 # Dependencies
-node_modules/
 /yarn.lock
-
-# Build directories
-build/
+node_modules/
 
 # Misc
 *.log
 *.DS_Store
-*.env
