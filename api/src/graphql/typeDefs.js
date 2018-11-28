@@ -26,8 +26,6 @@ const typeDefs = `
   }
 
   type Mutation {
-    initLoomioDiscussions: [String]
-    initLoomioGroups: [String]
     createNeed(title: String!): Need
     createResponsibility(
       title: String!
