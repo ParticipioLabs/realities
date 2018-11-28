@@ -20,8 +20,12 @@ import {
   removeDeliberation,
   searchPersons,
   searchRealities,
+  getEmailData,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
+import { sendUpdateMail } from '../../email/mailService';
+
+const notify = (process.env.EMAIL_NOTIFICATIONS === 'enabled');
 
 const pubsub = new PubSub();
 
@@ -41,8 +45,13 @@ const resolvers = {
       if (search) return searchPersons(driver, search);
       return findNodesByLabel(driver, 'Person');
     },
-    person(obj, { email }, { driver }) {
-      return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
+    person(obj, { nodeId, email }, { driver }) {
+      if (email) return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
+      if (nodeId) return findNodeByLabelAndId(driver, 'Person', nodeId);
+      const errorMessage =
+        'Field "person" arguments "email" of type "String" and "nodeId" of type "ID" ' +
+        'were both undefined. Please provide at least one.';
+      return new Error(errorMessage);
     },
     needs(obj, { search }, { driver }) {
       if (search) return searchRealities(driver, 'Need', search);
@@ -142,17 +151,37 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver }) => {
-        const need = updateReality(driver, args);
+      async (obj, args, { driver, user }) => {
+        const emailData = await getEmailData(driver, args);
+        const need = await updateReality(driver, args, user);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        if (need && notify) {
+          sendUpdateMail(
+            driver,
+            user,
+            args,
+            emailData,
+            need,
+          );
+        }
         return need;
       },
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver }) => {
+      async (obj, args, { driver, user }) => {
+        const emailData = await getEmailData(driver, args);
         const responsibility = await updateReality(driver, args);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        if (responsibility && notify) {
+          sendUpdateMail(
+            driver,
+            user,
+            args,
+            emailData,
+            responsibility,
+          );
+        }
         return responsibility;
       },
     ),

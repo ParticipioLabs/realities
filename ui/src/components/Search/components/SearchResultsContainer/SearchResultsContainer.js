@@ -22,6 +22,11 @@ const GET_SEARCH = gql`
         nodeId
       }
     }
+    persons(search: $term) {
+      nodeId
+      email
+      name
+    }
   }
 `;
 
@@ -54,11 +59,16 @@ const SearchResultsContainer = withDebouncedProp('searchTerm', 250)(({
           const searchResults = [
             ...(data.needs || []),
             ...(data.responsibilities || []),
+            ...(data.persons || []),
           ];
           if (searchResults.length === 0) return <CardBody>No results</CardBody>;
           return (
             <SearchResults
-              results={_.orderBy(searchResults, [r => r.title.toLowerCase()], ['asc'])}
+              results={_.orderBy(searchResults, [(r) => {
+                if (r.title) return r.title.toLowerCase();
+                else if (r.name) return r.name.toLowerCase();
+                return '';
+              }], ['asc'])}
               getMenuProps={getMenuProps}
               getItemProps={getItemProps}
               highlightedIndex={highlightedIndex}

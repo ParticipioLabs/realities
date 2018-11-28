@@ -49,8 +49,6 @@ function pushNode(graph, originNode, node, relation, direction) {
       label: relation,
     });
   }
-  pushNode(graph, node, node.guide, 'Guides', 'OUT');
-  pushNode(graph, node, node.realizer, 'Realizes', 'OUT');
 
   return graph;
 }
@@ -82,5 +80,53 @@ function getSubGraph(originNode = {}) {
 
   return graph;
 }
+function getPersonGraph(originNode = {}) {
+  const trimmedLabel = _.truncate(originNode.name, { length: 12, separator: ',.?! ' });
+  const graph = {
+    nodes: [
+      {
+        id: originNode.nodeId,
+        label: trimmedLabel,
+        color: colorCollection[originNode.__typename],
+        title: originNode.name,
+        shape: 'ellipse',
+        description: originNode.description,
+      },
+    ],
+    edges: [],
+  };
 
-export default { getSubGraph };
+  function pushNodesToSubsequentNodes(userNodeId, nodes, role, relation) {
+    nodes.forEach((node) => {
+      // The following check is to prevent duplicate edges between a
+      // need/responsibility and a person.
+      if (node[role] && node[role].nodeId !== userNodeId) {
+        pushNode(graph, node, node[role], relation, 'IN');
+      }
+      // If node is a responsibility, add node for the need it fulfills and
+      // for every responsibility that depends on it.
+      if (node.__typename === 'Responsibility') {
+        pushNode(graph, node, node.fulfills, 'Fulfills', 'IN');
+        node.dependsOnResponsibilities.forEach((responsibility) => {
+          pushNode(graph, node, responsibility, 'Depends On', 'IN');
+        });
+      }
+    });
+  }
+
+  pushNode(graph, originNode, originNode.guidesNeeds, 'Guides', 'IN');
+  pushNodesToSubsequentNodes(originNode.nodeId, originNode.guidesNeeds, 'realizer', 'Realizes');
+
+  pushNode(graph, originNode, originNode.realizesNeeds, 'Realizes', 'IN');
+  pushNodesToSubsequentNodes(originNode.nodeId, originNode.realizesNeeds, 'guide', 'Guides');
+
+  pushNode(graph, originNode, originNode.guidesResponsibilities, 'Guides', 'IN');
+  pushNodesToSubsequentNodes(originNode.nodeId, originNode.guidesResponsibilities, 'realizer', 'Realizes');
+
+  pushNode(graph, originNode, originNode.realizesResponsibilities, 'Realizes', 'IN');
+  pushNodesToSubsequentNodes(originNode.nodeId, originNode.realizesResponsibilities, 'guide', 'Guides');
+
+  return graph;
+}
+
+export default { getSubGraph, getPersonGraph };
