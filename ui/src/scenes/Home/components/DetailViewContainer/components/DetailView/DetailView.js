@@ -66,6 +66,7 @@ const DetailView = ({
       <CardBody>
         <EditDetailsContainer node={node} />
         <Divider />
+        {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
         <Deliberations
           showAddRemove
           nodeType={node.__typename}
@@ -81,7 +82,6 @@ const DetailView = ({
             ...(node.dependsOnResponsibilities || []),
           ]}
         />
-        {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
         <Divider />
         <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
       </CardBody>
