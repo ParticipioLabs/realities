@@ -236,6 +236,23 @@ export function updateReality(driver, args) {
   return runQueryAndGetRecord(driver.session(), query, args);
 }
 
+export function changeFulfills(driver, { responsibilityId, needId }) {
+  const queryParams = {
+    responsibilityId,
+    needId,
+  };
+
+  const query = `
+    MATCH (resp:Responsibility {nodeId: {responsibilityId}})-[r:FULFILLS]->(n1:Need)
+    MATCH (n2:Need {nodeId: {needId}})
+    CREATE (resp)-[r2:FULFILLS]->(n2)
+    DELETE r
+    RETURN resp
+  `;
+
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
+}
+
 export function updateViewerName(driver, { name }, userEmail) {
   const queryParams = {
     name,

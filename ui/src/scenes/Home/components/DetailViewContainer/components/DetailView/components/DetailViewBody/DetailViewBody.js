@@ -12,7 +12,6 @@ import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 import Deliberations from '@/components/Deliberations';
 import LocalGraph from '@/components/LocalGraph';
 
-
 const LabelSpan = styled.span`
   font-weight: bold;
   margin-right: 0.5em;
