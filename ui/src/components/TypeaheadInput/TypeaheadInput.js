@@ -23,6 +23,7 @@ const TypeaheadInput = ({
   onChange,
   onBlur,
   invalid,
+  autoFocus,
 }) => (
   <Downshift
     selectedItem={selectedItem}
@@ -46,6 +47,7 @@ const TypeaheadInput = ({
             id,
             placeholder,
             disabled,
+            autoFocus,
             onBlur: (e) => {
               if (!inputValue) clearSelection();
               onBlur(e);
@@ -86,6 +88,7 @@ TypeaheadInput.propTypes = {
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
   invalid: PropTypes.bool,
+  autoFocus: PropTypes.bool,
 };
 
 TypeaheadInput.defaultProps = {
@@ -101,6 +104,7 @@ TypeaheadInput.defaultProps = {
   onChange: () => null,
   onBlur: () => null,
   invalid: false,
+  autoFocus: false,
 };
 
 export default TypeaheadInput;
