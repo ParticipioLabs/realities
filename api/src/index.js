@@ -10,6 +10,7 @@ import jwksRsa from 'jwks-rsa';
 import neo4jDriver from './db/neo4jDriver';
 
 import schema from './graphql/schema';
+import startSchedulers from './services/scheduler';
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -102,3 +103,6 @@ httpServer.listen(API_PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
   console.log(`View GraphQL Playground at http://localhost:${API_PORT}/graphql`);
 });
+
+// Start the schedulers that download data from various APIs.
+startSchedulers();

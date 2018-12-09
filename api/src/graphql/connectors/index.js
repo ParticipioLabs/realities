@@ -1,6 +1,18 @@
 import _ from 'lodash';
 import uuidv4 from 'uuid/v4';
 
+// This fist connector works differently than the rest.
+// It does not get Nodes, but data records that can be from a calculation.
+// Because of this, it does not assign a __label propery.
+function runQueryAndGetRawData(session, query, params) {
+  return session.run(query, params)
+    .then((result) => {
+      session.close();
+      if (!result.records) return null;
+      return result.records[0].toObject();
+    });
+}
+
 function runQueryAndGetRecords(session, query, params) {
   return session.run(query, params)
     .then((result) => {
@@ -72,14 +84,19 @@ export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyV
 }
 
 function getRelationshipQuery(relationship, label, direction) {
-  const relationshipFragment = direction && direction.toUpperCase() === 'IN'
-    ? `<-[:${relationship.toUpperCase()}]-`
-    : `-[:${relationship.toUpperCase()}]->`;
-  return `
-    MATCH ({nodeId: {nodeId}})${relationshipFragment}(n:${label})
+  const relationshipFragment =
+    direction && direction.toUpperCase() === 'IN'
+      ? `<-[:${relationship.toUpperCase()}]-`
+      : `-[:${relationship.toUpperCase()}]->`;
+  const labelFragment =
+    label === ''
+      ? '(n)'
+      : `(n:${label})`;
+  const query = `
+    MATCH ({nodeId: {nodeId}})${relationshipFragment}${labelFragment}
     WHERE NOT EXISTS(n.deleted)
-    RETURN n ORDER BY n.created DESC
-  `;
+    RETURN n ORDER BY n.created DESC`;
+  return query;
 }
 
 export function findNodesByRelationshipAndLabel(
@@ -162,6 +179,23 @@ export function addRealityHasDeliberation(driver, { from, to }) {
     RETURN reality as from, info as to
   `;
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
+}
+
+export function createInfo(driver, { title }, infoUrl) {
+  const queryParams = {
+    title,
+    url: infoUrl,
+    infoId: uuidv4(),
+  };
+  // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
+  const query = `
+    MERGE (info:Info {url: {url}})
+    FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
+      SET info += {nodeId:{infoId}, created:timestamp(), title: {title}})
+    SET info.title = {title}
+    RETURN info
+  `;
+  return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
 export function createViewer(driver, userEmail) {
@@ -303,4 +337,31 @@ export function searchRealities(driver, label, term) {
     RETURN n
   `;
   return runQueryAndGetRecords(driver.session(), query, { term });
+}
+
+export function getPeopleTwoStepsFromReality(driver, { nodeId }) {
+  const query = `
+    MATCH (n {nodeId:'${nodeId}'})<-[*0..2]-(p:Person) 
+    WITH collect(distinct p) as pe
+    UNWIND pe as people
+    RETURN people
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { nodeId });
+}
+
+export function getEmailData(driver, { nodeId }) {
+  const query = `
+    MATCH (n {nodeId:'${nodeId}'})
+    MATCH (n)<-[:GUIDES*0..1]-(gu:Person)
+    OPTIONAL MATCH (re:Person)-[:REALIZES*0..1]->(n)
+    OPTIONAL MATCH (n)-[:FULFILLS]->(need)
+    RETURN 
+    labels(n) as reality_labels,
+    n.description as description, 
+    n.title as title, 
+    gu.email as guideEmail,
+    re.email as realizerEmail,
+    need.nodeId as linkedNeedId
+  `;
+  return runQueryAndGetRawData(driver.session(), query, { nodeId });
 }
