@@ -40,9 +40,6 @@ const wsLink = new WebSocketLink({
   uri: process.env.REACT_APP_GRAPHQL_SUBSCRIPTION,
   options: {
     reconnect: true,
-    connectionParams: {
-      authToken: auth.getAccessToken(),
-    },
   },
 });
 
