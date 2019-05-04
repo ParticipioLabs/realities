@@ -12,6 +12,7 @@ import {
   createResponsibility,
   createViewer,
   updateReality,
+  changeFulfills,
   updateViewerName,
   softDeleteNode,
   addDependency,
@@ -20,8 +21,12 @@ import {
   removeDeliberation,
   searchPersons,
   searchRealities,
+  getEmailData,
 } from '../connectors';
 import { isAuthenticated } from '../authorization';
+import { sendUpdateMail } from '../../email/mailService';
+
+const notify = (process.env.EMAIL_NOTIFICATIONS === 'enabled');
 
 const pubsub = new PubSub();
 
@@ -147,19 +152,44 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver }) => {
-        const need = updateReality(driver, args);
+      async (obj, args, { driver, user }) => {
+        const emailData = await getEmailData(driver, args);
+        const need = await updateReality(driver, args, user);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        if (need && notify) {
+          sendUpdateMail(
+            driver,
+            user,
+            args,
+            emailData,
+            need,
+          );
+        }
         return need;
       },
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver }) => {
+      async (obj, args, { driver, user }) => {
+        const emailData = await getEmailData(driver, args);
         const responsibility = await updateReality(driver, args);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        if (responsibility && notify) {
+          sendUpdateMail(
+            driver,
+            user,
+            args,
+            emailData,
+            responsibility,
+          );
+        }
         return responsibility;
       },
+    ),
+    changeFulfills: combineResolvers(
+      isAuthenticated,
+      (obj, { responsibilityId, needId }, { driver }) =>
+        changeFulfills(driver, { responsibilityId, needId }),
     ),
     updateViewerName: combineResolvers(
       isAuthenticated,

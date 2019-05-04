@@ -40,6 +40,10 @@ const createDetailViewQuery = nodeType => gql`
           nodeId
         }
       }
+      ${nodeType === 'responsibility' ? `fulfills {
+        nodeId
+        title
+      }` : ''}
     }
     showDetailedEditView @client
   }

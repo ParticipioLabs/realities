@@ -48,6 +48,7 @@ const typeDefs = `
       description: String
       deliberationLink: String
     ): Responsibility
+    changeFulfills(responsibilityId: ID!, needId: ID!): Responsibility
     updateViewerName(name: String!): Person
     softDeleteNeed(nodeId: ID!): Need
     softDeleteResponsibility(nodeId: ID!): Responsibility

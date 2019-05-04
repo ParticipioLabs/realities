@@ -7,11 +7,11 @@ import {
   CardText,
   CardTitle,
 } from 'reactstrap';
+import ReactMarkdown from 'react-markdown';
 import Dependencies from '@/components/Dependencies';
 import RealizersMissingIcon from '@/components/RealizersMissingIcon';
 import Deliberations from '@/components/Deliberations';
 import LocalGraph from '@/components/LocalGraph';
-
 
 const LabelSpan = styled.span`
   font-weight: bold;
@@ -55,7 +55,7 @@ const DetailViewBody = ({ node }) => (
       <LabelSpan>
         Description:
       </LabelSpan>
-      {node.description}
+      <ReactMarkdown source={node.description} />
     </CardText>
 
     <CardSection>

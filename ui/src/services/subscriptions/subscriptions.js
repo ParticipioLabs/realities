@@ -80,6 +80,16 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
         url
         title
       }
+      ... on Need {
+        fulfilledBy {
+          nodeId
+          title
+          realizer {
+            nodeId
+            name
+          }
+        }
+      }
     }
   }
 `;
