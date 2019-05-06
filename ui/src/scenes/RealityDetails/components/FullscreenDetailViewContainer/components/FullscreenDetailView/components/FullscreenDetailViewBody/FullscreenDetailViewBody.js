@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
+  Col,
+  Row,
   CardBody,
   CardText,
   CardTitle,
@@ -20,7 +22,7 @@ const CardSection = styled.div`
   margin-bottom: 1rem;
 `;
 
-const DetailViewBody = ({ node }) => (
+const FullscreenDetailViewBody = ({ node }) => (
   <CardBody>
     <CardTitle>
       {node.title}
@@ -68,33 +70,41 @@ const DetailViewBody = ({ node }) => (
     </CardSection>
 
     <CardSection>
-      <LabelSpan>Depends on:</LabelSpan>
-      <Dependencies
-        nodeType={node.__typename}
-        nodeId={node.nodeId}
-        dependencies={[
-          ...(node.dependsOnNeeds || []),
-          ...(node.dependsOnResponsibilities || []),
-        ]}
-      />
+      <LabelSpan>This depends on:</LabelSpan>
+      <Row>
+        <Col md="6">
+          <Dependencies
+            nodeType={node.__typename}
+            nodeId={node.nodeId}
+            dependencies={[
+              ...(node.dependsOnNeeds || []),
+              ...(node.dependsOnResponsibilities || []),
+            ]}
+          />
+        </Col>
+      </Row>
     </CardSection>
 
     <CardSection>
       <LabelSpan>What depends on this:</LabelSpan>
-      <Dependencies
-        nodeType={node.__typename}
-        nodeId={node.nodeId}
-        dependencies={[
-          ...(node.needsThatDependOnThis || []),
-          ...(node.responsibilitiesThatDependOnThis || []),
-        ]}
-      />
+      <Row>
+        <Col md="6">
+          <Dependencies
+            nodeType={node.__typename}
+            nodeId={node.nodeId}
+            dependencies={[
+              ...(node.needsThatDependOnThis || []),
+              ...(node.responsibilitiesThatDependOnThis || []),
+            ]}
+          />
+        </Col>
+      </Row>
     </CardSection>
 
   </CardBody>
 );
 
-DetailViewBody.propTypes = {
+FullscreenDetailViewBody.propTypes = {
   node: PropTypes.shape({
     __typename: PropTypes.string,
     nodeId: PropTypes.string,
@@ -146,7 +156,7 @@ DetailViewBody.propTypes = {
   }),
 };
 
-DetailViewBody.defaultProps = {
+FullscreenDetailViewBody.defaultProps = {
   node: {
     nodeId: '',
     title: '',
@@ -168,4 +178,4 @@ DetailViewBody.defaultProps = {
   },
 };
 
-export default DetailViewBody;
+export default FullscreenDetailViewBody;
