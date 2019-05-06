@@ -5,10 +5,10 @@ import { withRouter } from 'react-router-dom';
 import { Query } from 'react-apollo';
 import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
-import DetailView from './components/DetailView';
+import FullscreenDetailView from './components/FullscreenDetailView';
 
 const createDetailViewQuery = nodeType => gql`
-  query DetailViewContainer_${nodeType}($nodeId: ID!) {
+  query FullscreenDetailViewContainer_${nodeType}($nodeId: ID!) {
     ${nodeType}(nodeId: $nodeId) {
       nodeId
       title
@@ -64,12 +64,13 @@ const createDetailViewQuery = nodeType => gql`
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
-const DetailViewContainer = withAuth(withRouter(({
+const FullscreenDetailViewContainer = withAuth(withRouter(({
   auth,
   history,
   match,
 }) => {
   if (!match.params.needId && !match.params.responsibilityId) return null;
+
   const queryProps = !match.params.responsibilityId ? {
     query: GET_NEED,
     variables: {
@@ -95,13 +96,13 @@ const DetailViewContainer = withAuth(withRouter(({
         const node = !match.params.responsibilityId ? data.need : data.responsibility;
         if (!node) return null;
         return (
-          <DetailView
+          <FullscreenDetailView
             node={node}
             showEdit={data.showDetailedEditView}
             isLoggedIn={auth.isLoggedIn}
             onClickEdit={() => client.writeData({ data: { showDetailedEditView: true } })}
             onClickCancel={() => client.writeData({ data: { showDetailedEditView: false } })}
-            onClickFullscreen={() => history.push(`/reality/${match.params.needId}/${match.params.responsibilityId || ''}`)}
+            onClickNavigate={() => history.push(`/${match.params.needId}/${match.params.responsibilityId || ''}`)}
           />
         );
       }}
@@ -109,7 +110,7 @@ const DetailViewContainer = withAuth(withRouter(({
   );
 }));
 
-DetailViewContainer.propTypes = {
+FullscreenDetailViewContainer.propTypes = {
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,
   }),
@@ -121,7 +122,7 @@ DetailViewContainer.propTypes = {
   }),
 };
 
-DetailViewContainer.defaultProps = {
+FullscreenDetailViewContainer.defaultProps = {
   auth: {
     isLoggedIn: false,
   },
@@ -133,4 +134,4 @@ DetailViewContainer.defaultProps = {
   },
 };
 
-export default DetailViewContainer;
+export default FullscreenDetailViewContainer;

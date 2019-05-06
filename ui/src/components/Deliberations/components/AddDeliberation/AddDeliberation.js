@@ -65,14 +65,14 @@ const AddDeliberation = withRouter(({ nodeId }) => (
             }) => (
               <div>
                 <Label for="editDeliberationUrl">
-                  Add a deliberation {touched.url && errors.url &&
+                  Add a discussion reference {touched.url && errors.url &&
                     <InvalidUrlText>
                       <FaChainBroken /> {errors.url}
                     </InvalidUrlText>}
                 </Label>
                 <InfoForm
                   inputName="url"
-                  placeholder="Enter a deliberation URL..."
+                  placeholder="Enter a discussion URL..."
                   value={values.url}
                   handleChange={handleChange}
                   handleBlur={handleBlur}
