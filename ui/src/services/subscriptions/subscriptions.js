@@ -75,6 +75,17 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
           nodeId
         }
       }
+      needsThatDependOnThis {
+        nodeId
+        title
+      }
+      responsibilitiesThatDependOnThis {
+        nodeId
+        title
+        fulfills {
+          nodeId
+        }
+      }
       deliberations {
         nodeId
         url
