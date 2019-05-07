@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
 import RealizersMissingIcon from '@/components/RealizersMissingIcon';
+import _ from 'lodash';
 
 const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
@@ -36,11 +37,17 @@ class ResponsibilitiesList extends Component {
 
   render() {
     const {
-      responsibilities,
       selectedResponsibilityId,
       history,
       match,
     } = this.props;
+    const responsibilitiesAlphabetical = _.orderBy(this.props.responsibilities, [(r) => {
+      if (r.title) return r.title.toLowerCase();
+      return '';
+    }], ['asc']);
+    const responsibilities = _.orderBy(responsibilitiesAlphabetical, [r =>
+      (r.nodeId === selectedResponsibilityId),
+    ], ['desc']);
     return (
       <div>
         <ResponsibilitiesListGroup>

@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
 import RealizersMissingIcon from '@/components/RealizersMissingIcon';
+import _ from 'lodash';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
@@ -49,7 +50,14 @@ class NeedsList extends Component {
   }
 
   render() {
-    const { needs, selectedNeedId, history } = this.props;
+    const { selectedNeedId, history } = this.props;
+    const needsAlphabetical = _.orderBy(this.props.needs, [(r) => {
+      if (r.title) return r.title.toLowerCase();
+      return '';
+    }], ['asc']);
+    const needs = _.orderBy(needsAlphabetical, [r =>
+      (r.nodeId === selectedNeedId),
+    ], ['desc']);
     return (
       <div>
         <NeedsListGroup>
