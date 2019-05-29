@@ -61,14 +61,16 @@ class ResponsibilitiesList extends Component {
     return (
       <div>
         <ResponsibilitiesListGroup>
-          {responsibilities.filter(responsibility => responsibility.nodeId === selectedResponsibilityId).map(responsibility => (
-            <ResponsibilitiesListGroupHeader
-              key={selectedResponsibilityId}
-              active="true"
-            >
-              {responsibility.title}
-              {renderMissingRealizerIcon(responsibility)}
-            </ResponsibilitiesListGroupHeader>
+          {responsibilities.filter(responsibility =>
+            responsibility.nodeId === selectedResponsibilityId)
+            .map(responsibility => (
+              <ResponsibilitiesListGroupHeader
+                key={selectedResponsibilityId}
+                active="true"
+              >
+                {responsibility.title}
+                {renderMissingRealizerIcon(responsibility)}
+              </ResponsibilitiesListGroupHeader>
           ))}
           {responsibilities.map(responsibility => (
             <ResponsibilitiesListGroupItem
