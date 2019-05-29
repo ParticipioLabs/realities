@@ -11,7 +11,7 @@ const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
-const NeedsListGroupItem = styled(ListGroupItem)`
+const NeedsListGroupHeader = styled(ListGroupItem)`
   display: flex;
   justify-content: space-between;
   &:focus {
@@ -21,6 +21,19 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     background-color: ${colors.need};
     border-color: ${colors.need};
     color: white;
+  }
+`;
+
+const NeedsListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
+  &:focus {
+    outline: none;
+  }
+  &.active {
+    background-color: white;
+    border-color: ${colors.need};
+    color: ${colors.need};
   }
 `;
 
@@ -51,16 +64,22 @@ class NeedsList extends Component {
 
   render() {
     const { selectedNeedId, history } = this.props;
-    const needsAlphabetical = _.orderBy(this.props.needs, [(r) => {
+    const needs = _.orderBy(this.props.needs, [(r) => {
       if (r.title) return r.title.toLowerCase();
       return '';
     }], ['asc']);
-    const needs = _.orderBy(needsAlphabetical, [r =>
-      (r.nodeId === selectedNeedId),
-    ], ['desc']);
     return (
       <div>
         <NeedsListGroup>
+          {needs.filter(need => need.nodeId === selectedNeedId).map(need => (
+            <NeedsListGroupHeader
+              key={selectedNeedId}
+              active="true"
+            >
+              {need.title}
+              {renderMissingRealizersAmount(need)}
+            </NeedsListGroupHeader>
+          ))}
           {needs.map(need => (
             <NeedsListGroupItem
               key={need.nodeId}

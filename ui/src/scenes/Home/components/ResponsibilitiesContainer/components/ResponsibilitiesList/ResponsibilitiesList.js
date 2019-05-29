@@ -11,7 +11,7 @@ const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
-const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+const ResponsibilitiesListGroupHeader = styled(ListGroupItem)`
   display: flex;
   justify-content: space-between;
   &:focus {
@@ -21,6 +21,19 @@ const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
     background-color: ${colors.responsibility};
     border-color: ${colors.responsibility};
     color: white;
+  }
+`;
+
+const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
+  &:focus {
+    outline: none;
+  }
+  &.active {
+    background-color: white;
+    border-color: ${colors.responsibility};
+    color: ${colors.responsibility};
   }
 `;
 
@@ -41,16 +54,22 @@ class ResponsibilitiesList extends Component {
       history,
       match,
     } = this.props;
-    const responsibilitiesAlphabetical = _.orderBy(this.props.responsibilities, [(r) => {
+    const responsibilities = _.orderBy(this.props.responsibilities, [(r) => {
       if (r.title) return r.title.toLowerCase();
       return '';
     }], ['asc']);
-    const responsibilities = _.orderBy(responsibilitiesAlphabetical, [r =>
-      (r.nodeId === selectedResponsibilityId),
-    ], ['desc']);
     return (
       <div>
         <ResponsibilitiesListGroup>
+          {responsibilities.filter(responsibility => responsibility.nodeId === selectedResponsibilityId).map(responsibility => (
+            <ResponsibilitiesListGroupHeader
+              key={selectedResponsibilityId}
+              active="true"
+            >
+              {responsibility.title}
+              {renderMissingRealizerIcon(responsibility)}
+            </ResponsibilitiesListGroupHeader>
+          ))}
           {responsibilities.map(responsibility => (
             <ResponsibilitiesListGroupItem
               key={responsibility.nodeId}
