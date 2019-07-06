@@ -51,6 +51,9 @@ class RealitiesNavbar extends Component {
         <Collapse isOpen={this.state.isOpen} navbar className="flex-grow-0">
           <Nav className="ml-auto" navbar>
             <NavItem>
+              <NavLink tag={Link} to="/graph">Graph</NavLink>
+            </NavItem>
+            <NavItem>
               <NavLink tag={Link} to="/about">About</NavLink>
             </NavItem>
             {this.props.auth.isLoggedIn ? (
