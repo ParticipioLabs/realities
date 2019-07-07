@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
-import gql from 'graphql-tag';
+import _ from 'lodash';
 import styled from 'styled-components';
+import gql from 'graphql-tag';
 import graphUtils from '@/services/graphUtils';
 import { Query } from 'react-apollo';
 import {
-  Button,
-  ButtonGroup,
   Card,
   CardBody,
+  CardText,
+  CardTitle,
   Container,
   Row,
   Col,
 } from 'reactstrap';
 import VisGraph from 'react-graph-vis';
 import WrappedLoader from '@/components/WrappedLoader';
+import Controls from './components/Controls';
 
-const LegendWrapper = styled.div`
-  position: absolute;
-  top: 0.5em;
-  left: 0.5em;
-  z-index: 10;
-`;
-
-const Label = styled.p`
-  margin-bottom: 0.5em;
+const ControlsRow = styled(Row)`
+  margin-bottom: 8px;
 `;
 
 const GET_RESPONSIBILITIES = gql`
@@ -66,62 +61,68 @@ class Graph extends Component {
 
     this.state = {
       highlightedEdge: 'realizes',
+      selectedNode: null,
     };
   }
+
+  onSelectNode = ({ nodes }, graphData) => {
+    const selectedNodeId = nodes && nodes[0];
+    const graphNode = _.find(graphData.nodes, { id: selectedNodeId });
+    this.setState({ selectedNode: graphNode });
+  };
 
   handleSelectHighlightedEdge = highlightedEdge => this.setState({ highlightedEdge });
 
   render() {
-    const { highlightedEdge } = this.state;
+    const { highlightedEdge, selectedNode } = this.state;
 
     return (
       <Container fluid>
         <Row>
-          <Col>
+          <Col md="3">
+            <ControlsRow>
+              <Col>
+                <Controls
+                  highlightedEdge={highlightedEdge}
+                  onSelectHighlightedEdge={this.handleSelectHighlightedEdge}
+                />
+              </Col>
+            </ControlsRow>
+            <Row>
+              <Col>
+                <Card>
+                  <CardBody>
+                    <CardTitle>Selected node</CardTitle>
+                    {selectedNode ? (
+                      <CardText>
+                        {selectedNode.title}
+                        {selectedNode.description && ` (${selectedNode.description})`}
+                      </CardText>
+                    ) : (
+                      <CardText className="text-muted font-italic">
+                        Click a node to see details
+                      </CardText>
+                    )}
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+          <Col md="9">
             <Card>
               <CardBody>
                 <Query query={GET_RESPONSIBILITIES}>
                   {({ loading, error, data }) => {
                     if (loading) return <WrappedLoader />;
                     if (error) return `Error! ${error.message}`;
+                    const graphData = graphUtils.getMasterGraph(data, highlightedEdge);
                     return (
-                      <div>
-                        <LegendWrapper>
-                          <Card>
-                            <CardBody>
-                              <Label>Hightlight relationship</Label>
-                              <ButtonGroup>
-                                <Button
-                                  color="primary"
-                                  onClick={() => this.handleSelectHighlightedEdge('realizes')}
-                                  outline={highlightedEdge !== 'realizes'}
-                                >
-                                  Realizes
-                                </Button>
-                                <Button
-                                  color="primary"
-                                  onClick={() => this.handleSelectHighlightedEdge('guides')}
-                                  outline={highlightedEdge !== 'guides'}
-                                >
-                                  Guides
-                                </Button>
-                                <Button
-                                  color="primary"
-                                  onClick={() => this.handleSelectHighlightedEdge('depends_on')}
-                                  outline={highlightedEdge !== 'depends_on'}
-                                >
-                                  Depends on
-                                </Button>
-                              </ButtonGroup>
-                            </CardBody>
-                          </Card>
-                        </LegendWrapper>
-                        <VisGraph
-                          graph={graphUtils.getMasterGraph(data, highlightedEdge)}
-                          options={graphOptions}
-                          style={{ height: 'calc(100vh - 100px)' }}
-                        />
-                      </div>
+                      <VisGraph
+                        graph={graphData}
+                        options={graphOptions}
+                        events={{ select: event => this.onSelectNode(event, graphData) }}
+                        style={{ height: 'calc(100vh - 100px)' }}
+                      />
                     );
                   }}
                 </Query>
