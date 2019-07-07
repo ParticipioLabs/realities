@@ -33,18 +33,20 @@ function pushNode(graph, node, config = {}) {
   }
 }
 
-function pushEdge(graph, originNode, node, relation, direction) {
+function pushEdge(graph, originNode, node, relation, direction, config = {}) {
   if (direction === 'IN') {
     graph.edges.push({
       from: originNode.nodeId,
       to: node.nodeId,
       label: relation,
+      ...config,
     });
   } else {
     graph.edges.push({
       from: node.nodeId,
       to: originNode.nodeId,
       label: relation,
+      ...config,
     });
   }
 }
@@ -126,29 +128,183 @@ function getPersonGraph(originNode = {}) {
   return graph;
 }
 
+function getPeopleFromResponsibilities(responsibilities) {
+  const people = responsibilities.reduce((peopleAcc, responsibility) => {
+    const { guide, realizer } = responsibility;
+
+    function addPerson(person, respArrayKey) {
+      if (!person) return;
+
+      const foundPerson = _.find(peopleAcc, { nodeId: person.nodeId });
+
+      if (foundPerson) {
+        if (foundPerson[respArrayKey]) {
+          foundPerson[respArrayKey].push(responsibility);
+        } else {
+          foundPerson[respArrayKey] = [responsibility];
+        }
+      } else {
+        peopleAcc.push({
+          ...person,
+          [respArrayKey]: [responsibility],
+        });
+      }
+    }
+
+    addPerson(guide, 'guidesResponsibilities');
+    addPerson(realizer, 'realizesResponsibilities');
+
+    return peopleAcc;
+  }, []);
+
+  const sortedPeople = _.sortBy(
+    people,
+    [
+      p => (p.realizesResponsibilities ? p.realizesResponsibilities.length : 0),
+    ],
+  );
+
+  return sortedPeople;
+}
+
+function getRadius(numberOfNodes, nodeSpace) {
+  const circumference = nodeSpace * numberOfNodes;
+  return circumference / (2 * Math.PI);
+}
+
+function getThetaIncrement(numberOfNodes) {
+  return numberOfNodes
+    ? (2 * Math.PI) / numberOfNodes
+    : null;
+}
+
 function getMasterGraph({ responsibilities = [] }) {
   const graph = {
     nodes: [],
     edges: [],
   };
 
-  const r = 3000;
-  let theta = 0;
-  const thetaIncrement = (2 * Math.PI) / responsibilities.length;
+  const nodeSpace = 100;
+  const minSpaceBetweenCircles = 500;
 
-  responsibilities.forEach((responsibility) => {
+
+  // Add unclaimed responsibilities as inner circle
+  // ----------------------------------------------------------------------
+  const unclaimedResponsibilities = responsibilities.filter(r => !r.realizer);
+
+  const unclaimedRadius = getRadius(unclaimedResponsibilities.length, nodeSpace);
+  const unclaimedThetaIncrement = getThetaIncrement(unclaimedResponsibilities.length);
+
+  unclaimedResponsibilities.forEach((resp, i) => {
     pushNode(
       graph,
-      responsibility,
+      resp,
       {
-        x: r * Math.cos(theta),
-        y: r * Math.sin(theta),
+        x: unclaimedRadius * Math.cos(unclaimedThetaIncrement * i),
+        y: unclaimedRadius * Math.sin(unclaimedThetaIncrement * i),
       },
     );
-    theta += thetaIncrement;
-    pushRelatedNode(graph, responsibility, responsibility.guide, 'Guides', 'OUT');
-    pushRelatedNode(graph, responsibility, responsibility.realizer, 'Realizes', 'OUT');
-    pushRelatedNode(graph, responsibility, responsibility.dependsOnResponsibilities, 'Depends on', 'IN');
+  });
+
+
+  // Add claimed responsibilities to middle circle and people to outer circle
+  // ----------------------------------------------------------------------
+  const people = getPeopleFromResponsibilities(responsibilities);
+
+  const numberOfSlotsInClaimedCircle = people.reduce((acc, person) => {
+    // Circle of claimed responsibilities should leave empty spaces for people
+    // that guide responsibilities but don't realize any
+    const increment = person.realizesResponsibilities
+      ? person.realizesResponsibilities.length
+      : 1;
+    return acc + increment;
+  }, 0);
+
+  const claimedRadius = Math.max(
+    getRadius(numberOfSlotsInClaimedCircle, nodeSpace),
+    unclaimedRadius + minSpaceBetweenCircles,
+  );
+  const claimedThetaIncrement = getThetaIncrement(numberOfSlotsInClaimedCircle);
+
+  const peopleRadius = claimedRadius + minSpaceBetweenCircles;
+
+  let claimedIndex = 0;
+  const peopleWithCoordinates = people.map((person) => {
+    if (person.realizesResponsibilities) {
+      const responsibilitiesWithCoordinates = person.realizesResponsibilities.map((resp) => {
+        const respWithCoordinates = {
+          ...resp,
+          theta: claimedThetaIncrement * claimedIndex,
+          x: claimedRadius * Math.cos(claimedThetaIncrement * claimedIndex),
+          y: claimedRadius * Math.sin(claimedThetaIncrement * claimedIndex),
+        };
+        claimedIndex += 1;
+        return respWithCoordinates;
+      });
+      const personTheta = _.mean(_.map(responsibilitiesWithCoordinates, 'theta'));
+      return {
+        ...person,
+        x: peopleRadius * Math.cos(personTheta),
+        y: peopleRadius * Math.sin(personTheta),
+        realizesResponsibilities: responsibilitiesWithCoordinates,
+      };
+    }
+    const personWithCoordinates = {
+      ...person,
+      x: peopleRadius * Math.cos(claimedThetaIncrement * claimedIndex),
+      y: peopleRadius * Math.sin(claimedThetaIncrement * claimedIndex),
+    };
+    claimedIndex += 1;
+    return personWithCoordinates;
+  });
+
+  peopleWithCoordinates.forEach((person) => {
+    if (person.realizesResponsibilities) {
+      person.realizesResponsibilities.forEach((resp) => {
+        pushNode(graph, resp, { x: resp.x, y: resp.y });
+      });
+    }
+    pushNode(graph, person, { x: person.x, y: person.y });
+  });
+
+
+  // Add edges
+  // ----------------------------------------------------------------------
+  responsibilities.forEach((responsibility) => {
+    const { guide, realizer, dependsOnResponsibilities } = responsibility;
+
+    if (guide) {
+      pushEdge(graph, responsibility, guide, 'Guides', 'OUT', {
+        color: {
+          color: colors.guide,
+          highlight: colors.guide,
+          inherit: false,
+          opacity: 0.2,
+        },
+      });
+    }
+
+    if (realizer) {
+      pushEdge(graph, responsibility, realizer, 'Realizes', 'OUT', {
+        color: {
+          color: colors.realizer,
+          highlight: colors.realizer,
+          inherit: false,
+        },
+        width: 10,
+      });
+    }
+
+    dependsOnResponsibilities.forEach((dependency) => {
+      pushEdge(graph, responsibility, dependency, 'Depends on', 'IN', {
+        color: {
+          color: colors.dependency,
+          highlight: colors.dependency,
+          inherit: false,
+          opacity: 0.2,
+        },
+      });
+    });
   });
 
   return graph;

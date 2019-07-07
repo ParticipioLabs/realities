@@ -29,32 +29,20 @@ const GET_RESPONSIBILITIES = gql`
       }
       dependsOnResponsibilities {
         nodeId
-        title
       }
     }
   }
 `;
 
 const graphOptions = {
-  layout: {
-    improvedLayout: true,
-  },
-  edges: {
-    color: '#000000',
-    font: {
-      align: 'top',
-    },
-    smooth: {
-      enabled: true,
-      type: 'dynamic',
-      roundness: 0.5,
-    },
-  },
   nodes: {
     shape: 'dot',
   },
   physics: {
     enabled: false,
+  },
+  edges: {
+    arrowStrikethrough: false,
   },
 };
 
@@ -68,13 +56,10 @@ const Graph = () => (
               {({ loading, error, data }) => {
                 if (loading) return <WrappedLoader />;
                 if (error) return `Error! ${error.message}`;
-                const graphData = graphUtils.getMasterGraph(data);
-                console.log(data);
-                console.log(graphData);
                 return (
                   <div>
                     <VisGraph
-                      graph={graphData}
+                      graph={graphUtils.getMasterGraph(data)}
                       options={graphOptions}
                       style={{ height: 'calc(100vh - 100px)' }}
                     />
