@@ -5,13 +5,13 @@ import {
   ButtonGroup,
   Card,
   CardBody,
-  CardTitle,
+  CardHeader,
 } from 'reactstrap';
 
 const Controls = ({ highlightedEdge, onSelectHighlightedEdge }) => (
   <Card>
+    <CardHeader>Highlighted relationship</CardHeader>
     <CardBody>
-      <CardTitle>Hightlight relationship</CardTitle>
       <ButtonGroup>
         <Button
           color="primary"
