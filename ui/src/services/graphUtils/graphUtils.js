@@ -178,7 +178,7 @@ function getThetaIncrement(numberOfNodes) {
     : null;
 }
 
-function getMasterGraph({ responsibilities = [] }) {
+function getMasterGraph({ responsibilities = [] }, highlightedEdge) {
   const graph = {
     nodes: [],
     edges: [],
@@ -279,8 +279,9 @@ function getMasterGraph({ responsibilities = [] }) {
           color: colors.guide,
           highlight: colors.guide,
           inherit: false,
-          opacity: 0.2,
+          opacity: highlightedEdge === 'guides' ? 1 : 0.2,
         },
+        width: highlightedEdge === 'guides' ? 10 : 1,
       });
     }
 
@@ -290,8 +291,9 @@ function getMasterGraph({ responsibilities = [] }) {
           color: colors.realizer,
           highlight: colors.realizer,
           inherit: false,
+          opacity: highlightedEdge === 'realizes' ? 1 : 0.2,
         },
-        width: 10,
+        width: highlightedEdge === 'realizes' ? 10 : 1,
       });
     }
 
@@ -301,8 +303,9 @@ function getMasterGraph({ responsibilities = [] }) {
           color: colors.dependency,
           highlight: colors.dependency,
           inherit: false,
-          opacity: 0.2,
+          opacity: highlightedEdge === 'depends_on' ? 1 : 0.2,
         },
+        width: highlightedEdge === 'depends_on' ? 10 : 1,
       });
     });
   });
