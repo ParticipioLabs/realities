@@ -12,7 +12,7 @@ function getNodeTitle(node) {
 }
 
 function getTrimmedLabel(node) {
-  return _.truncate(getNodeTitle(node), { length: 12, separator: ',.?! ' });
+  return _.truncate(getNodeTitle(node), { length: 20, separator: ',.?! ' });
 }
 
 function getNodeDescription(node) {
