@@ -7,8 +7,6 @@ import { Query } from 'react-apollo';
 import {
   Card,
   CardBody,
-  CardText,
-  CardTitle,
   Container,
   Row,
   Col,
@@ -16,6 +14,7 @@ import {
 import VisGraph from 'react-graph-vis';
 import WrappedLoader from '@/components/WrappedLoader';
 import Controls from './components/Controls';
+import SelectedNode from './components/SelectedNode';
 
 const ControlsRow = styled(Row)`
   margin-bottom: 8px;
@@ -90,21 +89,10 @@ class Graph extends Component {
             </ControlsRow>
             <Row>
               <Col>
-                <Card>
-                  <CardBody>
-                    <CardTitle>Selected node</CardTitle>
-                    {selectedNode ? (
-                      <CardText>
-                        {selectedNode.title}
-                        {selectedNode.description && ` (${selectedNode.description})`}
-                      </CardText>
-                    ) : (
-                      <CardText className="text-muted font-italic">
-                        Click a node to see details
-                      </CardText>
-                    )}
-                  </CardBody>
-                </Card>
+                <SelectedNode
+                  nodeId={selectedNode && selectedNode.id}
+                  nodeType={selectedNode && selectedNode.__typename}
+                />
               </Col>
             </Row>
           </Col>

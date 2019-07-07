@@ -24,6 +24,7 @@ function pushNode(graph, node, config = {}) {
   if (!_.find(graph.nodes, { id: node.nodeId })) {
     graph.nodes.push({
       id: node.nodeId,
+      __typename: node.__typename,
       label: getTrimmedLabel(node),
       color: colorCollection[node.__typename],
       title: getNodeTitle(node),
