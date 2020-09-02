@@ -55,7 +55,7 @@
     "lodash": "^4.17.11",
     "mime": "^2.0.3",
     "mocha": "^4.0.1",
-    "neo4j-driver": "^1.6.3",
+    "neo4j-driver": "4.1.1",
     "node-cron": "^2.0.3",
     "nodemon": "^1.12.4",
     "normalize-url": "^4.0.0",
