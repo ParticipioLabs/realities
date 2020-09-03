@@ -135,7 +135,7 @@
     "babel-eslint": "^8.0.3",
     "css-loader": "^0.28.7",
     "file-loader": "^1.1.5",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.13.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
     "webpack": "^3.8.1"
