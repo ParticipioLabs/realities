@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/client/react/components';
 import { GET_NEEDS, GET_RESPONSIBILITIES } from '@/services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 

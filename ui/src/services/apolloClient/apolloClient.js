@@ -1,24 +1,24 @@
-import { ApolloClient } from 'apollo-client';
-import { getMainDefinition } from 'apollo-utilities';
-import { withClientState } from 'apollo-link-state';
-import { HttpLink } from 'apollo-link-http';
-import { WebSocketLink } from 'apollo-link-ws';
-import { ApolloLink, split } from 'apollo-link';
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import { ApolloClient, ApolloLink, split, HttpLink } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+// import { withClientState } from 'apollo-link-state';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { InMemoryCache } from '@apollo/client/cache';
 import auth from '@/services/auth';
-import { resolvers, defaults } from './localState';
-import introspectionQueryResultData from './fragmentTypes.json';
+// import { resolvers, defaults } from './localState';
+// import introspectionQueryResultData from './fragmentTypes.json';
 
-const fragmentMatcher = new IntrospectionFragmentMatcher({
+// removed from apollo
+// todo: replace?
+/* const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData,
-});
+}); */
 
 const cache = new InMemoryCache({
   dataIdFromObject: object => `${object.__typename}:${object.nodeId}`,
-  fragmentMatcher,
+  // fragmentMatcher,
 });
 
-const stateLink = withClientState({ cache, resolvers, defaults });
+// const stateLink = withClientState({ cache, resolvers, defaults });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   const accessToken = auth.getAccessToken();
@@ -57,9 +57,9 @@ const terminatingLink = split(
 
 const client = new ApolloClient({
   cache,
-  link: ApolloLink.from([stateLink, authMiddleware, terminatingLink]),
+  link: ApolloLink.from([/* stateLink, */authMiddleware, terminatingLink]),
 });
 
-client.onResetStore(stateLink.writeDefaults);
+// client.onResetStore(stateLink.writeDefaults);
 
 export default client;

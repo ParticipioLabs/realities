@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import * as yup from 'yup';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
 import EditDetailsForm from './components/EditDetailsForm';
 

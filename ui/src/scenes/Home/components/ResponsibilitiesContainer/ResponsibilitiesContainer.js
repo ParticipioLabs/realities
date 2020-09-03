@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Query } from 'react-apollo';
+import { Query } from '@apollo/client/react/components';
 import { GET_RESPONSIBILITIES } from '@/services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,

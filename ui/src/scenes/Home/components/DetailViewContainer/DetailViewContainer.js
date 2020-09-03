@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Query } from 'react-apollo';
+import { Query } from '@apollo/client/react/components';
 import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
 import DetailView from './components/DetailView';

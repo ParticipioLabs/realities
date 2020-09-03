@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
+import { Query } from '@apollo/client/react/components';
+import { gql } from '@apollo/client';
 import LocalGraph from '@/components/LocalGraph';
 import WrappedLoader from '@/components/WrappedLoader';
 

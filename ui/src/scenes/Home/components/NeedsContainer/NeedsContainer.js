@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
-import { Query } from 'react-apollo';
+import { Query } from '@apollo/client/react/components';
 import { GET_NEEDS } from '@/services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
@@ -40,7 +40,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
               })
             }
         />
-        {localData.showCreateNeed && <CreateNeed />}
+        {localData && localData.showCreateNeed && <CreateNeed />}
         <Query query={GET_NEEDS}>
           {({
               subscribeToMore,
