@@ -25,7 +25,7 @@ const GET_SHOW_CREATE_NEED = gql`
 
 const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
   <Query query={GET_SHOW_CREATE_NEED}>
-    {({ data: localData, client }) => (
+    {({ data: localData = {}, client }) => (
       <div>
         <ListHeader
           text="Needs"
@@ -40,7 +40,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
               })
             }
         />
-        {localData && localData.showCreateNeed && <CreateNeed />}
+        {localData.showCreateNeed && <CreateNeed />}
         <Query query={GET_NEEDS}>
           {({
               subscribeToMore,
