@@ -73,7 +73,7 @@ const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
       {({
         loading,
         error,
-        data,
+        data = {},
         client,
       }) => {
         if (loading) return <WrappedLoader />;

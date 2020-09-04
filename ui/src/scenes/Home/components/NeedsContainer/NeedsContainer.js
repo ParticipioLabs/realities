@@ -32,7 +32,13 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           color={colors.need}
           showButton={auth.isLoggedIn}
           onButtonClick={() =>
-              client.writeData({
+              client.writeQuery({
+                query: gql`
+                  query ShowCreates {
+                    showCreateNeed
+                    showCreateResponsibility
+                  }
+                `,
                 data: {
                   showCreateNeed: !localData.showCreateNeed,
                   showCreateResponsibility: false,
