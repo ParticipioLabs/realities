@@ -27,7 +27,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
 
   return (
     <Query query={GET_SHOW_CREATE_RESPONSIBILITY}>
-      {({ data: localData, client }) => (
+      {({ data: localData = {}, client }) => (
         <div>
           <ListHeader
             text="Responsibilities"
