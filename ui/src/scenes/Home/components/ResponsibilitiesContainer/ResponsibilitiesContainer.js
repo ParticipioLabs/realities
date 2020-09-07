@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
 import { Query } from '@apollo/client/react/components';
-import { GET_RESPONSIBILITIES } from '@/services/queries';
+import { GET_RESPONSIBILITIES, SHOW_CREATES } from '@/services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
@@ -34,7 +34,8 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
             color={colors.responsibility}
             showButton={auth.isLoggedIn && !!match.params.needId}
             onButtonClick={() =>
-                client.writeData({
+                client.writeQuery({
+                  query: SHOW_CREATES,
                   data: {
                     showCreateResponsibility: !localData.showCreateResponsibility,
                     showCreateNeed: false,

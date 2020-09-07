@@ -4,7 +4,7 @@ import { gql } from '@apollo/client';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Query } from '@apollo/client/react/components';
-import { GET_NEEDS } from '@/services/queries';
+import { GET_NEEDS, SHOW_CREATES } from '@/services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
@@ -33,12 +33,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
           showButton={auth.isLoggedIn}
           onButtonClick={() =>
               client.writeQuery({
-                query: gql`
-                  query ShowCreates {
-                    showCreateNeed
-                    showCreateResponsibility
-                  }
-                `,
+                query: SHOW_CREATES,
                 data: {
                   showCreateNeed: !localData.showCreateNeed,
                   showCreateResponsibility: false,

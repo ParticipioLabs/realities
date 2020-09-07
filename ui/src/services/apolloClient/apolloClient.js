@@ -4,6 +4,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from '@apollo/client/cache';
 import auth from '@/services/auth';
+// todo: would be nice to load the defaults from here
 // import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
