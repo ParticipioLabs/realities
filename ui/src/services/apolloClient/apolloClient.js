@@ -1,11 +1,10 @@
 import { ApolloClient, ApolloLink, split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
-// import { withClientState } from 'apollo-link-state';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from '@apollo/client/cache';
 import auth from '@/services/auth';
-// todo: would be nice to load the defaults from here
-// import { resolvers, defaults } from './localState';
+import { SET_CACHE } from '@/services/queries';
+import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
 // removed from apollo
@@ -18,8 +17,6 @@ const cache = new InMemoryCache({
   dataIdFromObject: object => `${object.__typename}:${object.nodeId}`,
   // fragmentMatcher,
 });
-
-// const stateLink = withClientState({ cache, resolvers, defaults });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   const accessToken = auth.getAccessToken();
@@ -58,7 +55,13 @@ const terminatingLink = split(
 
 const client = new ApolloClient({
   cache,
-  link: ApolloLink.from([/* stateLink, */authMiddleware, terminatingLink]),
+  resolvers,
+  link: ApolloLink.from([authMiddleware, terminatingLink]),
+});
+
+cache.writeQuery({
+  query: SET_CACHE,
+  data: defaults,
 });
 
 // client.onResetStore(stateLink.writeDefaults);

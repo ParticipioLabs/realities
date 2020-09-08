@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
-import { GET_RESPONSIBILITIES, SHOW_CREATES } from '@/services/queries';
+import { GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
 import ListForm from '@/components/ListForm';
 
 const CREATE_RESPONSIBILITY = gql`
@@ -26,7 +26,7 @@ const CreateResponsibility = withRouter(({ match, history }) => (
     mutation={CREATE_RESPONSIBILITY}
     update={(cache, { data: { createResponsibility } }) => {
       cache.writeQuery({
-        query: SHOW_CREATES,
+        query: SET_CACHE,
         data: {
           showCreateResponsibility: false,
         },

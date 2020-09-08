@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
-import { GET_NEEDS, SHOW_CREATES } from '@/services/queries';
+import { GET_NEEDS, SET_CACHE } from '@/services/queries';
 import ListForm from '@/components/ListForm';
 
 const CREATE_NEED = gql`
@@ -30,7 +30,7 @@ const CreateNeed = withRouter(({ history }) => (
     mutation={CREATE_NEED}
     update={(cache, { data: { createNeed } }) => {
       cache.writeQuery({
-        query: SHOW_CREATES,
+        query: SET_CACHE,
         data: {
           showCreateNeed: false,
         },

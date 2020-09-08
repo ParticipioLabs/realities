@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 
-export const SHOW_CREATES = gql`
+// eslint-disable-next-line import/prefer-default-export
+export const SET_CACHE = gql`
   query ShowCreates {
     showCreateNeed
     showCreateResponsibility
+    showDetailedEditView
   }
 `;
-
-export const potato = 'asdf';
