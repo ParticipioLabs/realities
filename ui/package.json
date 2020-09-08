@@ -72,7 +72,7 @@
     "react-tag-input": "^4.7.2",
     "reactstrap": "^5.0.0",
     "store": "^2.0.12",
-    "styled-components": "^2.2.4",
+    "styled-components": "5.2.0",
     "subscriptions-transport-ws": "^0.9.15",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.6.2",
