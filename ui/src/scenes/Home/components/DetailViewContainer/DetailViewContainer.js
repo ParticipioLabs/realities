@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Query } from '@apollo/client/react/components';
 import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
+import { SET_CACHE } from '@/services/queries';
 import DetailView from './components/DetailView';
 
 const createDetailViewQuery = nodeType => gql`
@@ -85,8 +86,18 @@ const DetailViewContainer = withAuth(withRouter(({ auth, match }) => {
             node={node}
             showEdit={data.showDetailedEditView}
             isLoggedIn={auth.isLoggedIn}
-            onClickEdit={() => client.writeData({ data: { showDetailedEditView: true } })}
-            onClickCancel={() => client.writeData({ data: { showDetailedEditView: false } })}
+            onClickEdit={() => client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: true,
+              },
+            })}
+            onClickCancel={() => client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: false,
+              },
+            })}
           />
         );
       }}
