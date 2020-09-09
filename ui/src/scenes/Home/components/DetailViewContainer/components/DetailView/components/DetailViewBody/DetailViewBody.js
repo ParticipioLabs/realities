@@ -51,14 +51,14 @@ const DetailViewBody = ({ node }) => (
       {!node.realizer && <RealizersMissingIcon />}
     </CardText>
 
-    <div>
+    <CardSection>
       <LabelSpan>
         Description:
       </LabelSpan>
       <div>
         <ReactMarkdown source={node.description} />
       </div>
-    </div>
+    </CardSection>
 
     <CardSection>
       <LabelSpan>Deliberations:</LabelSpan>
