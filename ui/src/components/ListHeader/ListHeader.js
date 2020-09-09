@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
-import { FaPlus } from 'react-icons/lib/fa';
+import { FaPlus } from 'react-icons/fa';
 import IconButton from '@/components/IconButton';
 
 const StyledHeader = styled(Card)`

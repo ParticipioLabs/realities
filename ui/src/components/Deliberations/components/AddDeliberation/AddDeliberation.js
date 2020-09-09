@@ -8,7 +8,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import InfoForm from '@/components/InfoForm';
-import { FaChainBroken } from 'react-icons/lib/fa';
+import { FaUnlink } from 'react-icons/fa';
 
 const ADD_REALITY_HAS_DELIBERATION = gql`
   mutation AddRealityHasDeliberation_addHasDeliberationMutation(
@@ -67,7 +67,7 @@ const AddDeliberation = withRouter(({ nodeId }) => (
                 <Label for="editDeliberationUrl">
                   Add a deliberation {touched.url && errors.url &&
                     <InvalidUrlText>
-                      <FaChainBroken /> {errors.url}
+                      <FaUnlink /> {errors.url}
                     </InvalidUrlText>}
                 </Label>
                 <InfoForm
