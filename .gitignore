@@ -4,6 +4,7 @@
 *~
 *.bak
 *.swp
+.vscode/
 
 # Dependencies
 /yarn.lock

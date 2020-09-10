@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
-import { GET_NEEDS } from '@/services/queries';
+import { GET_NEEDS, SET_CACHE } from '@/services/queries';
 import ListForm from '@/components/ListForm';
 
 const CREATE_NEED = gql`
@@ -29,7 +29,12 @@ const CreateNeed = withRouter(({ history }) => (
   <Mutation
     mutation={CREATE_NEED}
     update={(cache, { data: { createNeed } }) => {
-      cache.writeData({ data: { showCreateNeed: false } });
+      cache.writeQuery({
+        query: SET_CACHE,
+        data: {
+          showCreateNeed: false,
+        },
+      });
       const { needs } = cache.readQuery({ query: GET_NEEDS });
 
       const alreadyExists = needs.filter(need => need.nodeId === createNeed.nodeId).length > 0;

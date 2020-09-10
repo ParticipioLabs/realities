@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/client/react/components';
 import {
   Button,
 } from 'reactstrap';

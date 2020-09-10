@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from 'react-apollo';
-import { GET_NEEDS, GET_RESPONSIBILITIES } from '@/services/queries';
+import { Mutation } from '@apollo/client/react/components';
+import { GET_NEEDS, GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 
 const SOFT_DELETE_NEED = gql`
@@ -46,7 +46,13 @@ class DeleteNodeContainer extends Component {
         mutation={this.props.nodeType === 'Need' ? SOFT_DELETE_NEED : SOFT_DELETE_RESPONSIBILITY}
         update={(cache, { data }) => {
           this.setState({ confirmationModalIsOpen: false });
-          cache.writeData({ data: { showDetailedEditView: false } });
+          cache.writeQuery({
+            query: SET_CACHE,
+            data: {
+              showDetailedEditView: false,
+            },
+          });
+
           if (this.props.nodeType === 'Need') {
             const { needs } = cache.readQuery({ query: GET_NEEDS });
             cache.writeQuery({

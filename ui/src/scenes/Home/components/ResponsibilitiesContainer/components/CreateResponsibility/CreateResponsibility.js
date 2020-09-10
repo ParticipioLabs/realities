@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
-import { GET_RESPONSIBILITIES } from '@/services/queries';
+import { GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
 import ListForm from '@/components/ListForm';
 
 const CREATE_RESPONSIBILITY = gql`
@@ -25,7 +25,12 @@ const CreateResponsibility = withRouter(({ match, history }) => (
   <Mutation
     mutation={CREATE_RESPONSIBILITY}
     update={(cache, { data: { createResponsibility } }) => {
-      cache.writeData({ data: { showCreateResponsibility: false } });
+      cache.writeQuery({
+        query: SET_CACHE,
+        data: {
+          showCreateResponsibility: false,
+        },
+      });
       const { responsibilities } = cache.readQuery({
         query: GET_RESPONSIBILITIES,
         variables: { needId: match.params.needId },
