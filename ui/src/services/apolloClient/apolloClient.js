@@ -59,11 +59,15 @@ const client = new ApolloClient({
   link: ApolloLink.from([authMiddleware, terminatingLink]),
 });
 
-cache.writeQuery({
-  query: SET_CACHE,
-  data: defaults,
-});
+const initStore = () => {
+  cache.writeQuery({
+    query: SET_CACHE,
+    data: defaults,
+  });
+};
 
-// client.onResetStore(stateLink.writeDefaults);
+initStore();
+
+client.onResetStore(initStore);
 
 export default client;
