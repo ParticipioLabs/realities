@@ -6,7 +6,6 @@
     "type": "git",
     "url": "https://github.com/theborderland/realities.git"
   },
-  "license": "GPL-3.0",
   "engines": {
     "npm": "5.5.1",
     "node": "8.9.1"
