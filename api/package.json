@@ -23,7 +23,6 @@
     "serve": {
       "command": "node build/bundle.js",
       "env": {
-        "PORT": "3100",
         "NODE_ENV": "production"
       }
     }
