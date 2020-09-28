@@ -28,7 +28,7 @@ app.use(expressJwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: 'https://theborderland.eu.auth0.com/.well-known/jwks.json',
+    jwksUri: 'https://platoproject.eu.auth0.com/.well-known/jwks.json',
   }),
 }));
 
@@ -38,8 +38,8 @@ function getUser(user) {
     {},
     user,
     {
-      email: user['https://realities.theborderland.se/email'],
-      role: user['https://realities.theborderland.se/role'],
+      email: user['https://realities.platoproject.org/email'],
+      role: user['https://realities.platoproject.org/role'],
     },
   );
 }
