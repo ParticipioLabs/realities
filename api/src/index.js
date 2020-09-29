@@ -57,12 +57,6 @@ server.applyMiddleware({ app, path: '/graphql' });
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
-// Serve static frontend files.
-// NOTE: Temporary solution. Remove this once we deploy static files to its own place
-// to decrease coupling between backend and frontend code.
-app.use(express.static(path.resolve(__dirname, '../../ui/build')));
-app.use((req, res) => res.sendFile(path.resolve(__dirname, '../../ui/build/index.html')));
-
 httpServer.listen(API_PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
   console.log(`View GraphQL Playground at http://localhost:${API_PORT}/graphql`);
