@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
-import { Query } from 'react-apollo';
-import { GET_NEEDS } from '@/services/queries';
+import { Query } from '@apollo/client/react/components';
+import { GET_NEEDS, SET_CACHE } from '@/services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
@@ -25,14 +25,15 @@ const GET_SHOW_CREATE_NEED = gql`
 
 const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
   <Query query={GET_SHOW_CREATE_NEED}>
-    {({ data: localData, client }) => (
+    {({ data: localData = {}, client }) => (
       <div>
         <ListHeader
           text="Needs"
           color={colors.need}
           showButton={auth.isLoggedIn}
           onButtonClick={() =>
-              client.writeData({
+              client.writeQuery({
+                query: SET_CACHE,
                 data: {
                   showCreateNeed: !localData.showCreateNeed,
                   showCreateResponsibility: false,

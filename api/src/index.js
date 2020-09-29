@@ -28,7 +28,7 @@ app.use(expressJwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: 'https://theborderland.eu.auth0.com/.well-known/jwks.json',
+    jwksUri: 'https://platoproject.eu.auth0.com/.well-known/jwks.json',
   }),
 }));
 
@@ -38,8 +38,8 @@ function getUser(user) {
     {},
     user,
     {
-      email: user['https://realities.theborderland.se/email'],
-      role: user['https://realities.theborderland.se/role'],
+      email: user['https://realities.platoproject.org/email'],
+      role: user['https://realities.platoproject.org/role'],
     },
   );
 }
@@ -56,12 +56,6 @@ server.applyMiddleware({ app, path: '/graphql' });
 
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
-
-// Serve static frontend files.
-// NOTE: Temporary solution. Remove this once we deploy static files to its own place
-// to decrease coupling between backend and frontend code.
-app.use(express.static(path.resolve(__dirname, '../../ui/build')));
-app.use((req, res) => res.sendFile(path.resolve(__dirname, '../../ui/build/index.html')));
 
 httpServer.listen(API_PORT, () => {
   console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);

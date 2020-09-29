@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import * as yup from 'yup';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
+import { SET_CACHE } from '@/services/queries';
 import EditDetailsForm from './components/EditDetailsForm';
 
 const createEditDetailsMutation = nodeType => gql`
@@ -76,7 +77,12 @@ const EditDetailsContainer = ({ node }) => (
             },
           }).then(() => {
             resetForm();
-            client.writeData({ data: { showDetailedEditView: false } });
+            client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: false,
+              },
+            });
           });
         }}
       >
@@ -99,7 +105,12 @@ const EditDetailsContainer = ({ node }) => (
             handleSubmit={handleSubmit}
             setFieldValue={setFieldValue}
             isSubmitting={isSubmitting}
-            cancel={() => client.writeData({ data: { showDetailedEditView: false } })}
+            cancel={() => client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: false,
+              },
+            })}
           />
         )}
       </Formik>

@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import styled from 'styled-components';
 import _ from 'lodash';
-import { Query } from 'react-apollo';
+import { Query } from '@apollo/client/react/components';
 import { Card, CardBody } from 'reactstrap';
 import withDebouncedProp from '@/components/withDebouncedProp';
 import WrappedLoader from '@/components/WrappedLoader';

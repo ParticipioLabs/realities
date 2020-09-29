@@ -9,19 +9,25 @@ const TypeaheadResults = ({
   highlightedIndex,
   itemToResult,
 }) => (
-  <ListGroup flush {...getMenuProps()}>
-    {results.map((item, index) => (
-      <ListGroupItem
-        {...getItemProps({
+  // todo: see comment in
+  // ui/src/components/Search/components/SearchResultsContainer/components/
+  // SearchResults/SearchResults.js
+  // about this problem
+  <div {...getMenuProps()}>
+    <ListGroup flush>
+      {results.map((item, index) => (
+        <ListGroupItem
+          {...getItemProps({
           key: item.nodeId,
           item,
           style: { backgroundColor: highlightedIndex === index ? '#f8f9fa' : 'white' },
         })}
-      >
-        {itemToResult(item)}
-      </ListGroupItem>
-    ))}
-  </ListGroup>
+        >
+          {itemToResult(item)}
+        </ListGroupItem>
+      ))}
+    </ListGroup>
+  </div>
 );
 
 TypeaheadResults.propTypes = {

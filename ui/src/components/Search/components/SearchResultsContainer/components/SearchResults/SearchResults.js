@@ -9,20 +9,25 @@ const SearchResults = ({
   getItemProps,
   highlightedIndex,
 }) => (
-  <ListGroup flush {...getMenuProps()}>
-    {results.map((item, index) => (
-      <ListGroupItem
-        {...getItemProps({
-          key: item.nodeId,
-          item,
-          style: { backgroundColor: highlightedIndex === index ? '#f8f9fa' : 'white' },
-        })}
-      >
-        <TypeBadge nodeType={item.__typename} />
-        {item.title || item.name}
-      </ListGroupItem>
-    ))}
-  </ListGroup>
+  // todo: it'd be better to have the menuProps on the ListGroup (i think we might
+  // be breaking the accessibility thing now), but that's apparently a
+  // functional component so when it tries to attach a ref to it it breaks
+  <div {...getMenuProps()}>
+    <ListGroup flush>
+      {results.map((item, index) => (
+        <ListGroupItem
+          {...getItemProps({
+            key: item.nodeId,
+            item,
+            style: { backgroundColor: highlightedIndex === index ? '#f8f9fa' : 'white' },
+          })}
+        >
+          <TypeBadge nodeType={item.__typename} />
+          {item.title || item.name}
+        </ListGroupItem>
+      ))}
+    </ListGroup>
+  </div>
 );
 
 SearchResults.propTypes = {

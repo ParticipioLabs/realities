@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+import { gql } from '@apollo/client';
+import { Mutation } from '@apollo/client/react/components';
 import { FormGroup, Label } from 'reactstrap';
 import TypeaheadInput from '@/components/TypeaheadInput';
 import TypeBadge from '@/components/TypeBadge';

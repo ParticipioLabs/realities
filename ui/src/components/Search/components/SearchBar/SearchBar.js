@@ -7,7 +7,7 @@ import {
   InputGroup,
   InputGroupAddon,
 } from 'reactstrap';
-import { FaTimesCircle } from 'react-icons/lib/fa';
+import { FaTimesCircle } from 'react-icons/fa';
 
 const ClearButton = styled.button`
   background-color: white;

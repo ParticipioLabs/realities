@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+import { gql } from '@apollo/client';
+import { Mutation } from '@apollo/client/react/components';
 import { FormGroup, Label } from 'reactstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import InfoForm from '@/components/InfoForm';
-import { FaChainBroken } from 'react-icons/lib/fa';
+import { FaUnlink } from 'react-icons/fa';
 
 const ADD_REALITY_HAS_DELIBERATION = gql`
   mutation AddRealityHasDeliberation_addHasDeliberationMutation(
@@ -67,7 +67,7 @@ const AddDeliberation = withRouter(({ nodeId }) => (
                 <Label for="editDeliberationUrl">
                   Add a discussion reference {touched.url && errors.url &&
                     <InvalidUrlText>
-                      <FaChainBroken /> {errors.url}
+                      <FaUnlink /> {errors.url}
                     </InvalidUrlText>}
                 </Label>
                 <InfoForm
