@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Query } from 'react-apollo';
+import { Query } from '@apollo/client/react/components';
 import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
+import { SET_CACHE } from '@/services/queries';
 import DetailView from './components/DetailView';
 
 const createDetailViewQuery = nodeType => gql`
@@ -87,7 +88,7 @@ const DetailViewContainer = withAuth(withRouter(({
       {({
         loading,
         error,
-        data,
+        data = {},
         client,
       }) => {
         if (loading) return <WrappedLoader />;
@@ -99,8 +100,18 @@ const DetailViewContainer = withAuth(withRouter(({
             node={node}
             showEdit={data.showDetailedEditView}
             isLoggedIn={auth.isLoggedIn}
-            onClickEdit={() => client.writeData({ data: { showDetailedEditView: true } })}
-            onClickCancel={() => client.writeData({ data: { showDetailedEditView: false } })}
+            onClickEdit={() => client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: true,
+              },
+            })}
+            onClickCancel={() => client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: false,
+              },
+            })}
             onClickFullscreen={() => history.push(`/reality/${match.params.needId}/${match.params.responsibilityId || ''}`)}
           />
         );

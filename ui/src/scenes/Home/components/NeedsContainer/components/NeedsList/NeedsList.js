@@ -74,7 +74,7 @@ class NeedsList extends Component {
           {needs.filter(need => need.nodeId === selectedNeedId).map(need => (
             <NeedsListGroupHeader
               key={selectedNeedId}
-              active="true"
+              active
             >
               {need.title}
               {renderMissingRealizersAmount(need)}

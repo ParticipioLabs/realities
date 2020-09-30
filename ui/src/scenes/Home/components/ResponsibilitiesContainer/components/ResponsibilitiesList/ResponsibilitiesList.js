@@ -66,7 +66,7 @@ class ResponsibilitiesList extends Component {
             .map(responsibility => (
               <ResponsibilitiesListGroupHeader
                 key={selectedResponsibilityId}
-                active="true"
+                active
               >
                 {responsibility.title}
                 {renderMissingRealizerIcon(responsibility)}

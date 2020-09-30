@@ -67,7 +67,7 @@ export function findNodesByLabel(driver, label) {
 
 export function findNodeByLabelAndId(driver, label, nodeId) {
   const query = `
-    MATCH (n:${label} {nodeId: {nodeId}})
+    MATCH (n:${label} {nodeId: $nodeId})
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
@@ -76,7 +76,7 @@ export function findNodeByLabelAndId(driver, label, nodeId) {
 
 export function findNodeByLabelAndProperty(driver, label, propertyKey, propertyValue) {
   const query = `
-    MATCH (n:${label} {${propertyKey}: {value}})
+    MATCH (n:${label} {${propertyKey}: $value})
     WHERE NOT EXISTS(n.deleted)
     RETURN n
   `;
@@ -93,7 +93,7 @@ function getRelationshipQuery(relationship, label, direction) {
       ? '(n)'
       : `(n:${label})`;
   const query = `
-    MATCH ({nodeId: {nodeId}})${relationshipFragment}${labelFragment}
+    MATCH ({nodeId: $nodeId})${relationshipFragment}${labelFragment}
     WHERE NOT EXISTS(n.deleted)
     RETURN n ORDER BY n.created DESC`;
   return query;
@@ -129,8 +129,8 @@ export function createNeed(driver, { title }, userEmail) {
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
-    MATCH (person:Person {email:{email}})
-    CREATE (need:Need {title:{title}, nodeId:{needId}, created:timestamp()})
+    MATCH (person:Person {email:$email})
+    CREATE (need:Need {title:$title, nodeId:$needId, created:timestamp()})
     CREATE (person)-[:GUIDES]->(need)
     CREATE (person)-[:REALIZES]->(need)
     RETURN need
@@ -146,17 +146,17 @@ export function createResponsibility(driver, { title, needId }, userEmail) {
     responsibilityId: uuidv4(),
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
-  // THIS BRANCH USES A SUPER UGLY HACK TO SET DESCRIPTION TEMPLATES, DO NOT MERGE THIS TO MASTER!
   const query = `
-    MATCH (n:ResponsibilityTemplate {templateId: 'RespDesc2019-01'})
+    MERGE (n:ResponsibilityTemplate)
+    ON CREATE SET n.description = 'Describe the responsibility here'
     WITH n.description AS desc
-    MATCH (need:Need {nodeId: {needId}})
+    MATCH (need:Need {nodeId: $needId})
     WITH need, desc
-    MATCH (person:Person {email:{email}})
+    MATCH (person:Person {email:$email})
     CREATE (resp:Responsibility {
-      title:{title},
+      title:$title,
       description: desc,
-      nodeId:{responsibilityId},
+      nodeId:$responsibilityId,
       created:timestamp()
     })-[r:FULFILLS]->(need)
     CREATE (person)-[:GUIDES]->(resp)
@@ -173,11 +173,11 @@ export function addRealityHasDeliberation(driver, { from, to }) {
   };
   // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
   const query = `
-    MATCH (reality {nodeId: {realityId}})
+    MATCH (reality {nodeId: $realityId})
     WITH reality
-    MERGE (info:Info {url: {infoUrl}})
+    MERGE (info:Info {url: $infoUrl})
     FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
-      SET info += {nodeId:{infoId}, created:timestamp()})
+      SET info += {nodeId:$infoId, created:timestamp()})
     WITH reality, info
     MERGE (reality)-[:HAS_DELIBERATION]->(info)
     RETURN reality as from, info as to
@@ -193,10 +193,10 @@ export function createInfo(driver, { title }, infoUrl) {
   };
   // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
   const query = `
-    MERGE (info:Info {url: {url}})
+    MERGE (info:Info {url: $url})
     FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
-      SET info += {nodeId:{infoId}, created:timestamp(), title: {title}})
-    SET info.title = {title}
+      SET info += {nodeId:$infoId, created:timestamp(), title: $title})
+    SET info.title = $title
     RETURN info
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
@@ -209,9 +209,9 @@ export function createViewer(driver, userEmail) {
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
-    MERGE (person:Person {email:{email}})
+    MERGE (person:Person {email:$email})
     FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-      SET person += {nodeId:{personId}, created:timestamp()})
+      SET person += {nodeId:$personId, created:timestamp()})
     RETURN person
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
@@ -221,12 +221,12 @@ export function updateReality(driver, args) {
   // Use cypher FOREACH hack to only set realizer
   // if the Person node could be found
   const query = `
-    MATCH (reality {nodeId: {nodeId}})
+    MATCH (reality {nodeId: $nodeId})
     MATCH (oldguide:Person)-[g:GUIDES]->(reality)
-    MATCH (guide:Person {email: {guideEmail}})
+    MATCH (guide:Person {email: $guideEmail})
     OPTIONAL MATCH (oldrealizer:Person)-[r:REALIZES]->(reality)
-    OPTIONAL MATCH (realizer:Person {email: {realizerEmail}})
-    FOREACH(doThis IN CASE WHEN NOT {description} = reality.description THEN [1] ELSE [] END | 
+    OPTIONAL MATCH (realizer:Person {email: $realizerEmail})
+    FOREACH(doThis IN CASE WHEN NOT $description = reality.description THEN [1] ELSE [] END | 
       CREATE (d:Info {text: reality.description, created: timestamp()})-[:DESCRIBED {created: timestamp()}]->(reality)
     )
     FOREACH(doThis IN CASE WHEN NOT oldguide.email = guide.email THEN [1] ELSE [] END | 
@@ -236,9 +236,9 @@ export function updateReality(driver, args) {
       CREATE (oldrealizer)-[:REALIZED {created: timestamp()}]->(reality)
     )
     SET reality += {
-      title: {title},
-      description: {description},
-      deliberationLink: {deliberationLink}
+      title: $title,
+      description: $description,
+      deliberationLink: $deliberationLink
     }
     DELETE g, r
     CREATE (guide)-[:GUIDES]->(reality)
@@ -256,8 +256,8 @@ export function changeFulfills(driver, { responsibilityId, needId }) {
   };
 
   const query = `
-    MATCH (resp:Responsibility {nodeId: {responsibilityId}})-[r:FULFILLS]->(n1:Need)
-    MATCH (n2:Need {nodeId: {needId}})
+    MATCH (resp:Responsibility {nodeId: $responsibilityId})-[r:FULFILLS]->(n1:Need)
+    MATCH (n2:Need {nodeId: $needId})
     CREATE (resp)-[r2:FULFILLS]->(n2)
     DELETE r
     RETURN resp
@@ -274,10 +274,10 @@ export function updateViewerName(driver, { name }, userEmail) {
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
-    MERGE (person:Person {email:{email}})
+    MERGE (person:Person {email:$email})
     FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-      SET person += {nodeId:{personId}, created:timestamp()})
-    SET person.name = {name}
+      SET person += {nodeId:$personId, created:timestamp()})
+    SET person.name = $name
     RETURN person
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
@@ -285,7 +285,7 @@ export function updateViewerName(driver, { name }, userEmail) {
 
 export function softDeleteNode(driver, { nodeId }) {
   const query = `
-    MATCH (n {nodeId: {nodeId}})
+    MATCH (n {nodeId: $nodeId})
     SET n.deleted = timestamp()
     RETURN n
   `;
@@ -298,8 +298,8 @@ export function addDependency(driver, { from, to }) {
     toId: to.nodeId,
   };
   const query = `
-    MATCH (from {nodeId: {fromId}})
-    MATCH (to {nodeId: {toId}})
+    MATCH (from {nodeId: $fromId})
+    MATCH (to {nodeId: $toId})
     MERGE (from)-[:DEPENDS_ON]->(to)
     RETURN from, to
   `;
@@ -312,7 +312,7 @@ export function removeDependency(driver, { from, to }) {
     toId: to.nodeId,
   };
   const query = `
-    MATCH (from {nodeId: {fromId}})-[r:DEPENDS_ON]->(to {nodeId: {toId}})
+    MATCH (from {nodeId: $fromId})-[r:DEPENDS_ON]->(to {nodeId: $toId})
     DELETE r
     RETURN from, to
   `;
@@ -325,7 +325,7 @@ export function removeDeliberation(driver, { from, to }) {
     toUrl: to.url,
   };
   const query = `
-    MATCH (from {nodeId: {fromId}})-[r:HAS_DELIBERATION]->(to {url: {toUrl}})
+    MATCH (from {nodeId: $fromId})-[r:HAS_DELIBERATION]->(to {url: $toUrl})
     DELETE r
     RETURN from, to
   `;
@@ -336,7 +336,7 @@ export function searchPersons(driver, term) {
   const query = `
     MATCH (p:Person)
     WHERE
-      (toLower(p.name) CONTAINS toLower({term}) OR toLower(p.email) CONTAINS toLower({term}))
+      (toLower(p.name) CONTAINS toLower($term) OR toLower(p.email) CONTAINS toLower($term))
       AND NOT EXISTS(p.deleted)
     RETURN p
   `;
@@ -346,7 +346,7 @@ export function searchPersons(driver, term) {
 export function searchRealities(driver, label, term) {
   const query = `
     MATCH (n:${label})
-    WHERE toLower(n.title) CONTAINS toLower({term}) AND NOT EXISTS(n.deleted)
+    WHERE toLower(n.title) CONTAINS toLower($term) AND NOT EXISTS(n.deleted)
     RETURN n
   `;
   return runQueryAndGetRecords(driver.session(), query, { term });

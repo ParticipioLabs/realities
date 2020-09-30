@@ -6,20 +6,18 @@
     "type": "git",
     "url": "https://github.com/theborderland/realities.git"
   },
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/theborderland/realities/issues"
   },
   "homepage": "https://github.com/theborderland/realities#readme",
   "engines": {
-    "npm": "5.5.1",
-    "node": "8.9.1"
+    "node": "12.x"
   },
   "scripts": {
     "start": "concurrently --kill-others \"npm start --prefix api\" \"./scripts/wait.sh && npm start --prefix ui\"",
     "postinstall": "npm install --prefix api && npm install --prefix ui",
-    "build": "npm run build --prefix api && npm run build --prefix ui",
-    "heroku-postbuild": "npm run build"
+    "build": "npm run build --prefix api && npm run build --prefix ui"
   },
   "dependencies": {
     "babel-eslint": "^8.0.3",

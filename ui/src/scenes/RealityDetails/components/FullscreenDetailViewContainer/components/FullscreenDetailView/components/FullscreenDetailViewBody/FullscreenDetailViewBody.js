@@ -51,12 +51,14 @@ const FullscreenDetailViewBody = ({ node }) => (
       {!node.realizer && <RealizersMissingIcon />}
     </CardText>
 
-    <CardText>
+    <CardSection>
       <LabelSpan>
         Description:
       </LabelSpan>
-      <ReactMarkdown source={node.description} />
-    </CardText>
+      <div>
+        <ReactMarkdown source={node.description} />
+      </div>
+    </CardSection>
 
     <CardSection>
       <LabelSpan>Discussions on Talk:</LabelSpan>

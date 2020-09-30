@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Card, CardBody, CardHeader } from 'reactstrap';
-import { FaPencil, FaTimesCircle, FaExpand } from 'react-icons/lib/fa';
+import { FaEdit, FaTimesCircle, FaExpand } from 'react-icons/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
 import Dependencies from '@/components/Dependencies';
@@ -61,7 +61,7 @@ const DetailView = ({
           </HeaderButton>
         ) : (
           <HeaderButton onClick={onClickEdit}>
-            <FaPencil />
+            <FaEdit />
           </HeaderButton>
         )
       )}

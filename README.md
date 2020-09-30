@@ -76,3 +76,7 @@ $ npm start
 ```
 
 You can also `cd` into the `ui` and `api` directories separately and `npm start` them individually. That may be more practical during development since you'll get separate logs for the front-end and back-end. 
+
+## License
+
+This software is licensed under the AGPL license, version 3 or later. See the [license](./LICENSE) file for details.
