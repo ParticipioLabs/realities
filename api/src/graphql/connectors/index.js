@@ -147,11 +147,15 @@ export function createResponsibility(driver, { title, needId }, userEmail) {
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
+    MERGE (n:ResponsibilityTemplate)
+    ON CREATE SET n.description = 'Describe the responsibility here'
+    WITH n.description AS desc
     MATCH (need:Need {nodeId: $needId})
-    WITH need
+    WITH need, desc
     MATCH (person:Person {email:$email})
     CREATE (resp:Responsibility {
       title:$title,
+      description: desc,
       nodeId:$responsibilityId,
       created:timestamp()
     })-[r:FULFILLS]->(need)
@@ -218,10 +222,19 @@ export function updateReality(driver, args) {
   // if the Person node could be found
   const query = `
     MATCH (reality {nodeId: $nodeId})
-    MATCH (:Person)-[g:GUIDES]->(reality)
+    MATCH (oldguide:Person)-[g:GUIDES]->(reality)
     MATCH (guide:Person {email: $guideEmail})
-    OPTIONAL MATCH (:Person)-[r:REALIZES]->(reality)
+    OPTIONAL MATCH (oldrealizer:Person)-[r:REALIZES]->(reality)
     OPTIONAL MATCH (realizer:Person {email: $realizerEmail})
+    FOREACH(doThis IN CASE WHEN NOT $description = reality.description THEN [1] ELSE [] END | 
+      CREATE (d:Info {text: reality.description, created: timestamp()})-[:DESCRIBED {created: timestamp()}]->(reality)
+    )
+    FOREACH(doThis IN CASE WHEN NOT oldguide.email = guide.email THEN [1] ELSE [] END | 
+      CREATE (oldguide)-[:GUIDED {created: timestamp()}]->(reality)
+    )
+    FOREACH(doThis IN CASE WHEN NOT oldrealizer.email = realizer.email THEN [1] ELSE [] END | 
+      CREATE (oldrealizer)-[:REALIZED {created: timestamp()}]->(reality)
+    )
     SET reality += {
       title: $title,
       description: $description,

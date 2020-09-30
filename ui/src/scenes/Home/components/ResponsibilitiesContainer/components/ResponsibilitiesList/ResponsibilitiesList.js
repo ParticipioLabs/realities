@@ -5,12 +5,13 @@ import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from '@/styles/colors';
 import RealizersMissingIcon from '@/components/RealizersMissingIcon';
+import _ from 'lodash';
 
 const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
-const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+const ResponsibilitiesListGroupHeader = styled(ListGroupItem)`
   display: flex;
   justify-content: space-between;
   &:focus {
@@ -20,6 +21,19 @@ const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
     background-color: ${colors.responsibility};
     border-color: ${colors.responsibility};
     color: white;
+  }
+`;
+
+const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  justify-content: space-between;
+  &:focus {
+    outline: none;
+  }
+  &.active {
+    background-color: white;
+    border-color: ${colors.responsibility};
+    color: ${colors.responsibility};
   }
 `;
 
@@ -36,14 +50,28 @@ class ResponsibilitiesList extends Component {
 
   render() {
     const {
-      responsibilities,
       selectedResponsibilityId,
       history,
       match,
     } = this.props;
+    const responsibilities = _.orderBy(this.props.responsibilities, [(r) => {
+      if (r.title) return r.title.toLowerCase();
+      return '';
+    }], ['asc']);
     return (
       <div>
         <ResponsibilitiesListGroup>
+          {responsibilities.filter(responsibility =>
+            responsibility.nodeId === selectedResponsibilityId)
+            .map(responsibility => (
+              <ResponsibilitiesListGroupHeader
+                key={selectedResponsibilityId}
+                active
+              >
+                {responsibility.title}
+                {renderMissingRealizerIcon(responsibility)}
+              </ResponsibilitiesListGroupHeader>
+          ))}
           {responsibilities.map(responsibility => (
             <ResponsibilitiesListGroupItem
               key={responsibility.nodeId}

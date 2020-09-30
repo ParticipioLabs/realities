@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Card, CardBody, CardHeader } from 'reactstrap';
-import { FaEdit, FaTimesCircle, FaExpand } from 'react-icons/fa';
+import { FaEdit, FaTimesCircle, FaBars } from 'react-icons/fa';
 import colors from '@/styles/colors';
 import IconButton from '@/components/IconButton';
 import Dependencies from '@/components/Dependencies';
@@ -10,7 +10,7 @@ import Deliberations from '@/components/Deliberations';
 import EditDetailsContainer from '@/components/EditDetailsContainer';
 import DeleteNodeContainer from '@/components/DeleteNodeContainer';
 import ChangeFulfills from '@/components/ChangeFulfills';
-import DetailViewBody from './components/DetailViewBody';
+import FullscreenDetailViewBody from './components/FullscreenDetailViewBody';
 
 const DetailViewCardHeader = styled(CardHeader)`
   background-color: ${props => props.color};
@@ -42,14 +42,14 @@ const DetailView = ({
   isLoggedIn,
   onClickEdit,
   onClickCancel,
-  onClickFullscreen,
+  onClickNavigate,
 }) => (
   <Card>
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
     >
-      <HeaderButton onClick={onClickFullscreen}>
-        <FaExpand />
+      <HeaderButton onClick={onClickNavigate}>
+        <FaBars />
       </HeaderButton>
       <HeaderText>
         {node.__typename}
@@ -90,7 +90,7 @@ const DetailView = ({
         <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
       </CardBody>
     ) : (
-      <DetailViewBody node={node} />
+      <FullscreenDetailViewBody node={node} />
     )}
   </Card>
 );
@@ -134,7 +134,7 @@ DetailView.propTypes = {
   isLoggedIn: PropTypes.bool,
   onClickEdit: PropTypes.func,
   onClickCancel: PropTypes.func,
-  onClickFullscreen: PropTypes.func,
+  onClickNavigate: PropTypes.func,
 };
 
 DetailView.defaultProps = {
@@ -160,7 +160,7 @@ DetailView.defaultProps = {
   isLoggedIn: false,
   onClickEdit: () => null,
   onClickCancel: () => null,
-  onClickFullscreen: () => null,
+  onClickNavigate: () => null,
 };
 
 export default DetailView;
