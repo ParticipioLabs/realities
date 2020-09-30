@@ -146,9 +146,9 @@ export function createResponsibility(driver, { title, needId }, userEmail) {
     responsibilityId: uuidv4(),
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
-  // THIS BRANCH USES A SUPER UGLY HACK TO SET DESCRIPTION TEMPLATES, DO NOT MERGE THIS TO MASTER!
   const query = `
-    MATCH (n:ResponsibilityTemplate {templateId: 'RespDesc2019-01'})
+    MERGE (n:ResponsibilityTemplate)
+    ON CREATE SET n.description = 'Describe the responsibility here'
     WITH n.description AS desc
     MATCH (need:Need {nodeId: $needId})
     WITH need, desc
