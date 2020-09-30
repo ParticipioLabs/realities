@@ -3,7 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import graphUtils from '@/services/graphUtils';
-import { Query } from 'react-apollo';
+import { Query } from '@apollo/client/react/components';
 import {
   Card,
   CardBody,

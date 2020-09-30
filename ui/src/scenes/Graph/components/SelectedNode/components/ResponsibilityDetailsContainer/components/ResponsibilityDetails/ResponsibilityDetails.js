@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Button, CardTitle } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { FaExternalLink } from 'react-icons/lib/fa';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 const DescriptionWrapper = styled.div`
   border-bottom: 1px solid #eee;
@@ -35,7 +35,7 @@ const ResponsibilityDetails = ({ title, description, path }) => (
         <ButtonLabel>
           View details
         </ButtonLabel>
-        <FaExternalLink />
+        <FaExternalLinkAlt />
       </Button>
     </Link>
   </Fragment>
