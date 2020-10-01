@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Container, Row, Col } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
-import { gql } from '@apollo/client';
-import { Query } from '@apollo/client/react/components';
+import { gql, useQuery } from '@apollo/client';
 import LocalGraph from '@/components/LocalGraph';
 import WrappedLoader from '@/components/WrappedLoader';
 
@@ -18,48 +17,38 @@ const GET_PERSON = gql`
 
 const UserProfile = withRouter(({ match }) => {
   const { personId } = match.params;
-  return (
-    <Query
-      query={GET_PERSON}
-      variables={{ nodeId: personId }}
-    >
-      {({
-      loading,
-      data,
-    }) => {
-      if (loading) return <WrappedLoader />;
-      if (!data.person) {
-        return (
-          <Container>
-            <Row>
-              <Col lg={{ size: 3, offset: 5 }} sm={{ size: 3, offset: 5 }}>
-                No user profile found.
-              </Col>
-            </Row>
-          </Container>
-        );
-      }
+  const { loading, data } = useQuery(GET_PERSON, { variables: { nodeId: personId } });
 
-      return (
-        <Container>
-          <Row>
-            <Col
-              xs={{ size: 8, offset: 3 }}
-              sm={{ size: 6, offset: 4 }}
-              lg={{ size: 4, offset: 5 }}
-            >
-              {data.person.name}&apos;s Profile
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <LocalGraph nodeId={personId} nodeType={data.person.__typename} />
-            </Col>
-          </Row>
-        </Container>
-      );
-    }}
-    </Query>
+  if (loading) return <WrappedLoader />;
+  if (!data.person) {
+    return (
+      <Container>
+        <Row>
+          <Col lg={{ size: 3, offset: 5 }} sm={{ size: 3, offset: 5 }}>
+            No user profile found.
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <Row>
+        <Col
+          xs={{ size: 8, offset: 3 }}
+          sm={{ size: 6, offset: 4 }}
+          lg={{ size: 4, offset: 5 }}
+        >
+          {data.person.name}&apos;s Profile
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <LocalGraph nodeId={personId} nodeType={data.person.__typename} />
+        </Col>
+      </Row>
+    </Container>
   );
 });
 

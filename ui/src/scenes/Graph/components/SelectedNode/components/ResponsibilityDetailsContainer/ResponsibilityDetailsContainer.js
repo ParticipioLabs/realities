@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { Query } from '@apollo/client/react/components';
+import { gql, useQuery } from '@apollo/client';
 import WrappedLoader from '@/components/WrappedLoader';
 import ResponsibilityDetails from './components/ResponsibilityDetails';
 
@@ -18,31 +17,28 @@ const GET_RESPONSIBILITY = gql`
   }
 `;
 
-const ResponsibilityDetailsContainer = ({ nodeId }) => (
-  <Query
-    query={GET_RESPONSIBILITY}
-    variables={{ nodeId }}
-  >
-    {({ loading, error, data }) => {
-      if (loading) return <WrappedLoader />;
-      if (error) return `Error! ${error.message}`;
-      const {
-        responsibility: {
-          title,
-          description,
-          fulfills,
-        },
-      } = data;
-      return (
-        <ResponsibilityDetails
-          title={title}
-          description={description}
-          path={`/reality/${fulfills.nodeId}/${nodeId}`}
-        />
-      );
-    }}
-  </Query>
-);
+const ResponsibilityDetailsContainer = ({ nodeId }) => {
+  const { loading, error, data } = useQuery(GET_RESPONSIBILITY, {
+    variables: { nodeId },
+  });
+
+  if (loading) return <WrappedLoader />;
+  if (error) return `Error! ${error.message}`;
+  const {
+    responsibility: {
+      title,
+      description,
+      fulfills,
+    },
+  } = data;
+  return (
+    <ResponsibilityDetails
+      title={title}
+      description={description}
+      path={`/reality/${fulfills.nodeId}/${nodeId}`}
+    />
+  );
+};
 
 ResponsibilityDetailsContainer.propTypes = {
   nodeId: PropTypes.string.isRequired,
