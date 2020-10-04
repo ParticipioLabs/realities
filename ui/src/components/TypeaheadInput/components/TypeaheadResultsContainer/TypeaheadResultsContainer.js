@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from '@apollo/client/react/components';
+import { useQuery } from '@apollo/client';
 import { Card, CardBody } from 'reactstrap';
 import withDebouncedProp from '@/components/withDebouncedProp';
 import WrappedLoader from '@/components/WrappedLoader';
@@ -25,30 +25,29 @@ const TypeaheadResultsContainer = withDebouncedProp('inputValue', 250)(({
   searchQuery,
   queryDataToResultsArray,
 }) => {
+  const { loading, error, data } = useQuery(searchQuery, {
+    variables: { term: inputValue },
+    fetchPolicy: 'no-cache',
+  });
+
   if (!inputValue) return null;
   return (
     <Wrapper>
-      <Query
-        query={searchQuery}
-        variables={{ term: inputValue }}
-        fetchPolicy="no-cache"
-      >
-        {({ loading, error, data }) => {
-          if (loading) return <WrappedLoader />;
-          if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
-          const searchResults = queryDataToResultsArray(data) || [];
-          if (searchResults.length === 0) return <CardBody>No results</CardBody>;
-          return (
-            <TypeaheadResults
-              results={searchResults}
-              getMenuProps={getMenuProps}
-              getItemProps={getItemProps}
-              highlightedIndex={highlightedIndex}
-              itemToResult={itemToResult}
-            />
-          );
-        }}
-      </Query>
+      {(() => {
+        if (loading) return <WrappedLoader />;
+        if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
+        const searchResults = queryDataToResultsArray(data) || [];
+        if (searchResults.length === 0) return <CardBody>No results</CardBody>;
+        return (
+          <TypeaheadResults
+            results={searchResults}
+            getMenuProps={getMenuProps}
+            getItemProps={getItemProps}
+            highlightedIndex={highlightedIndex}
+            itemToResult={itemToResult}
+          />
+        );
+      })()}
     </Wrapper>
   );
 });

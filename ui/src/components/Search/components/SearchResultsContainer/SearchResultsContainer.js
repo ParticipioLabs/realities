@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import _ from 'lodash';
-import { Query } from '@apollo/client/react/components';
 import { Card, CardBody } from 'reactstrap';
 import withDebouncedProp from '@/components/withDebouncedProp';
 import WrappedLoader from '@/components/WrappedLoader';
@@ -46,36 +45,36 @@ const SearchResultsContainer = withDebouncedProp('searchTerm', 250)(({
   highlightedIndex,
 }) => {
   if (!searchTerm) return null;
+
+  const { loading, error, data } = useQuery(GET_SEARCH, {
+    variables: { term: searchTerm },
+    fetchPolicy: 'no-cache',
+  });
+
   return (
     <Wrapper>
-      <Query
-        query={GET_SEARCH}
-        variables={{ term: searchTerm }}
-        fetchPolicy="no-cache"
-      >
-        {({ loading, error, data }) => {
-          if (loading) return <WrappedLoader />;
-          if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
-          const searchResults = [
-            ...(data.needs || []),
-            ...(data.responsibilities || []),
-            ...(data.persons || []),
-          ];
-          if (searchResults.length === 0) return <CardBody>No results</CardBody>;
-          return (
-            <SearchResults
-              results={_.orderBy(searchResults, [(r) => {
-                if (r.title) return r.title.toLowerCase();
-                else if (r.name) return r.name.toLowerCase();
-                return '';
-              }], ['asc'])}
-              getMenuProps={getMenuProps}
-              getItemProps={getItemProps}
-              highlightedIndex={highlightedIndex}
-            />
-          );
-        }}
-      </Query>
+      {(() => {
+        if (loading) return <WrappedLoader />;
+        if (error) return <CardBody>`Error! ${error.message}`</CardBody>;
+        const searchResults = [
+          ...(data.needs || []),
+          ...(data.responsibilities || []),
+          ...(data.persons || []),
+        ];
+        if (searchResults.length === 0) return <CardBody>No results</CardBody>;
+        return (
+          <SearchResults
+            results={_.orderBy(searchResults, [(r) => {
+              if (r.title) return r.title.toLowerCase();
+              else if (r.name) return r.name.toLowerCase();
+              return '';
+            }], ['asc'])}
+            getMenuProps={getMenuProps}
+            getItemProps={getItemProps}
+            highlightedIndex={highlightedIndex}
+          />
+        );
+      })()}
     </Wrapper>
   );
 });

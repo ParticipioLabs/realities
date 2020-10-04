@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
-import { Query } from '@apollo/client/react/components';
+import { gql, useQuery } from '@apollo/client';
 import Graph from 'react-graph-vis';
 import _ from 'lodash';
 import {
@@ -215,93 +214,75 @@ const graphOptions = {
   },
 };
 
-class LocalGraphInstance extends Component {
-  constructor(props) {
-    super(props);
+const LocalGraphInstance = ({ nodeType, nodeId }) => {
+  const [selectedNode, setSelectedNode] = useState(null);
 
-    this.state = {
-      selectedNode: null,
-    };
+  let gqlQuery;
+  if (nodeType === 'Need') {
+    gqlQuery = GET_NEED;
+  } else if (nodeType === 'Responsibility') {
+    gqlQuery = GET_RESPONSIBILITY;
+  } else {
+    gqlQuery = GET_PERSON;
   }
 
-  onSelectNode = ({ nodes }, graphData) => {
+  const {
+    loading,
+    error,
+    data,
+    refetch,
+  } = useQuery(gqlQuery, { variables: { nodeId, nodeType } });
+
+  const onSelectNode = ({ nodes }, graphData) => {
     const selectedNodeId = nodes && nodes[0];
     const graphNode = _.find(graphData.nodes, { id: selectedNodeId });
-    this.setState({ selectedNode: graphNode });
+    setSelectedNode(graphNode);
   };
 
-  render() {
-    const { nodeType, nodeId } = this.props;
-    const { selectedNode } = this.state;
+  if (loading) return <WrappedLoader />;
+  if (error) return `Error! ${error.message}`;
+  // The next line is a temporary hack to make up for a bug in Apollo where
+  // the query returns an empty data object sometimes:
+  // https://github.com/apollographql/apollo-client/issues/3267
+  if (!data.need && !data.responsibility && !data.person) refetch();
 
-    let gqlQuery;
-    if (nodeType === 'Need') {
-      gqlQuery = GET_NEED;
-    } else if (nodeType === 'Responsibility') {
-      gqlQuery = GET_RESPONSIBILITY;
-    } else {
-      gqlQuery = GET_PERSON;
-    }
+  let node;
+  if (nodeType === 'Need') node = data.need;
+  else if (nodeType === 'Responsibility') node = data.responsibility;
+  else node = data.person;
 
-    return (
-      <Query
-        query={gqlQuery}
-        variables={{ nodeId, nodeType }}
+  if (!node) return null;
+  let graphData;
+  if (nodeType === 'Person') graphData = graphUtils.getPersonGraph(node);
+  else graphData = graphUtils.getSubGraph(node);
+  return (
+    <div>
+      <div id="localGraphWrapper">
+        <Graph
+          graph={graphData}
+          options={graphOptions}
+          events={{ select: event => onSelectNode(event, graphData) }}
+          style={{ height: '20em' }}
+        />
+      </div>
+      <Popover
+        placement="left"
+        isOpen={!!selectedNode}
+        target="localGraphWrapper"
       >
-        {({
-          loading,
-          error,
-          data,
-          refetch,
-        }) => {
-          if (loading) return <WrappedLoader />;
-          if (error) return `Error! ${error.message}`;
-          // The next line is a temporary hack to make up for a bug in Apollo where
-          // the query returns an empty data object sometimes:
-          // https://github.com/apollographql/apollo-client/issues/3267
-          if (!data.need && !data.responsibility && !data.person) refetch();
-
-          let node;
-          if (nodeType === 'Need') node = data.need;
-          else if (nodeType === 'Responsibility') node = data.responsibility;
-          else node = data.person;
-
-          if (!node) return null;
-          let graphData;
-          if (nodeType === 'Person') graphData = graphUtils.getPersonGraph(node);
-          else graphData = graphUtils.getSubGraph(node);
-          return (
-            <div>
-              <div id="localGraphWrapper">
-                <Graph
-                  graph={graphData}
-                  options={graphOptions}
-                  events={{ select: event => this.onSelectNode(event, graphData) }}
-                  style={{ height: '20em' }}
-                />
-              </div>
-              <Popover
-                placement="left"
-                isOpen={!!selectedNode}
-                target="localGraphWrapper"
-              >
-                <PopoverHeader>
-                  {selectedNode && selectedNode.title}
-                </PopoverHeader>
-                <PopoverBody>
-                  {_.truncate(
-                    (selectedNode && selectedNode.description),
-                    { length: 512, separator: ',.?! ' },
-                  )}
-                </PopoverBody>
-              </Popover>
-            </div>
-          );
-        }}
-      </Query>
-    );
-  }
-}
+        <PopoverHeader>
+          {selectedNode && selectedNode.title}
+        </PopoverHeader>
+        <PopoverBody>
+          {_.truncate(
+            (selectedNode && selectedNode.description),
+            { length: 512, separator: ',.?! ' },
+          )}
+        </PopoverBody>
+      </Popover>
+    </div>
+  );
+};
 
 LocalGraphInstance.propTypes = {
   nodeType: PropTypes.string,
