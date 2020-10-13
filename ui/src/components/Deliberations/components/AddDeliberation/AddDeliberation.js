@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { gql } from '@apollo/client';
-import { Mutation } from '@apollo/client/react/components';
+import { gql, useMutation } from '@apollo/client';
 import { FormGroup, Label } from 'reactstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -34,58 +33,54 @@ const InvalidUrlText = styled.span`
   font-weight: bold;
 `;
 
-const AddDeliberation = withRouter(({ nodeId }) => (
-  <Mutation
-    mutation={ADD_REALITY_HAS_DELIBERATION}
+const AddDeliberation = withRouter(({ nodeId }) => {
+  const [createDeliberation] = useMutation(ADD_REALITY_HAS_DELIBERATION);
 
-  >
-    {createDeliberation => (
-      <FormGroup>
-
-        <Formik
-          initialValues={{ url: '' }}
-          validationSchema={yup.object().shape({
-            url: yup.string().required('URL is required').url('Invalid URL'),
-          })}
-          onSubmit={(values, { resetForm }) => {
-            createDeliberation({ variables: { from: { nodeId }, to: { url: values.url } } })
-              .then(() => {
-              resetForm();
-            });
-          }}
-        >
-          {({
-            values,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            errors,
-            touched,
-            }) => (
-              <div>
-                <Label for="editDeliberationUrl">
-                  Add a discussion reference {touched.url && errors.url &&
-                    <InvalidUrlText>
-                      <FaUnlink /> {errors.url}
-                    </InvalidUrlText>}
-                </Label>
-                <InfoForm
-                  inputName="url"
-                  placeholder="Enter a discussion URL..."
-                  value={values.url}
-                  handleChange={handleChange}
-                  handleBlur={handleBlur}
-                  handleSubmit={handleSubmit}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
-          )}
-        </Formik>
-      </FormGroup>
+  return (
+    <FormGroup>
+      <Formik
+        initialValues={{ url: '' }}
+        validationSchema={yup.object().shape({
+          url: yup.string().required('URL is required').url('Invalid URL'),
+        })}
+        onSubmit={(values, { resetForm }) => {
+          createDeliberation({ variables: { from: { nodeId }, to: { url: values.url } } })
+            .then(() => {
+            resetForm();
+          });
+        }}
+      >
+        {({
+          values,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+          errors,
+          touched,
+        }) => (
+          <div>
+            <Label for="editDeliberationUrl">
+              Add a discussion reference {touched.url && errors.url &&
+                <InvalidUrlText>
+                  <FaUnlink /> {errors.url}
+                </InvalidUrlText>}
+            </Label>
+            <InfoForm
+              inputName="url"
+              placeholder="Enter a discussion URL..."
+              value={values.url}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              handleSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+            />
+          </div>
         )}
-  </Mutation>
-));
+      </Formik>
+    </FormGroup>
+  );
+});
 
 AddDeliberation.propTypes = {
   nodeId: PropTypes.string,

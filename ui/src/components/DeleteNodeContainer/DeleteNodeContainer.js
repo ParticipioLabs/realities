@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from '@apollo/client/react/components';
 import { GET_NEEDS, GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 
@@ -27,73 +26,63 @@ const SOFT_DELETE_RESPONSIBILITY = gql`
   }
 `;
 
-class DeleteNodeContainer extends Component {
-  constructor(props) {
-    super(props);
+const DeleteNodeContainer = ({ nodeType, nodeId, history }) => {
+  const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
+  const [
+    softDeleteNode,
+    { loading, error },
+  ] = useMutation(
+    nodeType === 'Need' ? SOFT_DELETE_NEED : SOFT_DELETE_RESPONSIBILITY,
+    {
+      update: (cache, { data }) => {
+        setConfirmationModalIsOpen(false);
+        cache.writeQuery({
+          query: SET_CACHE,
+          data: {
+            showDetailedEditView: false,
+          },
+        });
 
-    this.state = {
-      confirmationModalIsOpen: false,
-    };
-  }
-
-  toggleConfirmationModal = () => {
-    this.setState({ confirmationModalIsOpen: !this.state.confirmationModalIsOpen });
-  };
-
-  render() {
-    return (
-      <Mutation
-        mutation={this.props.nodeType === 'Need' ? SOFT_DELETE_NEED : SOFT_DELETE_RESPONSIBILITY}
-        update={(cache, { data }) => {
-          this.setState({ confirmationModalIsOpen: false });
+        if (nodeType === 'Need') {
+          const { needs } = cache.readQuery({ query: GET_NEEDS });
           cache.writeQuery({
-            query: SET_CACHE,
+            query: GET_NEEDS,
             data: {
-              showDetailedEditView: false,
+              needs: needs.filter(n => n.nodeId !== data.softDeleteNeed.nodeId),
             },
           });
+          history.push('/');
+        } else {
+          const needId = data.softDeleteResponsibility.fulfills.nodeId;
+          const { responsibilities } = cache.readQuery({
+            query: GET_RESPONSIBILITIES,
+            variables: { needId },
+          });
+          cache.writeQuery({
+            query: GET_RESPONSIBILITIES,
+            variables: { needId },
+            data: {
+              responsibilities: responsibilities
+                .filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
+            },
+          });
+          history.push(`/${needId}`);
+        }
+      },
+    },
+  );
 
-          if (this.props.nodeType === 'Need') {
-            const { needs } = cache.readQuery({ query: GET_NEEDS });
-            cache.writeQuery({
-              query: GET_NEEDS,
-              data: {
-                needs: needs.filter(n => n.nodeId !== data.softDeleteNeed.nodeId),
-              },
-            });
-            this.props.history.push('/');
-          } else {
-            const needId = data.softDeleteResponsibility.fulfills.nodeId;
-            const { responsibilities } = cache.readQuery({
-              query: GET_RESPONSIBILITIES,
-              variables: { needId },
-            });
-            cache.writeQuery({
-              query: GET_RESPONSIBILITIES,
-              variables: { needId },
-              data: {
-                responsibilities: responsibilities
-                  .filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
-              },
-            });
-            this.props.history.push(`/${needId}`);
-          }
-        }}
-      >
-        {(softDeleteNode, { loading, error }) => (
-          <DeleteNodeButton
-            nodeType={this.props.nodeType}
-            confirmationModalIsOpen={this.state.confirmationModalIsOpen}
-            onToggleConfirmationModal={this.toggleConfirmationModal}
-            onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId: this.props.nodeId } })}
-            loading={loading}
-            error={error}
-          />
-        )}
-      </Mutation>
-    );
-  }
-}
+  return (
+    <DeleteNodeButton
+      nodeType={nodeType}
+      confirmationModalIsOpen={confirmationModalIsOpen}
+      onToggleConfirmationModal={() => setConfirmationModalIsOpen(!confirmationModalIsOpen)}
+      onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId } })}
+      loading={loading}
+      error={error}
+    />
+  );
+};
 
 DeleteNodeContainer.propTypes = {
   nodeType: PropTypes.string,

@@ -1,6 +1,5 @@
-import React from 'react';
-import { gql } from '@apollo/client';
-import { Mutation } from '@apollo/client/react/components';
+import React, { useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { ListGroupItem, Button, FormGroup, Label } from 'reactstrap';
@@ -32,96 +31,89 @@ const CHANGE_FULFILLS = gql`
   }
 `;
 
-class ChangeFulfills extends React.Component {
-  state = { editing: false };
+const ChangeFulfills = ({ node, history }) => {
+  const [editing, setEditing] = useState(false);
+  const [changeOwner] = useMutation(CHANGE_FULFILLS, {
+    update: (cache, { data: { changeFulfills } }) => {
+      const { responsibilities } = cache.readQuery({
+        query: GET_RESPONSIBILITIES,
+        variables: { needId: node.fulfills.nodeId },
+      });
 
-  toggleEdit = () => this.setState({ editing: !this.state.editing });
+      cache.writeQuery({
+        query: GET_RESPONSIBILITIES,
+        variables: {
+          needId: node.fulfills.nodeId,
+        },
+        data: {
+          responsibilities: responsibilities.filter(i => i.nodeId !== changeFulfills.nodeId),
+        },
+      });
+    },
+  });
 
-  render() {
-    const { node, history } = this.props;
-    return (
-      <StyledFormGroup>
-        <Label>Fulfills</Label>
-        <Mutation
-          mutation={CHANGE_FULFILLS}
-          update={(cache, { data: { changeFulfills } }) => {
-            const { responsibilities } = cache.readQuery({
-              query: GET_RESPONSIBILITIES,
-              variables: { needId: node.fulfills.nodeId },
-            });
+  const toggleEdit = () => setEditing(!editing);
 
-            cache.writeQuery({
-              query: GET_RESPONSIBILITIES,
-              variables: {
-                needId: node.fulfills.nodeId,
-              },
-              data: {
-                responsibilities: responsibilities.filter(i => i.nodeId !== changeFulfills.nodeId),
-              },
-            });
-          }}
-        >
-          {changeOwner => (
-            <div>
-              {this.state.editing ? (
-                <TypeaheadInput
-                  placeholder="Search needs"
-                  searchQuery={gql`
-                    query ChangeOwner_searchNeeds($term: String!) {
-                      needs(search: $term) {
-                        nodeId
-                        title
-                      }
-                    }
-                  `}
-                  autoFocus
-                  onBlur={() => this.toggleEdit()}
-                  selectedItem={node.fulfills}
-                  queryDataToResultsArray={data => [...(data.needs || [])]}
-                  itemToString={i => (i && i.title) || ''}
-                  itemToResult={i => (
-                    <span>
-                      <TypeBadge nodeType={i.__typename} />
-                      {i.title}
-                    </span>
-                  )}
-                  onChange={(selectedNode) => {
-                    if (selectedNode) {
-                      changeOwner({
-                        variables: {
-                          responsibilityId: node.nodeId,
-                          needId: selectedNode.nodeId,
-                        },
-                      });
-                      this.toggleEdit();
-                    }
-                  }}
-                />
-              ) : (
-                <ListGroupItem onClick={() => history.push(`/${node.fulfills.nodeId}`)} action>
-                  <TypeBadge nodeType={node.fulfills.__typename} />
-                  {node.fulfills.title}
-                  <ButtonWrapper>
-                    <Button
-                      size="sm"
-                      color="primary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.toggleEdit();
-                      }}
-                    >
-                      Change
-                    </Button>
-                  </ButtonWrapper>
-                </ListGroupItem>
-              )}
-            </div>
-          )}
-        </Mutation>
-      </StyledFormGroup>
-    );
-  }
-}
+  return (
+    <StyledFormGroup>
+      <Label>Fulfills</Label>
+      <div>
+        {editing ? (
+          <TypeaheadInput
+            placeholder="Search needs"
+            searchQuery={gql`
+              query ChangeOwner_searchNeeds($term: String!) {
+                needs(search: $term) {
+                  nodeId
+                  title
+                }
+              }
+            `}
+            autoFocus
+            onBlur={toggleEdit}
+            selectedItem={node.fulfills}
+            queryDataToResultsArray={data => [...(data.needs || [])]}
+            itemToString={i => (i && i.title) || ''}
+            itemToResult={i => (
+              <span>
+                <TypeBadge nodeType={i.__typename} />
+                {i.title}
+              </span>
+            )}
+            onChange={(selectedNode) => {
+              if (selectedNode) {
+                changeOwner({
+                  variables: {
+                    responsibilityId: node.nodeId,
+                    needId: selectedNode.nodeId,
+                  },
+                });
+                toggleEdit();
+              }
+            }}
+          />
+        ) : (
+          <ListGroupItem onClick={() => history.push(`/${node.fulfills.nodeId}`)} action>
+            <TypeBadge nodeType={node.fulfills.__typename} />
+            {node.fulfills.title}
+            <ButtonWrapper>
+              <Button
+                size="sm"
+                color="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleEdit();
+                }}
+              >
+                Change
+              </Button>
+            </ButtonWrapper>
+          </ListGroupItem>
+        )}
+      </div>
+    </StyledFormGroup>
+  );
+};
 
 ChangeFulfills.propTypes = {
   node: PropTypes.shape({

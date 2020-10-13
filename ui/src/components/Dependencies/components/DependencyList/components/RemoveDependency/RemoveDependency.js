@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from '@apollo/client/react/components';
 import {
   Button,
 } from 'reactstrap';
@@ -92,27 +91,26 @@ const RemoveDependency = withRouter(({ match, nodeType, nodeId }) => {
   const REMOVE_DEPENDENCY = nodeType === 'Need'
     ? REMOVE_NEED_DEPENDENCY
     : REMOVE_RESPONSIBILITY_DEPENDENCY;
+
+  const [removeDependency, { loading }] = useMutation(REMOVE_DEPENDENCY);
+
   return (
-    <Mutation mutation={REMOVE_DEPENDENCY}>
-      {(removeDependency, { loading }) => (
-        <Button
-          size="sm"
-          color="danger"
-          disabled={loading}
-          onClick={(e) => {
-            e.stopPropagation();
-            removeDependency({
-              variables: {
-                from: { nodeId: match.params.responsibilityId || match.params.needId },
-                to: { nodeId },
-              },
-            });
-          }}
-        >
-          Remove
-        </Button>
-      )}
-    </Mutation>
+    <Button
+      size="sm"
+      color="danger"
+      disabled={loading}
+      onClick={(e) => {
+        e.stopPropagation();
+        removeDependency({
+          variables: {
+            from: { nodeId: match.params.responsibilityId || match.params.needId },
+            to: { nodeId },
+          },
+        });
+      }}
+    >
+      Remove
+    </Button>
   );
 });
 
