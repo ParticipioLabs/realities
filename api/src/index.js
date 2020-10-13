@@ -39,6 +39,7 @@ function getUser(user) {
     {
       email: user['https://realities.platoproject.org/email'],
       role: user['https://realities.platoproject.org/role'],
+      tenantId: 'placeholder',
     },
   );
 }

@@ -23,7 +23,7 @@ import {
   searchRealities,
   getEmailData,
 } from '../connectors';
-import { isAuthenticated } from '../authorization';
+import { isAuthenticated, isAuthorized } from '../authorization';
 import { sendUpdateMail } from '../../email/mailService';
 
 const notify = (process.env.EMAIL_NOTIFICATIONS === 'enabled');
@@ -170,6 +170,7 @@ const resolvers = {
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
+      isAuthorized,
       async (obj, args, { driver, user }) => {
         const emailData = await getEmailData(driver, args);
         const responsibility = await updateReality(driver, args);

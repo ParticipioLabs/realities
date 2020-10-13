@@ -11,3 +11,13 @@ export const isAdmin = combineResolvers(
     return (user && user.role === 'admin') ? skip : new Error('Not authorized');
   },
 );
+
+export const isAuthorized = combineResolvers(
+  isAuthenticated,
+  (obj, args, { user }) => {
+    if (user.tenantId === 'placeholder') {
+      return skip;
+    }
+    return new Error('Unauthorized access');
+  },
+);
