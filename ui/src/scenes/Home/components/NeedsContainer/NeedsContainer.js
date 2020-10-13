@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
-import { Query } from '@apollo/client/react/components';
 import { GET_NEEDS, SET_CACHE } from '@/services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
@@ -23,15 +22,22 @@ const GET_SHOW_CREATE_NEED = gql`
   }
 `;
 
-const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
-  <Query query={GET_SHOW_CREATE_NEED}>
-    {({ data: localData = {}, client }) => (
-      <div>
-        <ListHeader
-          text="Needs"
-          color={colors.need}
-          showButton={auth.isLoggedIn}
-          onButtonClick={() =>
+const NeedsContainer = withAuth(withRouter(({ auth, match }) => {
+  const { data: localData = {}, client } = useQuery(GET_SHOW_CREATE_NEED);
+  const {
+    subscribeToMore,
+    loading,
+    error,
+    data,
+  } = useQuery(GET_NEEDS);
+
+  return (
+    <div>
+      <ListHeader
+        text="Needs"
+        color={colors.need}
+        showButton={auth.isLoggedIn}
+        onButtonClick={() =>
               client.writeQuery({
                 query: SET_CACHE,
                 data: {
@@ -40,76 +46,68 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => (
                 },
               })
             }
-        />
-        {localData.showCreateNeed && <CreateNeed />}
-        <Query query={GET_NEEDS}>
-          {({
-              subscribeToMore,
-              loading,
-              error,
-              data,
-            }) => {
-            if (loading) return <WrappedLoader />;
-            if (error) return `Error! ${error.message}`;
+      />
+      {localData.showCreateNeed && <CreateNeed />}
+      {(() => {
+        if (loading) return <WrappedLoader />;
+        if (error) return `Error! ${error.message}`;
 
-            const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-            if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
-              return <Redirect to={`/${firstNeedId}`} />;
-            }
+        const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
+        if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
+          return <Redirect to={`/${firstNeedId}`} />;
+        }
 
-            return (<NeedsList
-              needs={data.needs}
-              selectedNeedId={match.params.needId}
-              subscribeToNeedsEvents={() => {
-                subscribeToMore({
-                  document: REALITIES_CREATE_SUBSCRIPTION,
-                  updateQuery: (prev, { subscriptionData }) => {
-                    if (!subscriptionData.data) return prev;
-                    const { realityCreated } = subscriptionData.data;
+        return (<NeedsList
+          needs={data.needs}
+          selectedNeedId={match.params.needId}
+          subscribeToNeedsEvents={() => {
+            subscribeToMore({
+              document: REALITIES_CREATE_SUBSCRIPTION,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const { realityCreated } = subscriptionData.data;
 
-                    if (realityCreated.__typename !== 'Need') return prev;
+                if (realityCreated.__typename !== 'Need') return prev;
 
-                    const alreadyExists = prev.needs
-                      .filter(need => need.nodeId === realityCreated.nodeId)
-                      .length > 0;
+                const alreadyExists = prev.needs
+                  .filter(need => need.nodeId === realityCreated.nodeId)
+                  .length > 0;
 
-                    if (alreadyExists) return prev;
-                    return { needs: [realityCreated, ...prev.needs] };
-                  },
-                });
-                subscribeToMore({
-                  document: REALITIES_DELETE_SUBSCRIPTION,
-                  updateQuery: (prev, { subscriptionData }) => {
-                    if (!subscriptionData.data) return prev;
-                    const { realityDeleted } = subscriptionData.data;
-                    return {
-                      needs: prev.needs.filter((item => item.nodeId !== realityDeleted.nodeId)),
-                    };
-                  },
-                });
-                subscribeToMore({
-                  document: REALITIES_UPDATE_SUBSCRIPTION,
-                  updateQuery: (prev, { subscriptionData }) => {
-                    if (!subscriptionData.data) return prev;
+                if (alreadyExists) return prev;
+                return { needs: [realityCreated, ...prev.needs] };
+              },
+            });
+            subscribeToMore({
+              document: REALITIES_DELETE_SUBSCRIPTION,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const { realityDeleted } = subscriptionData.data;
+                return {
+                  needs: prev.needs.filter((item => item.nodeId !== realityDeleted.nodeId)),
+                };
+              },
+            });
+            subscribeToMore({
+              document: REALITIES_UPDATE_SUBSCRIPTION,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
 
-                    const { realityUpdated } = subscriptionData.data;
+                const { realityUpdated } = subscriptionData.data;
 
-                    return {
-                      needs: prev.needs.map((item) => {
-                        if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
-                        return item;
-                      }),
-                    };
-                  },
-                });
-              }}
-            />);
+                return {
+                  needs: prev.needs.map((item) => {
+                    if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
+                    return item;
+                  }),
+                };
+              },
+            });
           }}
-        </Query>
-      </div>
-      )}
-  </Query>
-)));
+        />);
+      })()}
+    </div>
+  );
+}));
 
 NeedsContainer.propTypes = {
   auth: PropTypes.shape({

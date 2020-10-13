@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { Query } from '@apollo/client/react/components';
+import { gql, useQuery } from '@apollo/client';
 import WrappedLoader from '@/components/WrappedLoader';
 import PersonDetails from './components/PersonDetails';
 
@@ -15,24 +14,19 @@ const GET_PERSON = gql`
   }
 `;
 
-const PersonDetailsContainer = ({ nodeId }) => (
-  <Query
-    query={GET_PERSON}
-    variables={{ nodeId }}
-  >
-    {({ loading, error, data }) => {
-      if (loading) return <WrappedLoader />;
-      if (error) return `Error! ${error.message}`;
-      const { person: { name, email } } = data;
-      return (
-        <PersonDetails
-          name={name}
-          email={email}
-        />
-      );
-    }}
-  </Query>
-);
+const PersonDetailsContainer = ({ nodeId }) => {
+  const { loading, error, data } = useQuery(GET_PERSON, { variables: { nodeId } });
+
+  if (loading) return <WrappedLoader />;
+  if (error) return `Error! ${error.message}`;
+  const { person: { name, email } } = data;
+  return (
+    <PersonDetails
+      name={name}
+      email={email}
+    />
+  );
+};
 
 PersonDetailsContainer.propTypes = {
   nodeId: PropTypes.string.isRequired,

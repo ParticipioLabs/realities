@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from '@apollo/client/react/components';
 import { Formik } from 'formik';
 import { GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
 import ListForm from '@/components/ListForm';
@@ -21,10 +20,9 @@ const CREATE_RESPONSIBILITY = gql`
   }
 `;
 
-const CreateResponsibility = withRouter(({ match, history }) => (
-  <Mutation
-    mutation={CREATE_RESPONSIBILITY}
-    update={(cache, { data: { createResponsibility } }) => {
+const CreateResponsibility = withRouter(({ match, history }) => {
+  const [createResponsibility] = useMutation(CREATE_RESPONSIBILITY, {
+    update: (cache, { data: { createResponsibility: createRespRes } }) => {
       cache.writeQuery({
         query: SET_CACHE,
         data: {
@@ -37,58 +35,58 @@ const CreateResponsibility = withRouter(({ match, history }) => (
       });
 
       const alreadyExists =
-        responsibilities.filter(resp => resp.nodeId === createResponsibility.nodeId).length > 0;
+        responsibilities.filter(resp => resp.nodeId === createRespRes.nodeId).length > 0;
 
       if (!alreadyExists) {
         cache.writeQuery({
           query: GET_RESPONSIBILITIES,
           variables: { needId: match.params.needId },
           data: {
-            responsibilities: [createResponsibility, ...responsibilities],
+            responsibilities: [createRespRes, ...responsibilities],
           },
         });
       }
-    }}
-  >
-    {createResponsibility => (
-      <Formik
-        initialValues={{ title: '' }}
-        validationSchema={yup.object().shape({
-          title: yup.string().required('Title is required'),
-        })}
-        onSubmit={(values, { resetForm }) => {
-          createResponsibility({
-            variables: {
-              title: values.title,
-              needId: match.params.needId,
-            },
-          }).then(({ data }) => {
-            resetForm();
-            history.push(`/${match.params.needId}/${data.createResponsibility.nodeId}`);
-          });
-        }}
-      >
-        {({
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <ListForm
-            inputName="title"
-            placeholder="Enter a title for the new responsibility..."
-            value={values.title}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        )}
-      </Formik>
-    )}
-  </Mutation>
-));
+    },
+  });
+
+  return (
+    <Formik
+      initialValues={{ title: '' }}
+      validationSchema={yup.object().shape({
+        title: yup.string().required('Title is required'),
+      })}
+      onSubmit={(values, { resetForm }) => {
+        createResponsibility({
+          variables: {
+            title: values.title,
+            needId: match.params.needId,
+          },
+        }).then(({ data }) => {
+          resetForm();
+          history.push(`/${match.params.needId}/${data.createResponsibility.nodeId}`);
+        });
+      }}
+    >
+      {({
+        values,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        isSubmitting,
+      }) => (
+        <ListForm
+          inputName="title"
+          placeholder="Enter a title for the new responsibility..."
+          value={values.title}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      )}
+    </Formik>
+  );
+});
 
 CreateResponsibility.propTypes = {
   match: PropTypes.shape({

@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Mutation } from '@apollo/client/react/components';
 import {
   Button,
 } from 'reactstrap';
@@ -23,28 +22,28 @@ const REMOVE_REALITY_HAS_DELIBERATION = gql`
   }
 `;
 
-const RemoveDeliberation = withRouter(({ match, url }) => (
-  <Mutation mutation={REMOVE_REALITY_HAS_DELIBERATION}>
-    {(removeDeliberation, { loading }) => (
-      <Button
-        size="sm"
-        color="danger"
-        disabled={loading}
-        onClick={(e) => {
-          e.stopPropagation();
-          removeDeliberation({
-            variables: {
-              from: { nodeId: match.params.responsibilityId || match.params.needId },
-              to: { url },
-            },
-          });
-        }}
-      >
-        Remove
-      </Button>
-    )}
-  </Mutation>
-));
+const RemoveDeliberation = withRouter(({ match, url }) => {
+  const [removeDeliberation, { loading }] = useMutation(REMOVE_REALITY_HAS_DELIBERATION);
+
+  return (
+    <Button
+      size="sm"
+      color="danger"
+      disabled={loading}
+      onClick={(e) => {
+        e.stopPropagation();
+        removeDeliberation({
+          variables: {
+            from: { nodeId: match.params.responsibilityId || match.params.needId },
+            to: { url },
+          },
+        });
+      }}
+    >
+      Remove
+    </Button>
+  );
+});
 
 RemoveDeliberation.propTypes = {
   match: PropTypes.shape({

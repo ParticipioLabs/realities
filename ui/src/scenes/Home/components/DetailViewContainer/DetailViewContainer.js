@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { Query } from '@apollo/client/react/components';
 import withAuth from '@/components/withAuth';
 import WrappedLoader from '@/components/WrappedLoader';
 import { SET_CACHE } from '@/services/queries';
@@ -83,40 +82,36 @@ const DetailViewContainer = withAuth(withRouter(({
     },
   };
 
+  const {
+    loading,
+    error,
+    data = {},
+    client,
+  } = useQuery(queryProps.query, queryProps);
+
+  if (loading) return <WrappedLoader />;
+  if (error) return `Error! ${error.message}`;
+  const node = !match.params.responsibilityId ? data.need : data.responsibility;
+  if (!node) return null;
   return (
-    <Query {...queryProps}>
-      {({
-        loading,
-        error,
-        data = {},
-        client,
-      }) => {
-        if (loading) return <WrappedLoader />;
-        if (error) return `Error! ${error.message}`;
-        const node = !match.params.responsibilityId ? data.need : data.responsibility;
-        if (!node) return null;
-        return (
-          <DetailView
-            node={node}
-            showEdit={data.showDetailedEditView}
-            isLoggedIn={auth.isLoggedIn}
-            onClickEdit={() => client.writeQuery({
-              query: SET_CACHE,
-              data: {
-                showDetailedEditView: true,
-              },
-            })}
-            onClickCancel={() => client.writeQuery({
-              query: SET_CACHE,
-              data: {
-                showDetailedEditView: false,
-              },
-            })}
-            onClickFullscreen={() => history.push(`/reality/${match.params.needId}/${match.params.responsibilityId || ''}`)}
-          />
-        );
-      }}
-    </Query>
+    <DetailView
+      node={node}
+      showEdit={data.showDetailedEditView}
+      isLoggedIn={auth.isLoggedIn}
+      onClickEdit={() => client.writeQuery({
+        query: SET_CACHE,
+        data: {
+          showDetailedEditView: true,
+        },
+      })}
+      onClickCancel={() => client.writeQuery({
+        query: SET_CACHE,
+        data: {
+          showDetailedEditView: false,
+        },
+      })}
+      onClickFullscreen={() => history.push(`/reality/${match.params.needId}/${match.params.responsibilityId || ''}`)}
+    />
   );
 }));
 
