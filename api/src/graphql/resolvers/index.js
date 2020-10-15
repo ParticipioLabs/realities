@@ -169,7 +169,6 @@ const resolvers = {
       },
     ),
     updateResponsibility: combineResolvers(
-      isAuthenticated,
       isAuthorized,
       async (obj, args, { driver, user }) => {
         const emailData = await getEmailData(driver, args);

@@ -11,6 +11,9 @@ const driver = neo4j.driver(
   ),
 );
 
+// TODO: run migrations here maybe? store "version" in a node with a specific
+// label, if that number is too low then run upgrade migrations
+
 // TODO: Run driver.close() when node app exits.
 
 export default driver;
