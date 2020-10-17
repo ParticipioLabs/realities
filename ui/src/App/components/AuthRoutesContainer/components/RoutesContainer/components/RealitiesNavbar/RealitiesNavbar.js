@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import {
   Collapse,
   DropdownItem,
@@ -15,7 +14,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import withAuth from '@/components/withAuth';
+import { useAuth } from '@/services/auth';
 import Search from '@/components/Search';
 import ViewerName from '@/components/ViewerName';
 
@@ -23,81 +22,51 @@ const StyledNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
 `;
 
-class RealitiesNavbar extends Component {
-  constructor(props) {
-    super(props);
+const RealitiesNavbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isLoggedIn, login, logout } = useAuth();
 
-    this.state = {
-      isOpen: false,
-    };
-  }
-
-  toggle = () => {
-    this.setState({
-      isOpen: !this.state.isOpen,
-    });
-  };
-
-  render() {
-    return (
-      <Navbar color="faded" light expand="md">
-        <StyledNavbarBrand tag={Link} to="/">
+  return (
+    <Navbar color="faded" light expand="md">
+      <StyledNavbarBrand tag={Link} to="/">
           Realities
-        </StyledNavbarBrand>
-        <div className="flex-grow-1 mr-3 d-none d-md-block ">
-          <Search />
-        </div>
-        <NavbarToggler onClick={this.toggle} />
-        <Collapse isOpen={this.state.isOpen} navbar className="flex-grow-0">
-          <Nav className="ml-auto" navbar>
-            <NavItem>
-              <NavLink tag={Link} to="/graph">Graph</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to="/about">About</NavLink>
-            </NavItem>
-            {this.props.auth.isLoggedIn ? (
-              <UncontrolledDropdown nav>
-                <DropdownToggle nav caret>
-                  <ViewerName />
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem>
-                    <NavLink tag={Link} to="/profile">Profile</NavLink>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <NavLink onClick={this.props.auth.logout} href="#">Logout</NavLink>
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+      </StyledNavbarBrand>
+      <div className="flex-grow-1 mr-3 d-none d-md-block ">
+        <Search />
+      </div>
+      <NavbarToggler onClick={() => setIsOpen(!isOpen)} />
+      <Collapse isOpen={isOpen} navbar className="flex-grow-0">
+        <Nav className="ml-auto" navbar>
+          <NavItem>
+            <NavLink tag={Link} to="/graph">Graph</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink tag={Link} to="/about">About</NavLink>
+          </NavItem>
+          { isLoggedIn() ? (
+            <UncontrolledDropdown nav>
+              <DropdownToggle nav caret>
+                <ViewerName />
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>
+                  <NavLink tag={Link} to="/profile">Profile</NavLink>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavLink onClick={logout} href="#">Logout</NavLink>
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
             ) : (
               <NavItem>
-                <NavLink onClick={this.props.auth.login} href="#">Login</NavLink>
+                <NavLink onClick={login} href="#">Login</NavLink>
               </NavItem>
-            )}
-          </Nav>
-        </Collapse>
-      </Navbar>
-    );
-  }
-}
-
-RealitiesNavbar.defaultProps = {
-  auth: {
-    isLoggedIn: false,
-    email: 'example@example.com',
-    login: () => null,
-    logout: () => null,
-  },
+            )
+          }
+        </Nav>
+      </Collapse>
+    </Navbar>
+  );
 };
 
-RealitiesNavbar.propTypes = {
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
-    email: PropTypes.string,
-    login: PropTypes.func,
-    logout: PropTypes.func,
-  }),
-};
-
-export default withAuth(RealitiesNavbar);
+export default RealitiesNavbar;
