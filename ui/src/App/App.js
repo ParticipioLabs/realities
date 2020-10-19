@@ -1,7 +1,7 @@
 import React from 'react';
 import Keycloak from 'keycloak-js';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
-import useAuth from '@/services/auth';
+import useAuth from '@/services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from '@/services/apolloClient';
 import AuthRoutesContainer from './components/AuthRoutesContainer';

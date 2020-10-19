@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useAuth from '@/services/auth';
+import useAuth from '@/services/useAuth';
 
 export default (WrappedComponent) => {
   const EnhancedComponent = (props) => {
