@@ -1,4 +1,5 @@
 import Auth0 from 'auth0-js';
+import { useKeycloak } from '@react-keycloak/web';
 import store from 'store';
 import history from '@/services/history';
 
@@ -17,10 +18,13 @@ function fireHandlers() {
   handlers.forEach(fn => fn());
 }
 
-export function useAuth() {
+export default function useAuth() {
+  const { keycloak } = useKeycloak();
+
   return {
     login: () => {
-      auth0.authorize({ title: 'Realities' });
+      // auth0.authorize({ title: 'Realities' });
+      keycloak.login();
     },
     handleAuthentication: () => (
       new Promise((resolve, reject) => {
@@ -46,17 +50,20 @@ export function useAuth() {
       fireHandlers();
       history.push('/');
     },
-    isLoggedIn: () => !!store.get('auth'),
-    getAccessToken: () => {
-      const storedAuth = store.get('auth') || {};
-      const tokenExpired = storedAuth.expiresAt < new Date().getTime();
-      if (tokenExpired) {
-        store.remove('auth');
-        fireHandlers();
-        return null;
-      }
-      return storedAuth.accessToken;
-    },
+    isLoggedIn: () =>
+      // !!store.get('auth')
+      keycloak.authenticated,
+    getAccessToken: () =>
+      keycloak.token,
+    // const storedAuth = store.get('auth') || {};
+    // const tokenExpired = storedAuth.expiresAt < new Date().getTime();
+    // if (tokenExpired) {
+    //   store.remove('auth');
+    //   fireHandlers();
+    //   return null;
+    // }
+    // return storedAuth.accessToken;
+
     getEmail: () => {
       const storedAuth = store.get('auth') || {};
       return storedAuth.email;
@@ -69,5 +76,3 @@ export function useAuth() {
     },
   };
 }
-
-export default useAuth();

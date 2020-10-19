@@ -14,7 +14,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '@/services/auth';
+import useAuth from '@/services/auth';
 import Search from '@/components/Search';
 import ViewerName from '@/components/ViewerName';
 
