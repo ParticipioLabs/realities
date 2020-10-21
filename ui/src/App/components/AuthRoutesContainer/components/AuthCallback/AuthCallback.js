@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 // import { gql } from '@apollo/client';
 import Loader from 'react-loader';
-// import auth from '@/services/auth';
+import useAuth from '@/services/useAuth';
 // import apolloClient from '@/services/apolloClient';
-// import history from '@/services/history';
+import history from '@/services/history';
 
 // const GET_VIEWER = gql`
 //   query AuthCallback_person($email: String!) {
@@ -24,27 +24,34 @@ import Loader from 'react-loader';
 //   }
 // `;
 
-class AuthCallback extends Component {
-  componentWillMount() {
-    // auth.handleAuthentication().then(({ email }) => {
-    //   apolloClient
-    //     .query({ query: GET_VIEWER, variables: { email } })
-    //     .then(({ data }) => {
-    //       if (data.person) {
-    //         history.replace('/');
-    //       } else {
-    //         apolloClient
-    //           .mutate({ mutation: CREATE_VIEWER })
-    //           .then(() => history.replace('/profile'))
-    //           .catch(err => console.log(err));
-    //       }
-    //     })
-    //     .catch(err => console.log(err));
-    // });
-  }
+const AuthCallback = () => {
+  const auth = useAuth();
+  // const client = apolloClient(auth.getAccessToken());
 
-  render() {
-    return (
+  useEffect(() => {
+    if (auth.initialized && auth.isLoggedIn()) {
+      // auth.handleAuthentication().then(({ email }) => {
+      //   apolloClient
+      //     .query({ query: GET_VIEWER, variables: { email } })
+      //     .then(({ data }) => {
+      //       if (data.person) {
+      //         history.replace('/');
+      //       } else {
+      //         apolloClient
+      //           .mutate({ mutation: CREATE_VIEWER })
+      //           .then(() => history.replace('/profile'))
+      //           .catch(err => console.log(err));
+      //       }
+      //     })
+      //     .catch(err => console.log(err));
+      // });
+      history.replace('/');
+    }
+  }, [auth.initialized]);
+
+  return (
+    <div>
+      <div>{auth.initialized ? 'inited' : 'NOT inited'}</div>
       <Loader
         options={{
           color: '#aaa',
@@ -53,8 +60,8 @@ class AuthCallback extends Component {
           width: 8,
         }}
       />
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default AuthCallback;
