@@ -44,27 +44,21 @@ app.use('/graphql', keycloak.middleware());
 //   }),
 // }));
 
-function getUser(user) {
-  if (!user) return null;
-  console.log('user', user);
-  return Object.assign(
-    {},
-    user,
-    {
-      email: user['https://realities.platoproject.org/email'],
-      role: user['https://realities.platoproject.org/role'],
-    },
-  );
-}
-
 const server = new ApolloServer({
   schema,
-  context: async ({ req }) => ({
-    // TODO: maybe rather use the keycloak object to generate the user object?
-    kauth: new KeycloakContext({ req }),
-    user: getUser(req && req.user),
-    driver: neo4jDriver,
-  }),
+  context: async ({ req }) => {
+    const kauth = new KeycloakContext({ req });
+
+    return {
+      kauth,
+      user: {
+        email: kauth.accessToken && kauth.accessToken.content.email,
+        role: 'user',
+        // TODO: put the user's tenantId here
+      },
+      driver: neo4jDriver,
+    };
+  },
   tracing: true,
 });
 server.applyMiddleware({ app, path: '/graphql' });

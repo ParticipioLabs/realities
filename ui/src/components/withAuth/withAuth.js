@@ -8,7 +8,7 @@ export default (WrappedComponent) => {
     const getAuthProps = () => ({
       login: auth.login,
       logout: auth.logout,
-      isLoggedIn: auth.isLoggedIn(),
+      isLoggedIn: auth.isLoggedIn,
       email: auth.getEmail(),
       auth,
     });

@@ -29,7 +29,7 @@ const AuthCallback = () => {
   // const client = apolloClient(auth.getAccessToken());
 
   useEffect(() => {
-    if (auth.initialized && auth.isLoggedIn()) {
+    if (auth.initialized && auth.isLoggedIn) {
       // auth.handleAuthentication().then(({ email }) => {
       //   apolloClient
       //     .query({ query: GET_VIEWER, variables: { email } })

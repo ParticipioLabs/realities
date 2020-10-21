@@ -43,7 +43,7 @@ const RealitiesNavbar = () => {
           <NavItem>
             <NavLink tag={Link} to="/about">About</NavLink>
           </NavItem>
-          { isLoggedIn() ? (
+          { isLoggedIn ? (
             <UncontrolledDropdown nav>
               <DropdownToggle nav caret>
                 <ViewerName />

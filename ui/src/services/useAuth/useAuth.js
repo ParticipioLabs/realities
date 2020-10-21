@@ -21,6 +21,9 @@ function fireHandlers() {
 export default function useAuth() {
   const { keycloak, initialized } = useKeycloak();
 
+  // TODO: doesn't seem like any of the properties of `keycloak` are actually
+  // reactive. so set up some system where we turn e.g. isLoggedIn into a useState
+
   return {
     login: () => {
       // auth0.authorize({ title: 'Realities' });
@@ -56,7 +59,7 @@ export default function useAuth() {
       fireHandlers();
       history.push('/');
     },
-    isLoggedIn: () =>
+    isLoggedIn:
       // !!store.get('auth')
       keycloak.authenticated,
     getAccessToken: () =>
