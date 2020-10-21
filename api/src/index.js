@@ -53,7 +53,7 @@ const server = new ApolloServer({
       kauth,
       user: {
         email: kauth.accessToken && kauth.accessToken.content.email,
-        role: 'user',
+        role: kauth.accessToken && 'user',
         // TODO: put the user's tenantId here
       },
       driver: neo4jDriver,
