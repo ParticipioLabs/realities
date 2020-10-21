@@ -1,6 +1,6 @@
 // import Auth0 from 'auth0-js';
 import { useKeycloak } from '@react-keycloak/web';
-import store from 'store';
+// import store from 'store';
 import history from '@/services/history';
 
 // const auth0 = new Auth0.WebAuth({
@@ -70,10 +70,7 @@ export default function useAuth() {
     // }
     // return storedAuth.accessToken;
 
-    getEmail: () => {
-      const storedAuth = store.get('auth') || {};
-      return storedAuth.email;
-    },
+    getEmail: () => keycloak.tokenParsed && keycloak.tokenParsed.email,
     // TODO: only used in withAuth, we can probably remove this. the hooks
     // should make it reactive enough or?
     subscribe: (fn) => {

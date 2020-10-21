@@ -10,6 +10,7 @@ export default (WrappedComponent) => {
       logout: auth.logout,
       isLoggedIn: auth.isLoggedIn(),
       email: auth.getEmail(),
+      auth,
     });
 
     const [authProps, setAuthProps] = useState(getAuthProps());

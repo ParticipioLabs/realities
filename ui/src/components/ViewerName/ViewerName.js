@@ -17,9 +17,11 @@ const ViewerName = withAuth(({ auth }) => {
     variables: { email: auth.email },
   });
 
+  console.log('auth', auth);
   if (loading) return auth.email;
   if (error) return `Error! ${error.message}`;
   const viewer = data.person || {};
+  console.log('data', data);
   return viewer.name || auth.email;
 });
 

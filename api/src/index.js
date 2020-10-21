@@ -2,8 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
-import expressJwt from 'express-jwt';
-import jwksRsa from 'jwks-rsa';
+// import expressJwt from 'express-jwt';
+// import jwksRsa from 'jwks-rsa';
+import Keycloak from 'keycloak-connect';
+import { KeycloakContext } from 'keycloak-connect-graphql';
 import neo4jDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
@@ -19,20 +21,32 @@ if (!NODE_ENV || NODE_ENV.includes('dev')) {
   app.use(cors());
 }
 
-app.use(expressJwt({
-  credentialsRequired: false,
-  // Dynamically provide a signing key based on the kid in the header
-  // and the singing keys provided by the JWKS endpoint
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: 'https://platoproject.eu.auth0.com/.well-known/jwks.json',
-  }),
-}));
+const keycloak = new Keycloak({}, {
+  realm: 'plato',
+  'auth-server-url': 'https://auth.platoproject.org/auth/',
+  'ssl-required': 'external',
+  resource: 'realities',
+  'public-client': true,
+  'confidential-port': 0,
+});
+
+app.use('/graphql', keycloak.middleware());
+
+// app.use(expressJwt({
+//   credentialsRequired: false,
+//   // Dynamically provide a signing key based on the kid in the header
+//   // and the singing keys provided by the JWKS endpoint
+//   secret: jwksRsa.expressJwtSecret({
+//     cache: true,
+//     rateLimit: true,
+//     jwksRequestsPerMinute: 5,
+//     jwksUri: 'https://platoproject.eu.auth0.com/.well-known/jwks.json',
+//   }),
+// }));
 
 function getUser(user) {
   if (!user) return null;
+  console.log('user', user);
   return Object.assign(
     {},
     user,
@@ -46,6 +60,8 @@ function getUser(user) {
 const server = new ApolloServer({
   schema,
   context: async ({ req }) => ({
+    // TODO: maybe rather use the keycloak object to generate the user object?
+    kauth: new KeycloakContext({ req }),
     user: getUser(req && req.user),
     driver: neo4jDriver,
   }),
