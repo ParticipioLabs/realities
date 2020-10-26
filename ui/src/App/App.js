@@ -23,7 +23,6 @@ const eventLogger = (event, error) => {
 
 const ApolloSetup = () => {
   const { getAccessToken } = useAuth();
-  console.log('token', getAccessToken());
 
   return (
     <ApolloProvider client={apolloClient(getAccessToken())}>

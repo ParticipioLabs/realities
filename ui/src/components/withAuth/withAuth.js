@@ -1,31 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import useAuth from '@/services/useAuth';
 
 export default (WrappedComponent) => {
   const EnhancedComponent = (props) => {
     const auth = useAuth();
 
-    const getAuthProps = () => ({
+    const authProps = {
       login: auth.login,
       logout: auth.logout,
       isLoggedIn: auth.isLoggedIn,
-      email: auth.getEmail(),
+      email: auth.email,
       auth,
-    });
-
-    const [authProps, setAuthProps] = useState(getAuthProps());
-
-    const handleChange = () => {
-      setAuthProps(getAuthProps());
     };
-
-    useEffect(() => {
-      auth.subscribe(handleChange);
-
-      return () => {
-        auth.unsubscribe(handleChange);
-      };
-    });
 
     return <WrappedComponent {...props} auth={authProps} />;
   };

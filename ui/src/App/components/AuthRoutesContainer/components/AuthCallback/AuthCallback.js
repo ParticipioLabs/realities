@@ -26,43 +26,38 @@ const CREATE_VIEWER = gql`
 
 const AuthCallback = () => {
   const {
-    initialized, isLoggedIn, getEmail, getAccessToken,
+    initialized, isLoggedIn, email, getAccessToken,
   } = useAuth();
 
   console.log('outside inited', initialized);
   console.log('outside loggedin', isLoggedIn);
   useEffect(() => {
-    if (initialized && isLoggedIn) {
-      const client = apolloClient(getAccessToken());
-      const email = getEmail();
+    if (initialized) {
+      if (isLoggedIn && email) {
+        const client = apolloClient(getAccessToken());
 
-      client
-        .query({ query: GET_VIEWER, variables: { email } })
-        .then(({ data }) => {
-          if (data.person) {
-            history.replace('/');
-          } else {
-            client
-              .mutate({ mutation: CREATE_VIEWER })
-              .then(() => history.replace('/profile'))
-              .catch(err => console.log(err));
-          }
-        })
-        .catch(err => console.log(err));
+        client
+          .query({ query: GET_VIEWER, variables: { email } })
+          .then(({ data }) => {
+            if (data.person) {
+              history.replace('/');
+            } else {
+              client
+                .mutate({ mutation: CREATE_VIEWER })
+                .then(() => history.replace('/profile'))
+                .catch(err => console.log(err));
+            }
+          })
+          .catch(err => console.log(err));
+      } else {
+        // just logged out
+        history.replace('/');
+      }
     }
   });
 
   return (
     <div>
-      <div>
-        {(() => {
-          console.log('inrender inited', initialized);
-          if (initialized) {
-            return 'inited';
-          }
-          return 'NOT';
-        })()}
-      </div>
       <Loader
         options={{
           color: '#aaa',
