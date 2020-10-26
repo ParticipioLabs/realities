@@ -28,9 +28,6 @@ const RealitiesNavbar = () => {
     isLoggedIn, login, logout, initialized,
   } = useAuth();
 
-  console.log('initialized', initialized);
-  console.log('navbar isloggedin', isLoggedIn);
-
   return (
     <Navbar color="faded" light expand="md">
       <StyledNavbarBrand tag={Link} to="/">

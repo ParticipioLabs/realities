@@ -8,24 +8,22 @@ import AuthRoutesContainer from './components/AuthRoutesContainer';
 
 const keycloak = Keycloak({
   realm: 'plato',
-  // 'auth-server-url': 'https://auth.platoproject.org/auth/',
   url: 'https://auth.platoproject.org/auth/',
   'ssl-required': 'external',
-  // resource: 'realities',
   'public-client': true,
   'confidential-port': 0,
   clientId: 'realities',
 });
 
-const eventLogger = (event, error) => {
-  console.log('onKeycloakEvent', event, error);
-};
+// const eventLogger = (event, error) => {
+//   console.log('onKeycloakEvent', event, error);
+// };
 
 const ApolloSetup = () => {
-  const { getAccessToken } = useAuth();
+  const { accessToken } = useAuth();
 
   return (
-    <ApolloProvider client={apolloClient(getAccessToken())}>
+    <ApolloProvider client={apolloClient(accessToken)}>
       <AuthRoutesContainer />
     </ApolloProvider>
   );
@@ -34,7 +32,7 @@ const ApolloSetup = () => {
 const App = () => (
   <ReactKeycloakProvider
     authClient={keycloak}
-    onEvent={eventLogger}
+    // onEvent={eventLogger}
     initOptions={{
       // https://www.keycloak.org/docs/latest/securing_apps/index.html#_modern_browsers
       silentCheckSsoFallback: false,

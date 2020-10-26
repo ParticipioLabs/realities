@@ -25,11 +25,9 @@ export default function useAuth() {
     },
     isLoggedIn:
       keycloak.authenticated,
-    // TODO: fun->var
-    getAccessToken: () =>
+    accessToken:
       keycloak.token,
     email,
-    keycloak,
     initialized,
   };
 }

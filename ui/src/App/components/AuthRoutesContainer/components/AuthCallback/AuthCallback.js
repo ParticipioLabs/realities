@@ -26,15 +26,13 @@ const CREATE_VIEWER = gql`
 
 const AuthCallback = () => {
   const {
-    initialized, isLoggedIn, email, getAccessToken,
+    initialized, isLoggedIn, email, accessToken,
   } = useAuth();
 
-  console.log('outside inited', initialized);
-  console.log('outside loggedin', isLoggedIn);
   useEffect(() => {
     if (initialized) {
       if (isLoggedIn && email) {
-        const client = apolloClient(getAccessToken());
+        const client = apolloClient(accessToken);
 
         client
           .query({ query: GET_VIEWER, variables: { email } })

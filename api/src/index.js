@@ -2,8 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
-// import expressJwt from 'express-jwt';
-// import jwksRsa from 'jwks-rsa';
 import Keycloak from 'keycloak-connect';
 import { KeycloakContext } from 'keycloak-connect-graphql';
 import neo4jDriver from './db/neo4jDriver';
@@ -31,18 +29,6 @@ const keycloak = new Keycloak({}, {
 });
 
 app.use('/graphql', keycloak.middleware());
-
-// app.use(expressJwt({
-//   credentialsRequired: false,
-//   // Dynamically provide a signing key based on the kid in the header
-//   // and the singing keys provided by the JWKS endpoint
-//   secret: jwksRsa.expressJwtSecret({
-//     cache: true,
-//     rateLimit: true,
-//     jwksRequestsPerMinute: 5,
-//     jwksUri: 'https://platoproject.eu.auth0.com/.well-known/jwks.json',
-//   }),
-// }));
 
 const server = new ApolloServer({
   schema,
