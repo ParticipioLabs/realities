@@ -24,8 +24,11 @@ const StyledNavbarBrand = styled(NavbarBrand)`
 
 const RealitiesNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, login, logout } = useAuth();
+  const {
+    isLoggedIn, login, logout, initialized,
+  } = useAuth();
 
+  console.log('initialized', initialized);
   console.log('navbar isloggedin', isLoggedIn);
 
   return (
@@ -45,7 +48,7 @@ const RealitiesNavbar = () => {
           <NavItem>
             <NavLink tag={Link} to="/about">About</NavLink>
           </NavItem>
-          { isLoggedIn ? (
+          { initialized && isLoggedIn ? (
             <UncontrolledDropdown nav>
               <DropdownToggle nav caret>
                 <ViewerName />

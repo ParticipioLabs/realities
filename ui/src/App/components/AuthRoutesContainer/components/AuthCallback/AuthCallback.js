@@ -25,12 +25,16 @@ const CREATE_VIEWER = gql`
 `;
 
 const AuthCallback = () => {
-  const auth = useAuth();
+  const {
+    initialized, isLoggedIn, getEmail, getAccessToken,
+  } = useAuth();
 
+  console.log('outside inited', initialized);
+  console.log('outside loggedin', isLoggedIn);
   useEffect(() => {
-    if (auth.initialized && auth.isLoggedIn) {
-      const client = apolloClient(auth.getAccessToken());
-      const email = auth.getEmail();
+    if (initialized && isLoggedIn) {
+      const client = apolloClient(getAccessToken());
+      const email = getEmail();
 
       client
         .query({ query: GET_VIEWER, variables: { email } })
@@ -46,11 +50,19 @@ const AuthCallback = () => {
         })
         .catch(err => console.log(err));
     }
-  }, [auth.initialized, auth.isLoggedIn]);
+  });
 
   return (
     <div>
-      <div>{auth.initialized ? 'inited' : 'NOT inited'}</div>
+      <div>
+        {(() => {
+          console.log('inrender inited', initialized);
+          if (initialized) {
+            return 'inited';
+          }
+          return 'NOT';
+        })()}
+      </div>
       <Loader
         options={{
           color: '#aaa',

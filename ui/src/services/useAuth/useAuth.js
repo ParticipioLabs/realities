@@ -1,5 +1,5 @@
 // import Auth0 from 'auth0-js';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 // import store from 'store';
 import history from '@/services/history';
@@ -22,7 +22,7 @@ function fireHandlers() {
 export default function useAuth() {
   const { keycloak, initialized } = useKeycloak();
 
-  const [isLoggedIn/* , setIsLoggedIn */] = useState(keycloak.authenticated);
+  // const [isLoggedIn/* , setIsLoggedIn */] = useState(keycloak.authenticated);
 
   // TODO: doesn't seem like any of the properties of `keycloak` are actually
   // reactive. so set up some system where we turn e.g. isLoggedIn into a useState
@@ -62,10 +62,10 @@ export default function useAuth() {
       fireHandlers();
       history.push('/');
     },
-    // isLoggedIn:
+    isLoggedIn:
     //   // !!store.get('auth')
-    //   keycloak.authenticated,
-    isLoggedIn,
+      keycloak.authenticated,
+    // isLoggedIn,
     getAccessToken: () =>
       keycloak.token,
     // const storedAuth = store.get('auth') || {};
