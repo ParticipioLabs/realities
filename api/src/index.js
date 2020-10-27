@@ -20,10 +20,10 @@ if (!NODE_ENV || NODE_ENV.includes('dev')) {
 }
 
 const keycloak = new Keycloak({}, {
-  realm: 'plato',
-  'auth-server-url': 'https://auth.platoproject.org/auth/',
+  realm: process.env.KEYCLOAK_REALM,
+  'auth-server-url': process.env.KEYCLOAK_SERVER_URL,
   'ssl-required': 'external',
-  resource: 'realities',
+  resource: process.env.KEYCLOAK_CLIENT,
   'public-client': true,
   'confidential-port': 0,
 });

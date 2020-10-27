@@ -7,12 +7,12 @@ import apolloClient from '@/services/apolloClient';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
 
 const keycloak = Keycloak({
-  realm: 'plato',
-  url: 'https://auth.platoproject.org/auth/',
+  realm: process.env.REACT_APP_KEYCLOAK_REALM,
+  url: process.env.REACT_APP_KEYCLOAK_SERVER_URL,
   'ssl-required': 'external',
   'public-client': true,
   'confidential-port': 0,
-  clientId: 'realities',
+  clientId: process.env.REACT_APP_KEYCLOAK_CLIENT,
 });
 
 // const eventLogger = (event, error) => {
