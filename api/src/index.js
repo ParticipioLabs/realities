@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
-import expressJwt from 'express-jwt';
-import jwksRsa from 'jwks-rsa';
+import Keycloak from 'keycloak-connect';
+import { KeycloakContext } from 'keycloak-connect-graphql';
 import neo4jDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
@@ -19,36 +19,32 @@ if (!NODE_ENV || NODE_ENV.includes('dev')) {
   app.use(cors());
 }
 
-app.use(expressJwt({
-  credentialsRequired: false,
-  // Dynamically provide a signing key based on the kid in the header
-  // and the singing keys provided by the JWKS endpoint
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: 'https://platoproject.eu.auth0.com/.well-known/jwks.json',
-  }),
-}));
+const keycloak = new Keycloak({}, {
+  realm: process.env.KEYCLOAK_REALM,
+  'auth-server-url': process.env.KEYCLOAK_SERVER_URL,
+  'ssl-required': 'external',
+  resource: process.env.KEYCLOAK_CLIENT,
+  'public-client': true,
+  'confidential-port': 0,
+});
 
-function getUser(user) {
-  if (!user) return null;
-  return Object.assign(
-    {},
-    user,
-    {
-      email: user['https://realities.platoproject.org/email'],
-      role: user['https://realities.platoproject.org/role'],
-    },
-  );
-}
+app.use('/graphql', keycloak.middleware());
 
 const server = new ApolloServer({
   schema,
-  context: async ({ req }) => ({
-    user: getUser(req && req.user),
-    driver: neo4jDriver,
-  }),
+  context: async ({ req }) => {
+    const kauth = new KeycloakContext({ req });
+
+    return {
+      kauth,
+      user: {
+        email: kauth.accessToken && kauth.accessToken.content.email,
+        role: 'user',
+        // TODO: put the user's tenantId here
+      },
+      driver: neo4jDriver,
+    };
+  },
   tracing: true,
 });
 server.applyMiddleware({ app, path: '/graphql' });

@@ -1,8 +1,8 @@
 import { skip, combineResolvers } from 'graphql-resolvers';
 
 // eslint-disable-next-line arrow-body-style
-export const isAuthenticated = (obj, args, { user }) => {
-  return (user && user.role) ? skip : new Error("User isn't authenticated");
+export const isAuthenticated = (obj, args, { kauth }) => {
+  return kauth.isAuthenticated() ? skip : new Error("User isn't authenticated");
 };
 
 export const isAdmin = combineResolvers(

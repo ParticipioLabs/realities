@@ -1,12 +1,46 @@
 import React from 'react';
+import Keycloak from 'keycloak-js';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
+import useAuth from '@/services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from '@/services/apolloClient';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
 
+const keycloak = Keycloak({
+  realm: process.env.REACT_APP_KEYCLOAK_REALM,
+  url: process.env.REACT_APP_KEYCLOAK_SERVER_URL,
+  'ssl-required': 'external',
+  'public-client': true,
+  'confidential-port': 0,
+  clientId: process.env.REACT_APP_KEYCLOAK_CLIENT,
+});
+
+// const eventLogger = (event, error) => {
+//   console.log('onKeycloakEvent', event, error);
+// };
+
+const ApolloSetup = () => {
+  const { accessToken } = useAuth();
+
+  return (
+    <ApolloProvider client={apolloClient(accessToken)}>
+      <AuthRoutesContainer />
+    </ApolloProvider>
+  );
+};
+
 const App = () => (
-  <ApolloProvider client={apolloClient}>
-    <AuthRoutesContainer />
-  </ApolloProvider>
+  <ReactKeycloakProvider
+    authClient={keycloak}
+    // onEvent={eventLogger}
+    initOptions={{
+      // https://www.keycloak.org/docs/latest/securing_apps/index.html#_modern_browsers
+      silentCheckSsoFallback: false,
+      silentCheckSsoRedirectUri: process.env.REACT_APP_KEYCLOAK_CALLBACK_URL,
+    }}
+  >
+    <ApolloSetup />
+  </ReactKeycloakProvider>
 );
 
 export default App;

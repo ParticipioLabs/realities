@@ -8,7 +8,6 @@ import history from '@/services/history';
 import AuthCallback from './components/AuthCallback';
 import RoutesContainer from './components/RoutesContainer';
 
-
 const AuthRoutesContainer = () => (
   <Router history={history}>
     <Switch>

@@ -1,42 +1,12 @@
-import React, { Component } from 'react';
-import auth from '@/services/auth';
+import React from 'react';
+import useAuth from '@/services/useAuth';
 
 export default (WrappedComponent) => {
-  function getAuthProps() {
-    return {
-      login: auth.login,
-      logout: auth.logout,
-      isLoggedIn: auth.isLoggedIn(),
-      email: auth.getEmail(),
-    };
-  }
+  const EnhancedComponent = (props) => {
+    const auth = useAuth();
 
-  class EnhancedComponent extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        auth: getAuthProps(),
-      };
-    }
-
-    componentDidMount() {
-      auth.subscribe(this.handleChange);
-    }
-
-    componentWillUnmount() {
-      auth.unsubscribe(this.handleChange);
-    }
-
-    handleChange = () => {
-      this.setState({
-        auth: getAuthProps(),
-      });
-    }
-
-    render() {
-      return <WrappedComponent {...this.props} auth={this.state.auth} />;
-    }
-  }
+    return <WrappedComponent {...props} auth={auth} />;
+  };
 
   const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
   EnhancedComponent.displayName = `WithAuth(${wrappedComponentName})`;
