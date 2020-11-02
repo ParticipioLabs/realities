@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
+import { useEffect } from 'react';
+import { useAuth as useOidc } from 'oidc-react';
 
 export default function useAuth() {
-  const { keycloak, initialized } = useKeycloak();
-  const [email, setEmail] = useState('');
+  const auth = useOidc();
+
+  // const [email, setEmail] = useState('');
+
+  console.log('oidc', auth);
+  console.log('session state', auth.session_state);
 
   useEffect(() => {
-    setEmail(keycloak.tokenParsed && keycloak.tokenParsed.email);
+    // setEmail('test@test.com');
+    // setEmail(keycloak.tokenParsed && keycloak.tokenParsed.email);
   });
 
   // TODO: figure out the reactivity here
@@ -14,20 +19,22 @@ export default function useAuth() {
 
   return {
     login: () => {
-      keycloak.login({
-        redirectUri: process.env.REACT_APP_KEYCLOAK_CALLBACK_URL,
-      });
+      auth.signIn();
+      // keycloak.login({
+      //   redirectUri: process.env.REACT_APP_KEYCLOAK_CALLBACK_URL,
+      // });
     },
     logout: () => {
-      keycloak.logout({
-        redirectUri: process.env.REACT_APP_KEYCLOAK_CALLBACK_URL,
-      });
+      auth.signOut();
+      // keycloak.logout({
+      //   redirectUri: process.env.REACT_APP_KEYCLOAK_CALLBACK_URL,
+      // });
     },
-    isLoggedIn:
-      keycloak.authenticated,
-    accessToken:
-      keycloak.token,
-    email,
-    initialized,
+    isLoggedIn: auth.userData !== null,
+    // keycloak.authenticated,
+    accessToken: auth.userData && auth.userData.access_token,
+    // keycloak.token,
+    email: auth.userData && auth.userData.profile.email,
+    // initialized,
   };
 }
