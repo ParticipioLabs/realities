@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import colors from '@/styles/colors';
-import RealizersMissingIcon from '@/components/RealizersMissingIcon';
+import colors from 'styles/colors';
+import RealizersMissingIcon from 'components/RealizersMissingIcon';
 import _ from 'lodash';
 
 const ResponsibilitiesListGroup = styled(ListGroup)`
@@ -71,7 +71,7 @@ class ResponsibilitiesList extends Component {
                 {responsibility.title}
                 {renderMissingRealizerIcon(responsibility)}
               </ResponsibilitiesListGroupHeader>
-          ))}
+            ))}
           {responsibilities.map(responsibility => (
             <ResponsibilitiesListGroupItem
               key={responsibility.nodeId}

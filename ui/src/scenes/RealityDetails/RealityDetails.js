@@ -5,7 +5,7 @@ import {
   Container,
   Row,
 } from 'reactstrap';
-import Search from '@/components/Search';
+import Search from 'components/Search';
 import FullscreenDetailViewContainer from './components/FullscreenDetailViewContainer';
 
 const SearchRow = styled(Row)`

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { gql } from '@apollo/client';
 import Loader from 'react-loader';
-import useAuth from '@/services/useAuth';
-import apolloClient from '@/services/apolloClient';
-import history from '@/services/history';
+import useAuth from 'services/useAuth';
+import apolloClient from 'services/apolloClient';
+import history from 'services/history';
 
 const GET_VIEWER = gql`
   query AuthCallback_person($email: String!) {

@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
 import _ from 'lodash';
 import { withRouter, Redirect } from 'react-router-dom';
-import { GET_NEEDS, SET_CACHE } from '@/services/queries';
+import { GET_NEEDS, SET_CACHE } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
   REALITIES_UPDATE_SUBSCRIPTION,
-} from '@/services/subscriptions';
-import withAuth from '@/components/withAuth';
-import ListHeader from '@/components/ListHeader';
-import colors from '@/styles/colors';
-import WrappedLoader from '@/components/WrappedLoader';
+} from 'services/subscriptions';
+import withAuth from 'components/withAuth';
+import ListHeader from 'components/ListHeader';
+import colors from 'styles/colors';
+import WrappedLoader from 'components/WrappedLoader';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 
@@ -38,14 +38,14 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => {
         color={colors.need}
         showButton={auth.isLoggedIn}
         onButtonClick={() =>
-              client.writeQuery({
-                query: SET_CACHE,
-                data: {
-                  showCreateNeed: !localData.showCreateNeed,
-                  showCreateResponsibility: false,
-                },
-              })
-            }
+          client.writeQuery({
+            query: SET_CACHE,
+            data: {
+              showCreateNeed: !localData.showCreateNeed,
+              showCreateResponsibility: false,
+            },
+          })
+        }
       />
       {localData.showCreateNeed && <CreateNeed />}
       {(() => {

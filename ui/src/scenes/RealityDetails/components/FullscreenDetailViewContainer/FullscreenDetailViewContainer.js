@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import withAuth from '@/components/withAuth';
-import WrappedLoader from '@/components/WrappedLoader';
-import { SET_CACHE } from '@/services/queries';
+import withAuth from 'components/withAuth';
+import WrappedLoader from 'components/WrappedLoader';
+import { SET_CACHE } from 'services/queries';
 import FullscreenDetailView from './components/FullscreenDetailView';
 
 const createDetailViewQuery = nodeType => gql`
@@ -79,11 +79,11 @@ const FullscreenDetailViewContainer = withAuth(withRouter(({
       nodeId: match.params.needId,
     },
   } : {
-    query: GET_RESPONSIBILITY,
-    variables: {
-      nodeId: match.params.responsibilityId,
-    },
-  };
+      query: GET_RESPONSIBILITY,
+      variables: {
+        nodeId: match.params.responsibilityId,
+      },
+    };
 
   const {
     loading, error, data, client,

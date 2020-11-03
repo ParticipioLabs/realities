@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import TypeBadge from '@/components/TypeBadge';
+import TypeBadge from 'components/TypeBadge';
 import RemoveDependency from './components/RemoveDependency';
 
 const StyledListGroupItem = styled(ListGroupItem)`
@@ -23,9 +23,9 @@ const Dependencies = ({ dependencies, showRemove }) => (
         __typename,
         nodeId,
         title,
-        },
+      },
       onClick,
-      }) => (
+    }) => (
         <StyledListGroupItem
           key={nodeId}
           tag="div"
@@ -42,7 +42,7 @@ const Dependencies = ({ dependencies, showRemove }) => (
             </RemoveWrapper>
           )}
         </StyledListGroupItem>
-    ))}
+      ))}
   </ListGroup>
 );
 

@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { gql, useQuery } from '@apollo/client';
-import LocalGraph from '@/components/LocalGraph';
-import WrappedLoader from '@/components/WrappedLoader';
+import LocalGraph from 'components/LocalGraph';
+import WrappedLoader from 'components/WrappedLoader';
 
 const CardSection = styled.div`
   margin-bottom: 1rem;

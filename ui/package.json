@@ -4,13 +4,12 @@
   "description": "A frontend for tribal decentralised organisations.",
   "homepage": "",
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "better-npm-run build",
-    "test": "node scripts/test.js --env=jsdom"
+    "start": "react-scripts start",
+    "build": "better-npm-run build"
   },
   "betterScripts": {
     "build": {
-      "command": "node scripts/build.js",
+      "command": "react-scripts build",
       "env": {
         "NODE_ENV": "production"
       }
@@ -22,9 +21,6 @@
     "auth0-js": "^8.12.1",
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
-    "babel-eslint": "^8.0.3",
-    "babel-jest": "20.0.3",
-    "babel-loader": "7.1.2",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-react-app": "^3.1.0",
     "babel-runtime": "6.26.0",
@@ -35,7 +31,6 @@
     "css-loader": "^0.28.7",
     "dotenv": "4.0.0",
     "downshift": "6.0.6",
-    "eslint": "4.10.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-loader": "1.9.0",
     "eslint-plugin-flowtype": "2.39.1",
@@ -49,7 +44,6 @@
     "graphql": "15.3.0",
     "history": "^4.7.2",
     "html-webpack-plugin": "2.29.0",
-    "jest": "20.0.4",
     "jquery": "^3.2.1",
     "keycloak-js": "^9.0.0",
     "lodash": "^4.17.4",
@@ -71,6 +65,7 @@
     "react-loader": "2.4.7",
     "react-markdown": "4.3.1",
     "react-router-dom": "5.2.0",
+    "react-scripts": "^3.0.0",
     "react-tag-input": "^4.7.2",
     "reactstrap": "8.5.1",
     "sass-loader": "^6.0.6",
@@ -80,8 +75,7 @@
     "subscriptions-transport-ws": "^0.9.15",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.6.2",
-    "webpack": "^3.8.1",
-    "webpack-dev-server": "2.9.4",
+    "webpack": "4.42.0",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3",
     "yup": "^0.26.6"
@@ -127,5 +121,11 @@
     "plugins": [
       "transform-decorators-legacy"
     ]
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

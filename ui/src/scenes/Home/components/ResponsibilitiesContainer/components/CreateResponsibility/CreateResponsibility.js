@@ -4,8 +4,8 @@ import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Formik } from 'formik';
-import { GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
-import ListForm from '@/components/ListForm';
+import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
+import ListForm from 'components/ListForm';
 
 const CREATE_RESPONSIBILITY = gql`
   mutation CreateResponsibility_createResponsibilityMutation($title: String!, $needId: ID!) {
@@ -74,16 +74,16 @@ const CreateResponsibility = withRouter(({ match, history }) => {
         handleSubmit,
         isSubmitting,
       }) => (
-        <ListForm
-          inputName="title"
-          placeholder="Enter a title for the new responsibility..."
-          value={values.title}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
-          handleSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
-      )}
+          <ListForm
+            inputName="title"
+            placeholder="Enter a title for the new responsibility..."
+            value={values.title}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        )}
     </Formik>
   );
 });

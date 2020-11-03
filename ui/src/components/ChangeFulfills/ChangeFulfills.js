@@ -5,9 +5,9 @@ import styled from 'styled-components';
 import { ListGroupItem, Button, FormGroup, Label } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
 
-import { GET_RESPONSIBILITIES } from '@/services/queries';
-import TypeaheadInput from '@/components/TypeaheadInput';
-import TypeBadge from '@/components/TypeBadge';
+import { GET_RESPONSIBILITIES } from 'services/queries';
+import TypeaheadInput from 'components/TypeaheadInput';
+import TypeBadge from 'components/TypeBadge';
 
 const StyledFormGroup = styled(FormGroup)`
   margin-bottom: 2em;
@@ -93,23 +93,23 @@ const ChangeFulfills = ({ node, history }) => {
             }}
           />
         ) : (
-          <ListGroupItem onClick={() => history.push(`/${node.fulfills.nodeId}`)} action>
-            <TypeBadge nodeType={node.fulfills.__typename} />
-            {node.fulfills.title}
-            <ButtonWrapper>
-              <Button
-                size="sm"
-                color="primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleEdit();
-                }}
-              >
-                Change
+            <ListGroupItem onClick={() => history.push(`/${node.fulfills.nodeId}`)} action>
+              <TypeBadge nodeType={node.fulfills.__typename} />
+              {node.fulfills.title}
+              <ButtonWrapper>
+                <Button
+                  size="sm"
+                  color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleEdit();
+                  }}
+                >
+                  Change
               </Button>
-            </ButtonWrapper>
-          </ListGroupItem>
-        )}
+              </ButtonWrapper>
+            </ListGroupItem>
+          )}
       </div>
     </StyledFormGroup>
   );

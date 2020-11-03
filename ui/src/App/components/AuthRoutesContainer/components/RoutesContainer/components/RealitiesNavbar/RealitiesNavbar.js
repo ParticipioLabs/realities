@@ -14,9 +14,9 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import useAuth from '@/services/useAuth';
-import Search from '@/components/Search';
-import ViewerName from '@/components/ViewerName';
+import useAuth from 'services/useAuth';
+import Search from 'components/Search';
+import ViewerName from 'components/ViewerName';
 
 const StyledNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
@@ -31,7 +31,7 @@ const RealitiesNavbar = () => {
   return (
     <Navbar color="faded" light expand="md">
       <StyledNavbarBrand tag={Link} to="/">
-          Realities
+        Realities
       </StyledNavbarBrand>
       <div className="flex-grow-1 mr-3 d-none d-md-block ">
         <Search />
@@ -45,7 +45,7 @@ const RealitiesNavbar = () => {
           <NavItem>
             <NavLink tag={Link} to="/about">About</NavLink>
           </NavItem>
-          { initialized && isLoggedIn ? (
+          {initialized && isLoggedIn ? (
             <UncontrolledDropdown nav>
               <DropdownToggle nav caret>
                 <ViewerName />
@@ -59,7 +59,7 @@ const RealitiesNavbar = () => {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
-            ) : (
+          ) : (
               <NavItem>
                 <NavLink onClick={login} href="#">Login</NavLink>
               </NavItem>

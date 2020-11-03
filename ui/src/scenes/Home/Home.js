@@ -5,7 +5,7 @@ import {
   Container,
   Row,
 } from 'reactstrap';
-import Search from '@/components/Search';
+import Search from 'components/Search';
 import NeedsContainer from './components/NeedsContainer';
 import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 import DetailViewContainer from './components/DetailViewContainer';

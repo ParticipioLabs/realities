@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import TypeBadge from '@/components/TypeBadge';
+import TypeBadge from 'components/TypeBadge';
 import RemoveDeliberation from './components/RemoveDeliberation';
 
 const StyledListGroup = styled(ListGroup)`
@@ -33,8 +33,8 @@ const DeliberationList = ({ deliberations, showRemove }) => {
           nodeId,
           title,
           url,
-          },
-        }) => (
+        },
+      }) => (
           <StyledListGroupItem
             key={nodeId}
             tag="div"

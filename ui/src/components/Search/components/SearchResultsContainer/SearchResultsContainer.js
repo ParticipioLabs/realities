@@ -4,8 +4,8 @@ import { gql, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import _ from 'lodash';
 import { Card, CardBody } from 'reactstrap';
-import withDebouncedProp from '@/components/withDebouncedProp';
-import WrappedLoader from '@/components/WrappedLoader';
+import withDebouncedProp from 'components/withDebouncedProp';
+import WrappedLoader from 'components/WrappedLoader';
 import SearchResults from './components/SearchResults';
 
 const GET_SEARCH = gql`
@@ -88,8 +88,8 @@ SearchResultsContainer.propTypes = {
 
 SearchResultsContainer.defaultProps = {
   searchTerm: '',
-  getMenuProps: () => {},
-  getItemProps: () => {},
+  getMenuProps: () => { },
+  getItemProps: () => { },
   highlightedIndex: null,
 };
 
