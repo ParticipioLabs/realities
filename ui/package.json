@@ -47,7 +47,6 @@
     "react-tag-input": "^4.7.2",
     "reactstrap": "8.5.1",
     "sass-loader": "^6.0.6",
-    "store": "^2.0.12",
     "styled-components": "5.2.0",
     "subscriptions-transport-ws": "^0.9.15",
     "webpack": "4.42.0",
