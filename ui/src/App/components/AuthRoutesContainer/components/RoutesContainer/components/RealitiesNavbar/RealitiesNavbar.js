@@ -25,7 +25,7 @@ const StyledNavbarBrand = styled(NavbarBrand)`
 const RealitiesNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {
-    isLoggedIn, login, logout, initialized,
+    isLoggedIn, login, logout,
   } = useAuth();
 
   return (
@@ -45,7 +45,7 @@ const RealitiesNavbar = () => {
           <NavItem>
             <NavLink tag={Link} to="/about">About</NavLink>
           </NavItem>
-          {initialized && isLoggedIn ? (
+          { isLoggedIn ? (
             <UncontrolledDropdown nav>
               <DropdownToggle nav caret>
                 <ViewerName />
@@ -60,11 +60,10 @@ const RealitiesNavbar = () => {
               </DropdownMenu>
             </UncontrolledDropdown>
           ) : (
-              <NavItem>
-                <NavLink onClick={login} href="#">Login</NavLink>
-              </NavItem>
-            )
-          }
+            <NavItem>
+              <NavLink onClick={login} href="#">Login</NavLink>
+            </NavItem>
+          )}
         </Nav>
       </Collapse>
     </Navbar>

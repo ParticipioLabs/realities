@@ -26,31 +26,26 @@ const CREATE_VIEWER = gql`
 
 const AuthCallback = () => {
   const {
-    initialized, isLoggedIn, email, accessToken,
+    isLoggedIn, email, accessToken,
   } = useAuth();
 
   useEffect(() => {
-    if (initialized) {
-      if (isLoggedIn && email) {
-        const client = apolloClient(accessToken);
+    if (isLoggedIn && email) {
+      const client = apolloClient(accessToken);
 
-        client
-          .query({ query: GET_VIEWER, variables: { email } })
-          .then(({ data }) => {
-            if (data.person) {
-              history.replace('/');
-            } else {
-              client
-                .mutate({ mutation: CREATE_VIEWER })
-                .then(() => history.replace('/profile'))
-                .catch(err => console.log(err));
-            }
-          })
-          .catch(err => console.log(err));
-      } else {
-        // just logged out
-        history.replace('/');
-      }
+      client
+        .query({ query: GET_VIEWER, variables: { email } })
+        .then(({ data }) => {
+          if (data.person) {
+            history.replace('/');
+          } else {
+            client
+              .mutate({ mutation: CREATE_VIEWER })
+              .then(() => history.replace('/profile'))
+              .catch(err => console.log(err));
+          }
+        })
+        .catch(err => console.log(err));
     }
   });
 
