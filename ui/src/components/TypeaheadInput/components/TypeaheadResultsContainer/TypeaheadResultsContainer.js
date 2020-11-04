@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useQuery } from '@apollo/client';
 import { Card, CardBody } from 'reactstrap';
-import withDebouncedProp from '@/components/withDebouncedProp';
-import WrappedLoader from '@/components/WrappedLoader';
+import withDebouncedProp from 'components/withDebouncedProp';
+import WrappedLoader from 'components/WrappedLoader';
 import TypeaheadResults from './components/TypeaheadResults';
 
 const Wrapper = styled(Card)`
@@ -64,8 +64,8 @@ TypeaheadResultsContainer.propTypes = {
 
 TypeaheadResultsContainer.defaultProps = {
   inputValue: '',
-  getMenuProps: () => {},
-  getItemProps: () => {},
+  getMenuProps: () => { },
+  getItemProps: () => { },
   highlightedIndex: null,
   itemToResult: () => '',
   searchQuery: {},

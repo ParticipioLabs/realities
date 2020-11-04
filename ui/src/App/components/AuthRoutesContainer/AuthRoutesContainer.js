@@ -4,7 +4,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import history from '@/services/history';
+import history from 'services/history';
 import AuthCallback from './components/AuthCallback';
 import RoutesContainer from './components/RoutesContainer';
 

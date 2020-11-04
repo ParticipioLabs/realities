@@ -7,9 +7,9 @@ import {
   CardTitle,
 } from 'reactstrap';
 import ReactMarkdown from 'react-markdown';
-import Dependencies from '@/components/Dependencies';
-import RealizersMissingIcon from '@/components/RealizersMissingIcon';
-import Deliberations from '@/components/Deliberations';
+import Dependencies from 'components/Dependencies';
+import RealizersMissingIcon from 'components/RealizersMissingIcon';
+import Deliberations from 'components/Deliberations';
 
 const LabelSpan = styled.span`
   font-weight: bold;

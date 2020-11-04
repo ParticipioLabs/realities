@@ -7,7 +7,7 @@ export default function useAuth() {
 
   useEffect(() => {
     setEmail(keycloak.tokenParsed && keycloak.tokenParsed.email);
-  });
+  }, [keycloak.tokenParsed]);
 
   // TODO: figure out the reactivity here
   // https://github.com/react-keycloak/react-keycloak/issues/116

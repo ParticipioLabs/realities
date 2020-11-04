@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import colors from '@/styles/colors';
+import colors from 'styles/colors';
 
 const colorCollection = {
   Need: colors.need,

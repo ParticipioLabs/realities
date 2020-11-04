@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
-import graphUtils from '@/services/graphUtils';
+import graphUtils from 'services/graphUtils';
 import { gql, useQuery } from '@apollo/client';
 import {
   Card,
@@ -11,7 +11,7 @@ import {
   Col,
 } from 'reactstrap';
 import VisGraph from 'react-graph-vis';
-import WrappedLoader from '@/components/WrappedLoader';
+import WrappedLoader from 'components/WrappedLoader';
 import Controls from './components/Controls';
 import SelectedNode from './components/SelectedNode';
 

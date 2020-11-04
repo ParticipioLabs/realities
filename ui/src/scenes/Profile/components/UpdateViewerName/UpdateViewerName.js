@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import history from '@/services/history';
-import withAuth from '@/components/withAuth';
-import WrappedLoader from '@/components/WrappedLoader';
+import history from 'services/history';
+import withAuth from 'components/withAuth';
+import WrappedLoader from 'components/WrappedLoader';
 import UpdateViewerNameForm from './components/UpdateViewerNameForm';
 
 const GET_VIEWER_NAME = gql`
@@ -58,16 +58,16 @@ const UpdateViewerName = withAuth(({ auth }) => {
         handleSubmit,
         isSubmitting,
       }) => (
-        <UpdateViewerNameForm
-          inputName="name"
-          placeholder="Your name..."
-          value={values.name}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
-          handleSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
-      )}
+          <UpdateViewerNameForm
+            inputName="name"
+            placeholder="Your name..."
+            value={values.name}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        )}
     </Formik>
   );
 });

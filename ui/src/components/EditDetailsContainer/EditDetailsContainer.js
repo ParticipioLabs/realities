@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import { SET_CACHE } from '@/services/queries';
+import { SET_CACHE } from 'services/queries';
 import EditDetailsForm from './components/EditDetailsForm';
 
 const createEditDetailsMutation = nodeType => gql`
@@ -96,23 +96,23 @@ const EditDetailsContainer = ({ node }) => {
         setFieldValue,
         isSubmitting,
       }) => (
-        <EditDetailsForm
-          values={values}
-          errors={errors}
-          touched={touched}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
-          handleSubmit={handleSubmit}
-          setFieldValue={setFieldValue}
-          isSubmitting={isSubmitting}
-          cancel={() => client.writeQuery({
-            query: SET_CACHE,
-            data: {
-              showDetailedEditView: false,
-            },
-          })}
-        />
-      )}
+          <EditDetailsForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            handleSubmit={handleSubmit}
+            setFieldValue={setFieldValue}
+            isSubmitting={isSubmitting}
+            cancel={() => client.writeQuery({
+              query: SET_CACHE,
+              data: {
+                showDetailedEditView: false,
+              },
+            })}
+          />
+        )}
     </Formik>
   );
 };

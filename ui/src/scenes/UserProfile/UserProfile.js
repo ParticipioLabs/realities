@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Container, Row, Col } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
-import LocalGraph from '@/components/LocalGraph';
-import WrappedLoader from '@/components/WrappedLoader';
+import LocalGraph from 'components/LocalGraph';
+import WrappedLoader from 'components/WrappedLoader';
 
 const GET_PERSON = gql`
   query UserProfile_getPerson($nodeId: ID!) {

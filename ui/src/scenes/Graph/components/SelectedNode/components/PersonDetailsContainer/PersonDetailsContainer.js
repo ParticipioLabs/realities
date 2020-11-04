@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
-import WrappedLoader from '@/components/WrappedLoader';
+import WrappedLoader from 'components/WrappedLoader';
 import PersonDetails from './components/PersonDetails';
 
 const GET_PERSON = gql`

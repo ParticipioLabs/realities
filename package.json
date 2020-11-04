@@ -20,7 +20,6 @@
     "build": "npm run build --prefix api && npm run build --prefix ui"
   },
   "dependencies": {
-    "babel-eslint": "^8.0.3",
     "concurrently": "^3.5.1",
     "normalize-url": "^4.0.0"
   }

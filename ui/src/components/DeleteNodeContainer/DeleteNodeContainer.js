@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { GET_NEEDS, GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
+import { GET_NEEDS, GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 
 const SOFT_DELETE_NEED = gql`

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import { FaEdit, FaTimesCircle, FaExpand } from 'react-icons/fa';
-import colors from '@/styles/colors';
-import IconButton from '@/components/IconButton';
-import Dependencies from '@/components/Dependencies';
-import Deliberations from '@/components/Deliberations';
-import EditDetailsContainer from '@/components/EditDetailsContainer';
-import DeleteNodeContainer from '@/components/DeleteNodeContainer';
-import ChangeFulfills from '@/components/ChangeFulfills';
+import colors from 'styles/colors';
+import IconButton from 'components/IconButton';
+import Dependencies from 'components/Dependencies';
+import Deliberations from 'components/Deliberations';
+import EditDetailsContainer from 'components/EditDetailsContainer';
+import DeleteNodeContainer from 'components/DeleteNodeContainer';
+import ChangeFulfills from 'components/ChangeFulfills';
 import DetailViewBody from './components/DetailViewBody';
 
 const DetailViewCardHeader = styled(CardHeader)`
@@ -44,56 +44,56 @@ const DetailView = ({
   onClickCancel,
   onClickFullscreen,
 }) => (
-  <Card>
-    <DetailViewCardHeader
-      color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
-    >
-      <HeaderButton onClick={onClickFullscreen}>
-        <FaExpand />
-      </HeaderButton>
-      <HeaderText>
-        {node.__typename}
-      </HeaderText>
-      {isLoggedIn && (
-        showEdit ? (
-          <HeaderButton onClick={onClickCancel}>
-            <FaTimesCircle />
-          </HeaderButton>
-        ) : (
-          <HeaderButton onClick={onClickEdit}>
-            <FaEdit />
-          </HeaderButton>
-        )
-      )}
-    </DetailViewCardHeader>
-    {showEdit ? (
-      <CardBody>
-        <EditDetailsContainer node={node} />
-        <Divider />
-        {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
-        <Deliberations
-          showAddRemove
-          nodeType={node.__typename}
-          nodeId={node.nodeId}
-          deliberations={node.deliberations}
-        />
-        <Dependencies
-          showAddRemove
-          nodeType={node.__typename}
-          nodeId={node.nodeId}
-          dependencies={[
-            ...(node.dependsOnNeeds || []),
-            ...(node.dependsOnResponsibilities || []),
-          ]}
-        />
-        <Divider />
-        <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
-      </CardBody>
-    ) : (
-      <DetailViewBody node={node} />
-    )}
-  </Card>
-);
+    <Card>
+      <DetailViewCardHeader
+        color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
+      >
+        <HeaderButton onClick={onClickFullscreen}>
+          <FaExpand />
+        </HeaderButton>
+        <HeaderText>
+          {node.__typename}
+        </HeaderText>
+        {isLoggedIn && (
+          showEdit ? (
+            <HeaderButton onClick={onClickCancel}>
+              <FaTimesCircle />
+            </HeaderButton>
+          ) : (
+              <HeaderButton onClick={onClickEdit}>
+                <FaEdit />
+              </HeaderButton>
+            )
+        )}
+      </DetailViewCardHeader>
+      {showEdit ? (
+        <CardBody>
+          <EditDetailsContainer node={node} />
+          <Divider />
+          {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
+          <Deliberations
+            showAddRemove
+            nodeType={node.__typename}
+            nodeId={node.nodeId}
+            deliberations={node.deliberations}
+          />
+          <Dependencies
+            showAddRemove
+            nodeType={node.__typename}
+            nodeId={node.nodeId}
+            dependencies={[
+              ...(node.dependsOnNeeds || []),
+              ...(node.dependsOnResponsibilities || []),
+            ]}
+          />
+          <Divider />
+          <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
+        </CardBody>
+      ) : (
+          <DetailViewBody node={node} />
+        )}
+    </Card>
+  );
 
 DetailView.propTypes = {
   node: PropTypes.shape({

@@ -1,8 +1,10 @@
 module.exports = {
-  'extends': 'airbnb',
+  'extends': [
+    "react-app",
+    "airbnb"
+  ],
   'env': {
     'browser': true,
-    'jest': true
   },
   'parser': 'babel-eslint',
   'rules': {

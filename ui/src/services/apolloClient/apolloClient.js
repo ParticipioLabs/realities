@@ -2,7 +2,7 @@ import { ApolloClient, ApolloLink, split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from '@apollo/client/cache';
-import { SET_CACHE } from '@/services/queries';
+import { SET_CACHE } from 'services/queries';
 import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
-import withAuth from '@/components/withAuth';
+import withAuth from 'components/withAuth';
 
 const GET_VIEWER_NAME = gql`
   query UpdateViewerName_person($email: String!) {
