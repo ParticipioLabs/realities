@@ -1,8 +1,8 @@
 import React from 'react';
 import { AuthProvider } from 'oidc-react';
-import useAuth from '@/services/useAuth';
+import useAuth from 'services/useAuth';
 import { ApolloProvider } from '@apollo/client';
-import apolloClient from '@/services/apolloClient';
+import apolloClient from 'services/apolloClient';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
 
 const ApolloSetup = () => {

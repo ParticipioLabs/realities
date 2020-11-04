@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
-import IconButton from '@/components/IconButton';
+import IconButton from 'components/IconButton';
 
 const StyledHeader = styled(Card)`
   background-color: ${props => props.color || '#999'};
@@ -25,17 +25,17 @@ const ListHeader = ({
   onButtonClick,
   color,
 }) => (
-  <StyledHeader color={color}>
-    <ListHeaderText>
-      {text}
-    </ListHeaderText>
-    { showButton &&
-      <IconButton onClick={onButtonClick}>
-        <FaPlus />
-      </IconButton>
-    }
-  </StyledHeader>
-);
+    <StyledHeader color={color}>
+      <ListHeaderText>
+        {text}
+      </ListHeaderText>
+      { showButton &&
+        <IconButton onClick={onButtonClick}>
+          <FaPlus />
+        </IconButton>
+      }
+    </StyledHeader>
+  );
 
 ListHeader.propTypes = {
   text: PropTypes.string,

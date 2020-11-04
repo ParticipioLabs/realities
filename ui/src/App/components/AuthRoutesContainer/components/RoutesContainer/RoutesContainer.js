@@ -4,13 +4,13 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import history from '@/services/history';
-import Home from '@/scenes/Home';
-import RealityDetails from '@/scenes/RealityDetails';
-import Graph from '@/scenes/Graph';
-import About from '@/scenes/About';
-import Profile from '@/scenes/Profile';
-import UserProfile from '@/scenes/UserProfile';
+import history from 'services/history';
+import Home from 'scenes/Home';
+import RealityDetails from 'scenes/RealityDetails';
+import Graph from 'scenes/Graph';
+import About from 'scenes/About';
+import Profile from 'scenes/Profile';
+import UserProfile from 'scenes/UserProfile';
 import RealitiesNavbar from './components/RealitiesNavbar';
 import RealitiesFooter from './components/RealitiesFooter';
 

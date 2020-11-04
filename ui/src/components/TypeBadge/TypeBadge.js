@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Badge } from 'reactstrap';
-import colors from '@/styles/colors';
+import colors from 'styles/colors';
 
 const StyledBadge = styled(Badge)`
   background-color: ${props => props.badgecolor};

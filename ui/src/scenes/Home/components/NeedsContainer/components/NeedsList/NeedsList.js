@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import colors from '@/styles/colors';
-import RealizersMissingIcon from '@/components/RealizersMissingIcon';
+import colors from 'styles/colors';
+import RealizersMissingIcon from 'components/RealizersMissingIcon';
 import _ from 'lodash';
 
 const NeedsListGroup = styled(ListGroup)`

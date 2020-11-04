@@ -4,8 +4,8 @@ import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
 import { Formik } from 'formik';
-import { GET_NEEDS, SET_CACHE } from '@/services/queries';
-import ListForm from '@/components/ListForm';
+import { GET_NEEDS, SET_CACHE } from 'services/queries';
+import ListForm from 'components/ListForm';
 
 const CREATE_NEED = gql`
   mutation CreateNeed_createNeedMutation($title: String!) {
@@ -65,16 +65,16 @@ const CreateNeed = withRouter(({ history }) => {
         handleSubmit,
         isSubmitting,
       }) => (
-        <ListForm
-          inputName="title"
-          placeholder="Enter a title for the new need..."
-          value={values.title}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
-          handleSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
-      )}
+          <ListForm
+            inputName="title"
+            placeholder="Enter a title for the new need..."
+            value={values.title}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        )}
     </Formik>
   );
 });

@@ -8,7 +8,7 @@ import {
   Row,
   Col,
 } from 'reactstrap';
-import withAuth from '@/components/withAuth';
+import withAuth from 'components/withAuth';
 import UpdateViewerName from './components/UpdateViewerName';
 import UserGraph from './components/UserGraph';
 

@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import { FormGroup, Label } from 'reactstrap';
-import TypeaheadInput from '@/components/TypeaheadInput';
-import TypeBadge from '@/components/TypeBadge';
+import TypeaheadInput from 'components/TypeaheadInput';
+import TypeBadge from 'components/TypeBadge';
 
 const ADD_NEED_DEPENDS_ON_NEEDS = gql`
   mutation AddDependency_addNeedDependsOnNeedsMutation(

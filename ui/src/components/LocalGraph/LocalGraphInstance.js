@@ -8,8 +8,8 @@ import {
   PopoverBody,
   PopoverHeader,
 } from 'reactstrap';
-import graphUtils from '@/services/graphUtils';
-import WrappedLoader from '@/components/WrappedLoader';
+import graphUtils from 'services/graphUtils';
+import WrappedLoader from 'components/WrappedLoader';
 
 const NEED_FRAGMENT = gql`
   fragment LocalGraphNeedFields on Need {

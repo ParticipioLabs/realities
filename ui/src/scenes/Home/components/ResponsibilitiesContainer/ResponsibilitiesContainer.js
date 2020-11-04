@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { GET_RESPONSIBILITIES, SET_CACHE } from '@/services/queries';
+import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
   REALITIES_UPDATE_SUBSCRIPTION,
-} from '@/services/subscriptions';
-import withAuth from '@/components/withAuth';
-import ListHeader from '@/components/ListHeader';
-import colors from '@/styles/colors';
-import WrappedLoader from '@/components/WrappedLoader';
+} from 'services/subscriptions';
+import withAuth from 'components/withAuth';
+import ListHeader from 'components/ListHeader';
+import colors from 'styles/colors';
+import WrappedLoader from 'components/WrappedLoader';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 

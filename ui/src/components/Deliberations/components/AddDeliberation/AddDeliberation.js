@@ -6,7 +6,7 @@ import { FormGroup, Label } from 'reactstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { withRouter } from 'react-router-dom';
-import InfoForm from '@/components/InfoForm';
+import InfoForm from 'components/InfoForm';
 import { FaUnlink } from 'react-icons/fa';
 
 const ADD_REALITY_HAS_DELIBERATION = gql`
@@ -46,8 +46,8 @@ const AddDeliberation = withRouter(({ nodeId }) => {
         onSubmit={(values, { resetForm }) => {
           createDeliberation({ variables: { from: { nodeId }, to: { url: values.url } } })
             .then(() => {
-            resetForm();
-          });
+              resetForm();
+            });
         }}
       >
         {({
@@ -59,24 +59,24 @@ const AddDeliberation = withRouter(({ nodeId }) => {
           errors,
           touched,
         }) => (
-          <div>
-            <Label for="editDeliberationUrl">
-              Add a discussion reference {touched.url && errors.url &&
-                <InvalidUrlText>
-                  <FaUnlink /> {errors.url}
-                </InvalidUrlText>}
-            </Label>
-            <InfoForm
-              inputName="url"
-              placeholder="Enter a discussion URL..."
-              value={values.url}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-              handleSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-            />
-          </div>
-        )}
+            <div>
+              <Label for="editDeliberationUrl">
+                Add a discussion reference {touched.url && errors.url &&
+                  <InvalidUrlText>
+                    <FaUnlink /> {errors.url}
+                  </InvalidUrlText>}
+              </Label>
+              <InfoForm
+                inputName="url"
+                placeholder="Enter a discussion URL..."
+                value={values.url}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                handleSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+              />
+            </div>
+          )}
       </Formik>
     </FormGroup>
   );
