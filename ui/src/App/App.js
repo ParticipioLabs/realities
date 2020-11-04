@@ -21,6 +21,7 @@ const App = () => (
     clientId={process.env.REACT_APP_KEYCLOAK_CLIENT}
     redirectUri={process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}
     autoSignIn={false}
+    automaticSilentRenew
   >
     <ApolloSetup />
   </AuthProvider>
