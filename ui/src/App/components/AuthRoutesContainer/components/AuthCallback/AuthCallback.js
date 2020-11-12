@@ -30,6 +30,12 @@ const AuthCallback = () => {
   } = useAuth();
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('state') === null) {
+      // if that query param isn't there then the user likely just logged out
+      history.replace('/');
+    }
+
     if (isLoggedIn && email) {
       const client = apolloClient(accessToken);
 
@@ -42,10 +48,10 @@ const AuthCallback = () => {
             client
               .mutate({ mutation: CREATE_VIEWER })
               .then(() => history.replace('/profile'))
-              .catch(err => console.log(err));
+              .catch((err) => console.log(err));
           }
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     }
   });
 
