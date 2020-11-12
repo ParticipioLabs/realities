@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import axios from 'axios';
 import { createInfo } from '../graphql/connectors';
-import driver from '../db/neo4jDriver';
+import createDriver from '../db/neo4jDriver';
 
 // TODO: Check encoding, make sure it's UTF-8?
 const loomioApi = axios.create({
@@ -39,6 +39,8 @@ const loomio = async (resourceName, pathPrefix, fieldName, params) => {
 
   let resultPromises;
   try {
+    const driver = await createDriver();
+
     const response = await loomioApi.get(url, allParams);
     const objects = response.data[resourceName];
     resultPromises = objects.map((object) => {
