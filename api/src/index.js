@@ -4,9 +4,12 @@ import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import Keycloak from 'keycloak-connect';
 import { KeycloakContext } from 'keycloak-connect-graphql';
+import platoCore from 'plato-core';
 import neo4jDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
+
+const { db: { getConnection, getModels } } = platoCore;
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -34,13 +37,24 @@ const server = new ApolloServer({
   schema,
   context: async ({ req }) => {
     const kauth = new KeycloakContext({ req });
+    const coreDb = await getConnection(process.env.MONGO_URL);
+    const coreModels = getModels(coreDb);
+    const userId = kauth.accessToken && kauth.accessToken.content.sub;
+
+    // TODO: get the orgId that the user is viewing from one of the headers
+    const viewedOrgId = '5fae8532ef893e8126aa2443';
+
+    const orgMembership = await coreModels.OrganizationMembership.findOne({
+      keycloakId: userId,
+      organizationId: viewedOrgId,
+    });
 
     return {
       kauth,
       user: {
         email: kauth.accessToken && kauth.accessToken.content.email,
         role: 'user',
-        // TODO: put the user's tenantId here
+        orgId: orgMembership && orgMembership.organizationId,
       },
       driver: neo4jDriver,
     };
