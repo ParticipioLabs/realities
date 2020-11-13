@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Redirect,
   Router,
   Route,
   Switch,
@@ -19,12 +20,18 @@ const RoutesContainer = () => (
     <div>
       <RealitiesNavbar />
       <Switch>
-        <Route exact path="/graph" component={Graph} />
         <Route exact path="/about" component={About} />
-        <Route exact path="/profile" component={Profile} />
-        <Route exact path="/profile/:personId" component={UserProfile} />
-        <Route exact path="/reality/:needId?/:responsibilityId?" component={RealityDetails} />
-        <Route path="/:needId?/:responsibilityId?" component={Home} />
+        <Route exact path="/:orgSlug/graph" component={Graph} />
+        <Route exact path="/:orgSlug/profile" component={Profile} />
+        <Route exact path="/:orgSlug/profile/:personId" component={UserProfile} />
+        <Route exact path="/:orgSlug/reality/:needId?/:responsibilityId?" component={RealityDetails} />
+        <Route path="/:orgSlug/:needId?/:responsibilityId?" component={Home} />
+        <Route
+          path="/"
+          component={
+            <Redirect to={`/${process.env.REACT_APP_PLACEHOLDER_ORG_SLUG}`} />
+          }
+        />
       </Switch>
       <RealitiesFooter />
     </div>
