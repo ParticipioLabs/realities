@@ -54,8 +54,9 @@ const server = new ApolloServer({
       user: {
         email: kauth.accessToken && kauth.accessToken.content.email,
         role: 'user',
-        orgId: orgMembership && orgMembership.organizationId,
+        isMemberOfViewedOrg: (orgMembership && orgMembership.organizationId) === viewedOrgId,
       },
+      viewedOrgId,
       driver: neo4jDriver,
     };
   },
