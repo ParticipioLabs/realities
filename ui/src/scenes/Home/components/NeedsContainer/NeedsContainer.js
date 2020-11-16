@@ -1,15 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
 import _ from 'lodash';
-import { withRouter, Redirect } from 'react-router-dom';
+import { useParams, Redirect } from 'react-router-dom';
 import { GET_NEEDS, SET_CACHE } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
   REALITIES_UPDATE_SUBSCRIPTION,
 } from 'services/subscriptions';
-import withAuth from 'components/withAuth';
+import useAuth from 'services/useAuth';
 import ListHeader from 'components/ListHeader';
 import colors from 'styles/colors';
 import WrappedLoader from 'components/WrappedLoader';
@@ -22,7 +21,8 @@ const GET_SHOW_CREATE_NEED = gql`
   }
 `;
 
-const NeedsContainer = withAuth(withRouter(({ auth, match }) => {
+const NeedsContainer = () => {
+  const auth = useAuth();
   const { data: localData = {}, client } = useQuery(GET_SHOW_CREATE_NEED);
   const {
     subscribeToMore,
@@ -30,6 +30,7 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => {
     error,
     data,
   } = useQuery(GET_NEEDS);
+  const { needId, orgSlug } = useParams();
 
   return (
     <div>
@@ -51,14 +52,14 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => {
         if (error) return `Error! ${error.message}`;
 
         const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-        if (!_.find(data.needs, { nodeId: match.params.needId }) && firstNeedId) {
-          return <Redirect to={`/${firstNeedId}`} />;
+        if (!_.find(data.needs, { nodeId: needId }) && firstNeedId) {
+          return <Redirect to={`/${orgSlug}/${firstNeedId}`} />;
         }
 
         return (
           <NeedsList
             needs={data.needs}
-            selectedNeedId={match.params.needId}
+            selectedNeedId={needId}
             subscribeToNeedsEvents={() => {
               subscribeToMore({
                 document: REALITIES_CREATE_SUBSCRIPTION,
@@ -107,28 +108,6 @@ const NeedsContainer = withAuth(withRouter(({ auth, match }) => {
       })()}
     </div>
   );
-}));
-
-NeedsContainer.propTypes = {
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
-  }),
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      needId: PropTypes.string,
-    }),
-  }),
-};
-
-NeedsContainer.defaultProps = {
-  auth: {
-    isLoggedIn: false,
-  },
-  match: {
-    params: {
-      needId: undefined,
-    },
-  },
 };
 
 export default NeedsContainer;

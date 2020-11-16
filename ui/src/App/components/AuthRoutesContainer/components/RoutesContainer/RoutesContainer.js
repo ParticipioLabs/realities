@@ -28,7 +28,7 @@ const RoutesContainer = () => (
         <Route path="/:orgSlug/:needId?/:responsibilityId?" component={Home} />
         <Route
           path="/"
-          component={
+          render={
             () => <Redirect to={`/${process.env.REACT_APP_PLACEHOLDER_ORG_SLUG}`} />
           }
         />
