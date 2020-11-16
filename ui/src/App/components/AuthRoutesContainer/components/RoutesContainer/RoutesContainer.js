@@ -29,7 +29,7 @@ const RoutesContainer = () => (
         <Route
           path="/"
           component={
-            <Redirect to={`/${process.env.REACT_APP_PLACEHOLDER_ORG_SLUG}`} />
+            () => <Redirect to={`/${process.env.REACT_APP_PLACEHOLDER_ORG_SLUG}`} />
           }
         />
       </Switch>
