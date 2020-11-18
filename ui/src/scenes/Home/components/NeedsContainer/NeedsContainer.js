@@ -61,47 +61,50 @@ const NeedsContainer = () => {
             needs={data.needs}
             selectedNeedId={needId}
             subscribeToNeedsEvents={() => {
-              subscribeToMore({
-                document: REALITIES_CREATE_SUBSCRIPTION,
-                updateQuery: (prev, { subscriptionData }) => {
-                  if (!subscriptionData.data) return prev;
-                  const { realityCreated } = subscriptionData.data;
+              const unsubscribes = [
+                subscribeToMore({
+                  document: REALITIES_CREATE_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    const { realityCreated } = subscriptionData.data;
 
-                  if (realityCreated.__typename !== 'Need') return prev;
+                    if (realityCreated.__typename !== 'Need') return prev;
 
-                  const alreadyExists = prev.needs
-                    .filter((need) => need.nodeId === realityCreated.nodeId)
-                    .length > 0;
+                    const alreadyExists = prev.needs
+                      .filter((need) => need.nodeId === realityCreated.nodeId)
+                      .length > 0;
 
-                  if (alreadyExists) return prev;
-                  return { needs: [realityCreated, ...prev.needs] };
-                },
-              });
-              subscribeToMore({
-                document: REALITIES_DELETE_SUBSCRIPTION,
-                updateQuery: (prev, { subscriptionData }) => {
-                  if (!subscriptionData.data) return prev;
-                  const { realityDeleted } = subscriptionData.data;
-                  return {
-                    needs: prev.needs.filter(((item) => item.nodeId !== realityDeleted.nodeId)),
-                  };
-                },
-              });
-              subscribeToMore({
-                document: REALITIES_UPDATE_SUBSCRIPTION,
-                updateQuery: (prev, { subscriptionData }) => {
-                  if (!subscriptionData.data) return prev;
+                    if (alreadyExists) return prev;
+                    return { needs: [realityCreated, ...prev.needs] };
+                  },
+                }),
+                subscribeToMore({
+                  document: REALITIES_DELETE_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    const { realityDeleted } = subscriptionData.data;
+                    return {
+                      needs: prev.needs.filter(((item) => item.nodeId !== realityDeleted.nodeId)),
+                    };
+                  },
+                }),
+                subscribeToMore({
+                  document: REALITIES_UPDATE_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
 
-                  const { realityUpdated } = subscriptionData.data;
+                    const { realityUpdated } = subscriptionData.data;
 
-                  return {
-                    needs: prev.needs.map((item) => {
-                      if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
-                      return item;
-                    }),
-                  };
-                },
-              });
+                    return {
+                      needs: prev.needs.map((item) => {
+                        if (item.nodeId === realityUpdated.nodeId) return realityUpdated;
+                        return item;
+                      }),
+                    };
+                  },
+                }),
+              ];
+              return () => unsubscribes.forEach((fn) => fn());
             }}
           />
         );
