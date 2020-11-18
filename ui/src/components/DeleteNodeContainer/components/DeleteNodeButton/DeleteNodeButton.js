@@ -26,7 +26,9 @@ const DeleteNodeButton = ({
       onClick={onToggleConfirmationModal}
       disabled={loading}
     >
-      Delete {nodeType.toLowerCase()}
+      Delete
+      {' '}
+      {nodeType.toLowerCase()}
     </Button>
     {error && (
       <p className="text-danger">
@@ -38,7 +40,10 @@ const DeleteNodeButton = ({
       toggle={onToggleConfirmationModal}
     >
       <ModalBody>
-        Are you sure you want to delete this {nodeType.toLowerCase()}?
+        Are you sure you want to delete this
+        {' '}
+        {nodeType.toLowerCase()}
+        ?
       </ModalBody>
       <ModalFooter>
         <Button
@@ -46,7 +51,9 @@ const DeleteNodeButton = ({
           onClick={onConfirmSoftDelete}
           disabled={loading}
         >
-          Yes, delete this {nodeType.toLowerCase()}
+          Yes, delete this
+          {' '}
+          {nodeType.toLowerCase()}
         </Button>
         <Button color="link" onClick={onToggleConfirmationModal}>
           Cancel
