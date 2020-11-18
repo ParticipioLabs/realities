@@ -1,8 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
-import { withRouter } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Formik } from 'formik';
 import { GET_NEEDS, SET_CACHE } from 'services/queries';
 import ListForm from 'components/ListForm';
@@ -24,7 +23,9 @@ const CREATE_NEED = gql`
   }
 `;
 
-const CreateNeed = withRouter(({ history }) => {
+const CreateNeed = () => {
+  const history = useHistory();
+  const params = useParams();
   const [createNeed] = useMutation(CREATE_NEED, {
     update: (cache, { data: { createNeed: createNeedRes } }) => {
       cache.writeQuery({
@@ -35,7 +36,7 @@ const CreateNeed = withRouter(({ history }) => {
       });
       const { needs } = cache.readQuery({ query: GET_NEEDS });
 
-      const alreadyExists = needs.filter(need => need.nodeId === createNeedRes.nodeId).length > 0;
+      const alreadyExists = needs.filter((need) => need.nodeId === createNeedRes.nodeId).length > 0;
       if (!alreadyExists) {
         cache.writeQuery({
           query: GET_NEEDS,
@@ -54,7 +55,7 @@ const CreateNeed = withRouter(({ history }) => {
       onSubmit={(values, { resetForm }) => {
         createNeed({ variables: { title: values.title } }).then(({ data }) => {
           resetForm();
-          history.push(`/${data.createNeed.nodeId}`);
+          history.push(`/${params.orgSlug}/${data.createNeed.nodeId}`);
         });
       }}
     >
@@ -65,30 +66,18 @@ const CreateNeed = withRouter(({ history }) => {
         handleSubmit,
         isSubmitting,
       }) => (
-          <ListForm
-            inputName="title"
-            placeholder="Enter a title for the new need..."
-            value={values.title}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        )}
+        <ListForm
+          inputName="title"
+          placeholder="Enter a title for the new need..."
+          value={values.title}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </Formik>
   );
-});
-
-CreateNeed.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
-};
-
-CreateNeed.defaultProps = {
-  history: {
-    push: () => null,
-  },
 };
 
 export default CreateNeed;

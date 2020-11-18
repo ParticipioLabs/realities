@@ -97,27 +97,11 @@ ResponsibilitiesList.propTypes = {
     title: PropTypes.string,
   })),
   selectedResponsibilityId: PropTypes.string,
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      needId: PropTypes.string,
-    }),
-  }),
 };
 
 ResponsibilitiesList.defaultProps = {
   responsibilities: [],
   selectedResponsibilityId: undefined,
-  history: {
-    push: () => null,
-  },
-  match: {
-    params: {
-      needId: undefined,
-    },
-  },
 };
 
 export default ResponsibilitiesList;
