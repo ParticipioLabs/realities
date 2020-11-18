@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from 'styles/colors';
 import RealizersMissingIcon from 'components/RealizersMissingIcon';
@@ -64,6 +64,7 @@ const renderMissingRealizersAmount = (need) => {
 
 const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
   const history = useHistory();
+  const { orgSlug } = useParams();
 
   useEffect(() => subscribeToNeedsEvents(), [subscribeToNeedsEvents]);
 
@@ -90,7 +91,7 @@ const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
             href="#"
             action
             active={need.nodeId === selectedNeedId}
-            onClick={() => history.push(`/${need.nodeId}`)}
+            onClick={() => history.push(`/${orgSlug}/${need.nodeId}`)}
           >
             {need.title}
             {renderMissingRealizersAmount(need)}
