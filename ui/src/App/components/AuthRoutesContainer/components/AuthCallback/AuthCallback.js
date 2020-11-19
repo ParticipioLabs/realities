@@ -29,6 +29,9 @@ const AuthCallback = () => {
     isLoggedIn, email, accessToken,
   } = useAuth();
 
+  const orgSlug = new URLSearchParams(window.location.search).get('orgSlug');
+  console.log('orgslug in callback:', orgSlug);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('state') === null) {

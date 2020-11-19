@@ -1,4 +1,6 @@
 import React from 'react';
+import { Router } from 'react-router-dom';
+import history from 'services/history';
 import { AuthProvider, UserManager } from 'oidc-react';
 import Oidc, { WebStorageStateStore } from 'oidc-client';
 import useAuth from 'services/useAuth';
@@ -43,12 +45,14 @@ userManager.events.addSilentRenewError((err) => {
 Oidc.Log.logger = console;
 
 const App = () => (
-  <AuthProvider
-    autoSignIn={false}
-    userManager={userManager}
-  >
-    <ApolloSetup />
-  </AuthProvider>
+  <Router history={history}>
+    <AuthProvider
+      autoSignIn={false}
+      userManager={userManager}
+    >
+      <ApolloSetup />
+    </AuthProvider>
+  </Router>
 );
 
 export default App;
