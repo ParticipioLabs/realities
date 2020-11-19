@@ -20,7 +20,7 @@ const RoutesContainer = () => (
     <div>
       <RealitiesNavbar />
       <Switch>
-        <Route exact path="/about" component={About} />
+        <Route exact path="/:orgSlug/about" component={About} />
         <Route exact path="/:orgSlug/graph" component={Graph} />
         <Route exact path="/:orgSlug/profile" component={Profile} />
         <Route exact path="/:orgSlug/profile/:personId" component={UserProfile} />
