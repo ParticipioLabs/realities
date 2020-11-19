@@ -1,6 +1,6 @@
 import React from 'react';
 import { AuthProvider, UserManager } from 'oidc-react';
-import { WebStorageStateStore } from 'oidc-client';
+import Oidc, { WebStorageStateStore } from 'oidc-client';
 import useAuth from 'services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
@@ -35,6 +35,12 @@ const userManager = new UserManager({
   loadUserInfo: true,
   automaticSilentRenew: true,
 });
+
+// TODO: remove these loggers
+userManager.events.addSilentRenewError((err) => {
+  console.log('silent renew error', err);
+});
+Oidc.Log.logger = console;
 
 const App = () => (
   <AuthProvider
