@@ -53,7 +53,7 @@ const DeleteNodeContainer = ({ nodeType, nodeId }) => {
               needs: needs.filter((n) => n.nodeId !== data.softDeleteNeed.nodeId),
             },
           });
-          history.push('/');
+          history.push(`/${params.orgSlug}`);
         } else {
           const needId = data.softDeleteResponsibility.fulfills.nodeId;
           const { responsibilities } = cache.readQuery({

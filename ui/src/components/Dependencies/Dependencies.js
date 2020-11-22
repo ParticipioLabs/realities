@@ -1,40 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import withAuth from 'components/withAuth';
 import AddDependency from './components/AddDependency';
 import DependencyList from './components/DependencyList';
 
-const Dependencies = withAuth(withRouter(({
+const Dependencies = withAuth(({
   auth,
-  history,
   nodeType,
   nodeId,
   dependencies,
   showAddRemove,
-}) => (
+}) => {
+  const history = useHistory();
+  const { orgSlug } = useParams();
+  return (
     <div>
       {auth.isLoggedIn && showAddRemove && (
-        <AddDependency nodeType={nodeType} nodeId={nodeId} />
+      <AddDependency nodeType={nodeType} nodeId={nodeId} />
       )}
       <DependencyList
-        dependencies={dependencies.map(dep => ({
+        dependencies={dependencies.map((dep) => ({
           node: dep,
           onClick: () => history.push(dep.__typename === 'Need'
-            ? `/${dep.nodeId}`
-            : `/${dep.fulfills.nodeId}/${dep.nodeId}`),
+            ? `/${orgSlug}/${dep.nodeId}`
+            : `/${orgSlug}/${dep.fulfills.nodeId}/${dep.nodeId}`),
         }))}
         showRemove={auth.isLoggedIn && showAddRemove}
       />
     </div>
-  )));
+  );
+});
 
 Dependencies.propTypes = {
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,
-  }),
-  history: PropTypes.shape({
-    push: PropTypes.func,
   }),
   nodeType: PropTypes.string,
   nodeId: PropTypes.string,
@@ -52,9 +52,6 @@ Dependencies.propTypes = {
 Dependencies.defaultProps = {
   auth: {
     isLoggedIn: false,
-  },
-  history: {
-    push: () => null,
   },
   nodeType: 'Need',
   nodeId: '',
