@@ -12,10 +12,10 @@ import {
   NavLink,
   UncontrolledDropdown,
 } from 'reactstrap';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import _ from 'lodash';
 import useAuth from 'services/useAuth';
+import { getOrgSlug } from 'services/location';
 import Search from 'components/Search';
 import ViewerName from 'components/ViewerName';
 
@@ -24,10 +24,7 @@ const StyledNavbarBrand = styled(NavbarBrand)`
 `;
 
 const RealitiesNavbar = () => {
-  // can't use useParams here because we're technically not inside the Route
-  // here so we do this instead ¯\_(ツ)_/¯
-  const match = useRouteMatch('/:orgSlug');
-  const orgSlug = _.get(match, 'params.orgSlug', '');
+  const orgSlug = getOrgSlug();
 
   const [isOpen, setIsOpen] = useState(false);
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Downshift from 'downshift';
+import { getOrgSlug } from 'services/location';
 import SearchBar from './components/SearchBar';
 import SearchResultsContainer from './components/SearchResultsContainer';
 
@@ -11,7 +12,7 @@ const Wrapper = styled.div`
 
 const Search = () => {
   const history = useHistory();
-  const { orgSlug } = useParams();
+  const orgSlug = getOrgSlug();
 
   return (
     <Downshift

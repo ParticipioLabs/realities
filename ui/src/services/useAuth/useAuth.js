@@ -1,12 +1,10 @@
 import { useAuth as useOidc } from 'oidc-react';
+import { getOrgSlug } from 'services/location';
 
 export default function useAuth() {
   const auth = useOidc();
-  // should use useRouteMatch('/:orgSlug') but there are rendering bugs with that
-  // https://github.com/ReactTraining/react-router/issues/7699
-  const orgSlug = window.location.pathname.match(/[^/]+/);
 
-  const redirect = `${process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}?orgSlug=${orgSlug}`;
+  const redirect = `${process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}?orgSlug=${getOrgSlug()}`;
 
   return {
     login: () => auth.signIn({ redirect_uri: redirect }),
