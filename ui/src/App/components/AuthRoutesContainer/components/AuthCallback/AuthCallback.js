@@ -30,13 +30,12 @@ const AuthCallback = () => {
   } = useAuth();
 
   const orgSlug = new URLSearchParams(window.location.search).get('orgSlug');
-  console.log('orgslug in callback:', orgSlug);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('state') === null) {
       // if that query param isn't there then the user likely just logged out
-      history.replace('/');
+      history.replace(`/${orgSlug}`);
     }
 
     if (isLoggedIn && email) {
@@ -46,11 +45,11 @@ const AuthCallback = () => {
         .query({ query: GET_VIEWER, variables: { email } })
         .then(({ data }) => {
           if (data.person) {
-            history.replace('/');
+            history.replace(`/${orgSlug}`);
           } else {
             client
               .mutate({ mutation: CREATE_VIEWER })
-              .then(() => history.replace('/profile'))
+              .then(() => history.replace(`/${orgSlug}/profile`))
               .catch((err) => console.log(err));
           }
         })
