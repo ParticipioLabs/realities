@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
-import { withRouter } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { GET_NEEDS, GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 
@@ -26,7 +26,9 @@ const SOFT_DELETE_RESPONSIBILITY = gql`
   }
 `;
 
-const DeleteNodeContainer = ({ nodeType, nodeId, history }) => {
+const DeleteNodeContainer = ({ nodeType, nodeId }) => {
+  const history = useHistory();
+  const params = useParams();
   const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
   const [
     softDeleteNode,
@@ -48,10 +50,10 @@ const DeleteNodeContainer = ({ nodeType, nodeId, history }) => {
           cache.writeQuery({
             query: GET_NEEDS,
             data: {
-              needs: needs.filter(n => n.nodeId !== data.softDeleteNeed.nodeId),
+              needs: needs.filter((n) => n.nodeId !== data.softDeleteNeed.nodeId),
             },
           });
-          history.push('/');
+          history.push(`/${params.orgSlug}`);
         } else {
           const needId = data.softDeleteResponsibility.fulfills.nodeId;
           const { responsibilities } = cache.readQuery({
@@ -63,10 +65,10 @@ const DeleteNodeContainer = ({ nodeType, nodeId, history }) => {
             variables: { needId },
             data: {
               responsibilities: responsibilities
-                .filter(r => r.nodeId !== data.softDeleteResponsibility.nodeId),
+                .filter((r) => r.nodeId !== data.softDeleteResponsibility.nodeId),
             },
           });
-          history.push(`/${needId}`);
+          history.push(`/${params.orgSlug}/${needId}`);
         }
       },
     },
@@ -79,7 +81,7 @@ const DeleteNodeContainer = ({ nodeType, nodeId, history }) => {
       onToggleConfirmationModal={() => setConfirmationModalIsOpen(!confirmationModalIsOpen)}
       onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId } })}
       loading={loading}
-      error={error}
+      error={error && error.toString()}
     />
   );
 };
@@ -87,17 +89,11 @@ const DeleteNodeContainer = ({ nodeType, nodeId, history }) => {
 DeleteNodeContainer.propTypes = {
   nodeType: PropTypes.string,
   nodeId: PropTypes.string,
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
 };
 
 DeleteNodeContainer.defaultProps = {
   nodeType: 'Need',
   nodeId: '',
-  history: {
-    push: () => null,
-  },
 };
 
-export default withRouter(DeleteNodeContainer);
+export default DeleteNodeContainer;

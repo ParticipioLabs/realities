@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import useAuth from 'services/useAuth';
+import { getOrgSlug } from 'services/location';
 import Search from 'components/Search';
 import ViewerName from 'components/ViewerName';
 
@@ -23,14 +24,17 @@ const StyledNavbarBrand = styled(NavbarBrand)`
 `;
 
 const RealitiesNavbar = () => {
+  const orgSlug = getOrgSlug();
+
   const [isOpen, setIsOpen] = useState(false);
+
   const {
     isLoggedIn, login, logout,
   } = useAuth();
 
   return (
     <Navbar color="faded" light expand="md">
-      <StyledNavbarBrand tag={Link} to="/">
+      <StyledNavbarBrand tag={Link} to={`/${orgSlug}`}>
         Realities
       </StyledNavbarBrand>
       <div className="flex-grow-1 mr-3 d-none d-md-block ">
@@ -40,10 +44,10 @@ const RealitiesNavbar = () => {
       <Collapse isOpen={isOpen} navbar className="flex-grow-0">
         <Nav className="ml-auto" navbar>
           <NavItem>
-            <NavLink tag={Link} to="/graph">Graph</NavLink>
+            <NavLink tag={Link} to={`/${orgSlug}/graph`}>Graph</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink tag={Link} to="/about">About</NavLink>
+            <NavLink tag={Link} to={`/${orgSlug}/about`}>About</NavLink>
           </NavItem>
           { isLoggedIn ? (
             <UncontrolledDropdown nav>
@@ -52,7 +56,7 @@ const RealitiesNavbar = () => {
               </DropdownToggle>
               <DropdownMenu right>
                 <DropdownItem>
-                  <NavLink tag={Link} to="/profile">Profile</NavLink>
+                  <NavLink tag={Link} to={`/${orgSlug}/profile`}>Profile</NavLink>
                 </DropdownItem>
                 <DropdownItem>
                   <NavLink onClick={logout} href="#">Logout</NavLink>
