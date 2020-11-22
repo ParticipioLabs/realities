@@ -26,6 +26,8 @@ const RoutesContainer = () => (
       <Route
         path="/"
         render={
+            // this is the only place we should use this env var. in the future
+            // the route "/" should be some kind of org select screen
             () => <Redirect to={`/${process.env.REACT_APP_PLACEHOLDER_ORG_SLUG}`} />
           }
       />
