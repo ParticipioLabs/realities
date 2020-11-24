@@ -1,5 +1,6 @@
 import neo4j from 'neo4j-driver';
 import dotenv from 'dotenv';
+import { runDBMigrations } from './dbMigrations';
 
 dotenv.config({ silent: true });
 
@@ -11,6 +12,8 @@ async function createDriver() {
       process.env.DB_PASSWORD,
     ),
   );
+
+  await runDBMigrations();
 
   return driver;
 }

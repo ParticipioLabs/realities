@@ -43,7 +43,7 @@ userManager.events.addSilentRenewError((err) => {
   console.log('silent renew error', err);
 });
 Oidc.Log.logger = console;
-// Oidc.Log.level = Oidc.Log.DEBUG;
+Oidc.Log.level = Oidc.Log.DEBUG;
 
 const App = () => (
   <Router history={history}>
