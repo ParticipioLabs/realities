@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { ListGroupItem, Button, FormGroup, Label } from 'reactstrap';
-import { withRouter } from 'react-router-dom';
+import {
+  ListGroupItem, Button, FormGroup, Label,
+} from 'reactstrap';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { GET_RESPONSIBILITIES } from 'services/queries';
 import TypeaheadInput from 'components/TypeaheadInput';
@@ -31,7 +33,9 @@ const CHANGE_FULFILLS = gql`
   }
 `;
 
-const ChangeFulfills = ({ node, history }) => {
+const ChangeFulfills = ({ node }) => {
+  const history = useHistory();
+  const { orgSlug } = useParams();
   const [editing, setEditing] = useState(false);
   const [changeOwner] = useMutation(CHANGE_FULFILLS, {
     update: (cache, { data: { changeFulfills } }) => {
@@ -46,7 +50,7 @@ const ChangeFulfills = ({ node, history }) => {
           needId: node.fulfills.nodeId,
         },
         data: {
-          responsibilities: responsibilities.filter(i => i.nodeId !== changeFulfills.nodeId),
+          responsibilities: responsibilities.filter((i) => i.nodeId !== changeFulfills.nodeId),
         },
       });
     },
@@ -72,9 +76,9 @@ const ChangeFulfills = ({ node, history }) => {
             autoFocus
             onBlur={toggleEdit}
             selectedItem={node.fulfills}
-            queryDataToResultsArray={data => [...(data.needs || [])]}
-            itemToString={i => (i && i.title) || ''}
-            itemToResult={i => (
+            queryDataToResultsArray={(data) => [...(data.needs || [])]}
+            itemToString={(i) => (i && i.title) || ''}
+            itemToResult={(i) => (
               <span>
                 <TypeBadge nodeType={i.__typename} />
                 {i.title}
@@ -93,23 +97,23 @@ const ChangeFulfills = ({ node, history }) => {
             }}
           />
         ) : (
-            <ListGroupItem onClick={() => history.push(`/${node.fulfills.nodeId}`)} action>
-              <TypeBadge nodeType={node.fulfills.__typename} />
-              {node.fulfills.title}
-              <ButtonWrapper>
-                <Button
-                  size="sm"
-                  color="primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleEdit();
-                  }}
-                >
-                  Change
+          <ListGroupItem onClick={() => history.push(`/${orgSlug}/${node.fulfills.nodeId}`)} action>
+            <TypeBadge nodeType={node.fulfills.__typename} />
+            {node.fulfills.title}
+            <ButtonWrapper>
+              <Button
+                size="sm"
+                color="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleEdit();
+                }}
+              >
+                Change
               </Button>
-              </ButtonWrapper>
-            </ListGroupItem>
-          )}
+            </ButtonWrapper>
+          </ListGroupItem>
+        )}
       </div>
     </StyledFormGroup>
   );
@@ -150,9 +154,6 @@ ChangeFulfills.propTypes = {
       }),
     })),
   }),
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
 };
 
 ChangeFulfills.defaultProps = {
@@ -174,9 +175,6 @@ ChangeFulfills.defaultProps = {
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
-  history: {
-    push: () => null,
-  },
 };
 
-export default withRouter(ChangeFulfills);
+export default ChangeFulfills;
