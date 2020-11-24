@@ -42,9 +42,8 @@ const userManager = new UserManager({
 userManager.events.addSilentRenewError((err) => {
   console.log('silent renew error', err);
 });
-// NOTE: you can apparently change the log level?
-// https://github.com/IdentityModel/oidc-client-js/wiki#logging
 Oidc.Log.logger = console;
+// Oidc.Log.level = Oidc.Log.DEBUG;
 
 const App = () => (
   <Router history={history}>
