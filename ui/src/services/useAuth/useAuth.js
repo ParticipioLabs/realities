@@ -4,6 +4,9 @@ import { getOrgSlug } from 'services/location';
 export default function useAuth() {
   const auth = useOidc();
 
+  // console.log('auth token atm:', auth.userData && auth.userData.access_token);
+  // console.log('auth', auth);
+
   const redirect = `${process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}?orgSlug=${getOrgSlug()}`;
 
   return {

@@ -38,12 +38,11 @@ const userManager = new UserManager({
   automaticSilentRenew: true,
 });
 
-// TODO: remove these loggers
 userManager.events.addSilentRenewError((err) => {
   console.log('silent renew error', err);
 });
-Oidc.Log.logger = console;
 Oidc.Log.level = Oidc.Log.DEBUG;
+// Oidc.Log.logger = console;
 
 const App = () => (
   <Router history={history}>
