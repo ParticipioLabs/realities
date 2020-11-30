@@ -13,7 +13,7 @@ async function createDriver() {
     ),
   );
 
-  await runDBMigrations();
+  await runDBMigrations(driver);
 
   return driver;
 }
