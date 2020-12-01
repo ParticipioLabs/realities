@@ -1,4 +1,6 @@
-import { ApolloClient, ApolloLink, split, HttpLink } from '@apollo/client';
+import {
+  ApolloClient, ApolloLink, split, HttpLink,
+} from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from '@apollo/client/cache';
@@ -14,7 +16,7 @@ import { resolvers, defaults } from './localState';
 
 export default function apolloClient(token) {
   const cache = new InMemoryCache({
-    dataIdFromObject: object => `${object.__typename}:${object.nodeId}`,
+    dataIdFromObject: (object) => `${object.__typename}:${object.nodeId}`,
     // fragmentMatcher,
   });
 
