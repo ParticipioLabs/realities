@@ -5,11 +5,14 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from '@apollo/client/cache';
 import { SET_CACHE } from 'services/queries';
+import { getOrgSlug } from 'services/location';
 import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
 // removed from apollo
-// todo: replace?
+// todo: probably remove since apollo figures out the types automatically or
+// something like that. also remove the automatic generation of the imported
+// json file
 /* const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData,
 }); */
@@ -20,14 +23,19 @@ export default function apolloClient(token) {
     // fragmentMatcher,
   });
 
+  const authObj = token ? {
+    Authorization: `Bearer ${token}`,
+  } : {};
+
+  const context = {
+    orgSlug: getOrgSlug(),
+    ...authObj,
+  };
+
   const authMiddleware = new ApolloLink((operation, forward) => {
-    if (token) {
-      operation.setContext({
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    }
+    operation.setContext({
+      headers: context,
+    });
     return forward(operation);
   });
 
@@ -39,6 +47,7 @@ export default function apolloClient(token) {
     uri: process.env.REACT_APP_GRAPHQL_SUBSCRIPTION,
     options: {
       reconnect: true,
+      connectionParams: context,
     },
   });
 

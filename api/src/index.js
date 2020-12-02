@@ -3,10 +3,13 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import Keycloak from 'keycloak-connect';
-import { KeycloakContext } from 'keycloak-connect-graphql';
+import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandler } from 'keycloak-connect-graphql';
+import platoCore from 'plato-core';
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
+
+const { db: { getConnection, getModels } } = platoCore;
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -30,24 +33,62 @@ const keycloak = new Keycloak({}, {
 
 app.use('/graphql', keycloak.middleware());
 
+async function createContext(kauth, orgSlug, neo4jDriver) {
+  const coreDb = await getConnection(process.env.MONGO_URL);
+  const coreModels = getModels(coreDb);
+  const userId = kauth.accessToken && kauth.accessToken.content.sub;
+
+  const viewedOrg = await coreModels.Organization.findOne({
+    subdomain: orgSlug,
+  });
+  const viewedOrgId = viewedOrg.id;
+
+  // if we get a result back, it means that the user is a member of the org
+  const orgMembership = await coreModels.OrgMember.findOne({
+    userId,
+    organizationId: viewedOrgId,
+  });
+
+  return {
+    kauth,
+    user: {
+      email: kauth.accessToken && kauth.accessToken.content.email,
+      role: 'user',
+      isMemberOfViewedOrg: (orgMembership && orgMembership.organizationId) === viewedOrgId,
+    },
+    viewedOrgId,
+    driver: neo4jDriver,
+  };
+}
+
+const keycloakSubscriptionHandler = new KeycloakSubscriptionHandler({ keycloak, protect: false });
+
 createDriver().then((neo4jDriver) => {
   const server = new ApolloServer({
     schema,
-    context: async ({ req }) => {
-      const kauth = new KeycloakContext({ req });
+    subscriptions: {
+      onConnect: async (connectionParams) => {
+        const { orgSlug } = connectionParams;
 
-      return {
-        kauth,
-        user: {
-          email: kauth.accessToken && kauth.accessToken.content.email,
-          role: 'user',
-        // TODO: put the user's tenantId here
-        },
-        driver: neo4jDriver,
-      };
+        const token = await keycloakSubscriptionHandler.onSubscriptionConnect(connectionParams);
+        const kauth = new KeycloakSubscriptionContext(token);
+
+        return createContext(kauth, orgSlug, neo4jDriver);
+      },
+    },
+    context: async ({ req, connection }) => {
+      if (req) {
+        const kauth = new KeycloakContext({ req });
+
+        const orgSlug = req.get('orgSlug');
+
+        return createContext(kauth, orgSlug, neo4jDriver);
+      }
+      return connection.context;
     },
     tracing: true,
   });
+
   server.applyMiddleware({ app, path: '/graphql' });
 
   const httpServer = createServer(app);

@@ -4,6 +4,7 @@ import Loader from 'react-loader';
 import useAuth from 'services/useAuth';
 import apolloClient from 'services/apolloClient';
 import history from 'services/history';
+import { getOrgSlug } from 'services/location';
 
 const GET_VIEWER = gql`
   query AuthCallback_person($email: String!) {
@@ -29,7 +30,7 @@ const AuthCallback = () => {
     isLoggedIn, email, accessToken,
   } = useAuth();
 
-  const orgSlug = new URLSearchParams(window.location.search).get('orgSlug');
+  const orgSlug = getOrgSlug();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
