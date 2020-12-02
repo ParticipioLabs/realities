@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import history from 'services/history';
-import withAuth from 'components/withAuth';
+import { useHistory, useParams } from 'react-router-dom';
+import useAuth from 'services/useAuth';
 import WrappedLoader from 'components/WrappedLoader';
 import UpdateViewerNameForm from './components/UpdateViewerNameForm';
 
@@ -26,7 +25,10 @@ const UPDATE_VIEWER_NAME = gql`
   }
 `;
 
-const UpdateViewerName = withAuth(({ auth }) => {
+const UpdateViewerName = () => {
+  const history = useHistory();
+  const { orgSlug } = useParams();
+  const auth = useAuth();
   const {
     loading,
     error,
@@ -47,7 +49,7 @@ const UpdateViewerName = withAuth(({ auth }) => {
       onSubmit={(values) => {
         updateViewerName({ variables: { name: values.name } })
           .then(() => {
-            refetch().then(() => history.push('/'));
+            refetch().then(() => history.push(`/${orgSlug}`));
           });
       }}
     >
@@ -58,30 +60,18 @@ const UpdateViewerName = withAuth(({ auth }) => {
         handleSubmit,
         isSubmitting,
       }) => (
-          <UpdateViewerNameForm
-            inputName="name"
-            placeholder="Your name..."
-            value={values.name}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        )}
+        <UpdateViewerNameForm
+          inputName="name"
+          placeholder="Your name..."
+          value={values.name}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </Formik>
   );
-});
-
-UpdateViewerName.propTypes = {
-  auth: PropTypes.shape({
-    email: PropTypes.string,
-  }),
-};
-
-UpdateViewerName.defaultProps = {
-  auth: {
-    email: '',
-  },
 };
 
 export default UpdateViewerName;

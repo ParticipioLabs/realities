@@ -1,13 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
-import { withRouter } from 'react-router-dom';
-import withAuth from 'components/withAuth';
+import { useHistory, useParams } from 'react-router-dom';
+import useAuth from 'services/useAuth';
 import WrappedLoader from 'components/WrappedLoader';
 import { SET_CACHE } from 'services/queries';
 import FullscreenDetailView from './components/FullscreenDetailView';
 
-const createDetailViewQuery = nodeType => gql`
+const createDetailViewQuery = (nodeType) => gql`
   query FullscreenDetailViewContainer_${nodeType}($nodeId: ID!) {
     ${nodeType}(nodeId: $nodeId) {
       nodeId
@@ -60,35 +59,36 @@ const createDetailViewQuery = nodeType => gql`
   }
 `;
 
-
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
-const FullscreenDetailViewContainer = withAuth(withRouter(({
-  auth,
-  history,
-  match,
-}) => {
-  if (!match.params.needId && !match.params.responsibilityId) return null;
+const FullscreenDetailViewContainer = () => {
+  const auth = useAuth();
+  const history = useHistory();
+  const params = useParams();
 
-  const isNeed = !match.params.responsibilityId;
+  const isNeed = !params.responsibilityId;
+  const skip = !params.needId && !params.responsibilityId;
 
   const queryProps = isNeed ? {
     query: GET_NEED,
     variables: {
-      nodeId: match.params.needId,
+      nodeId: params.needId,
     },
+    skip,
   } : {
-      query: GET_RESPONSIBILITY,
-      variables: {
-        nodeId: match.params.responsibilityId,
-      },
-    };
+    query: GET_RESPONSIBILITY,
+    variables: {
+      nodeId: params.responsibilityId,
+    },
+    skip,
+  };
 
   const {
     loading, error, data, client,
   } = useQuery(queryProps.query, queryProps);
 
+  if (skip) return null;
   if (loading) return <WrappedLoader />;
   if (error) return `Error! ${error.message}`;
   const node = isNeed ? data.need : data.responsibility;
@@ -110,33 +110,9 @@ const FullscreenDetailViewContainer = withAuth(withRouter(({
           showDetailedEditView: false,
         },
       })}
-      onClickNavigate={() => history.push(`/${match.params.needId}/${match.params.responsibilityId || ''}`)}
+      onClickNavigate={() => history.push(`/${params.orgSlug}/${params.needId}/${params.responsibilityId || ''}`)}
     />
   );
-}));
-
-FullscreenDetailViewContainer.propTypes = {
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
-  }),
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      needId: PropTypes.string,
-      resposibilityId: PropTypes.string,
-    }),
-  }),
-};
-
-FullscreenDetailViewContainer.defaultProps = {
-  auth: {
-    isLoggedIn: false,
-  },
-  match: {
-    params: {
-      needId: undefined,
-      responsibilityId: undefined,
-    },
-  },
 };
 
 export default FullscreenDetailViewContainer;

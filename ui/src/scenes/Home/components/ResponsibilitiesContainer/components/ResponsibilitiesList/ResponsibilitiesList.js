@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { withRouter } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import colors from 'styles/colors';
 import RealizersMissingIcon from 'components/RealizersMissingIcon';
@@ -43,53 +43,52 @@ const renderMissingRealizerIcon = (responsibility) => {
   }
   return '';
 };
-class ResponsibilitiesList extends Component {
-  componentDidMount() {
-    this.props.subscribeToResponsibilitiesEvents();
-  }
 
-  render() {
-    const {
-      selectedResponsibilityId,
-      history,
-      match,
-    } = this.props;
-    const responsibilities = _.orderBy(this.props.responsibilities, [(r) => {
-      if (r.title) return r.title.toLowerCase();
-      return '';
-    }], ['asc']);
-    return (
-      <div>
-        <ResponsibilitiesListGroup>
-          {responsibilities.filter(responsibility =>
-            responsibility.nodeId === selectedResponsibilityId)
-            .map(responsibility => (
-              <ResponsibilitiesListGroupHeader
-                key={selectedResponsibilityId}
-                active
-              >
-                {responsibility.title}
-                {renderMissingRealizerIcon(responsibility)}
-              </ResponsibilitiesListGroupHeader>
-            ))}
-          {responsibilities.map(responsibility => (
-            <ResponsibilitiesListGroupItem
-              key={responsibility.nodeId}
-              tag="button"
-              href="#"
-              action
-              active={responsibility.nodeId === selectedResponsibilityId}
-              onClick={() => history.push(`/${match.params.needId}/${responsibility.nodeId}`)}
+const ResponsibilitiesList = ({
+  selectedResponsibilityId,
+  responsibilities,
+  subscribeToResponsibilitiesEvents,
+}) => {
+  const history = useHistory();
+  const { orgSlug, needId } = useParams();
+
+  useEffect(() => subscribeToResponsibilitiesEvents(), [subscribeToResponsibilitiesEvents]);
+
+  const sortedResponsibilities = _.orderBy(responsibilities, [(r) => {
+    if (r.title) return r.title.toLowerCase();
+    return '';
+  }], ['asc']);
+  return (
+    <div>
+      <ResponsibilitiesListGroup>
+        {sortedResponsibilities
+          .filter((responsibility) => responsibility.nodeId === selectedResponsibilityId)
+          .map((responsibility) => (
+            <ResponsibilitiesListGroupHeader
+              key={selectedResponsibilityId}
+              active
             >
               {responsibility.title}
               {renderMissingRealizerIcon(responsibility)}
-            </ResponsibilitiesListGroupItem>
+            </ResponsibilitiesListGroupHeader>
           ))}
-        </ResponsibilitiesListGroup>
-      </div>
-    );
-  }
-}
+        {sortedResponsibilities.map((responsibility) => (
+          <ResponsibilitiesListGroupItem
+            key={responsibility.nodeId}
+            tag="button"
+            href="#"
+            action
+            active={responsibility.nodeId === selectedResponsibilityId}
+            onClick={() => history.push(`/${orgSlug}/${needId}/${responsibility.nodeId}`)}
+          >
+            {responsibility.title}
+            {renderMissingRealizerIcon(responsibility)}
+          </ResponsibilitiesListGroupItem>
+        ))}
+      </ResponsibilitiesListGroup>
+    </div>
+  );
+};
 
 ResponsibilitiesList.propTypes = {
   subscribeToResponsibilitiesEvents: PropTypes.func.isRequired,
@@ -98,27 +97,11 @@ ResponsibilitiesList.propTypes = {
     title: PropTypes.string,
   })),
   selectedResponsibilityId: PropTypes.string,
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      needId: PropTypes.string,
-    }),
-  }),
 };
 
 ResponsibilitiesList.defaultProps = {
   responsibilities: [],
   selectedResponsibilityId: undefined,
-  history: {
-    push: () => null,
-  },
-  match: {
-    params: {
-      needId: undefined,
-    },
-  },
 };
 
-export default withRouter(ResponsibilitiesList);
+export default ResponsibilitiesList;

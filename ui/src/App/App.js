@@ -1,6 +1,8 @@
 import React from 'react';
+import { Router } from 'react-router-dom';
+import history from 'services/history';
 import { AuthProvider, UserManager } from 'oidc-react';
-import { WebStorageStateStore } from 'oidc-client';
+import Oidc, { WebStorageStateStore } from 'oidc-client';
 import useAuth from 'services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
@@ -36,13 +38,21 @@ const userManager = new UserManager({
   automaticSilentRenew: true,
 });
 
+userManager.events.addSilentRenewError((err) => {
+  console.log('silent renew error', err);
+});
+Oidc.Log.level = Oidc.Log.DEBUG;
+// Oidc.Log.logger = console;
+
 const App = () => (
-  <AuthProvider
-    autoSignIn={false}
-    userManager={userManager}
-  >
-    <ApolloSetup />
-  </AuthProvider>
+  <Router history={history}>
+    <AuthProvider
+      autoSignIn={false}
+      userManager={userManager}
+    >
+      <ApolloSetup />
+    </AuthProvider>
+  </Router>
 );
 
 export default App;
