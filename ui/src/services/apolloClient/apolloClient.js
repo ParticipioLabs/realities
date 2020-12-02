@@ -21,16 +21,18 @@ export default function apolloClient(token) {
     // fragmentMatcher,
   });
 
-  const authMiddleware = new ApolloLink((operation, forward) => {
-    const authObj = token ? {
-      Authorization: `Bearer ${token}`,
-    } : {};
+  const authObj = token ? {
+    Authorization: `Bearer ${token}`,
+  } : {};
 
+  const context = {
+    orgSlug: getOrgSlug(),
+    ...authObj,
+  };
+
+  const authMiddleware = new ApolloLink((operation, forward) => {
     operation.setContext({
-      headers: {
-        orgSlug: getOrgSlug(),
-        ...authObj,
-      },
+      headers: context,
     });
     return forward(operation);
   });
@@ -43,10 +45,7 @@ export default function apolloClient(token) {
     uri: process.env.REACT_APP_GRAPHQL_SUBSCRIPTION,
     options: {
       reconnect: true,
-      connectionParams: {
-        Authorization: `Bearer ${token}`,
-        orgSlug: getOrgSlug(),
-      },
+      connectionParams: context,
     },
   });
 
