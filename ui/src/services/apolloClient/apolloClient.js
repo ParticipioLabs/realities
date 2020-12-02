@@ -22,14 +22,16 @@ export default function apolloClient(token) {
   });
 
   const authMiddleware = new ApolloLink((operation, forward) => {
-    if (token) {
-      operation.setContext({
-        headers: {
-          Authorization: `Bearer ${token}`,
-          orgSlug: getOrgSlug(),
-        },
-      });
-    }
+    const authObj = token ? {
+      Authorization: `Bearer ${token}`,
+    } : {};
+
+    operation.setContext({
+      headers: {
+        orgSlug: getOrgSlug(),
+        ...authObj,
+      },
+    });
     return forward(operation);
   });
 

@@ -9,5 +9,9 @@ export function getOrgSlug() {
   // https://github.com/ReactTraining/react-router/issues/7699
   // so in the meantime when we can't use useParams we'll do this
   const match = window.location.pathname.match(/[^/]+/);
-  return match ? match[0] : '';
+  const firstPart = match ? match[0] : '';
+  if (firstPart !== 'auth-callback') {
+    return firstPart;
+  }
+  return new URLSearchParams(window.location.search).get('orgSlug');
 }

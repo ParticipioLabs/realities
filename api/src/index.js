@@ -80,12 +80,7 @@ createDriver().then((neo4jDriver) => {
       if (req) {
         const kauth = new KeycloakContext({ req });
 
-        // TODO: get from header instead
-        const referer = req.get('referer');
-
-        const refererUrl = new URL(referer);
-        const orgSlugMatch = refererUrl.pathname.match(/[^/]+/);
-        const orgSlug = orgSlugMatch ? orgSlugMatch[0] : '';
+        const orgSlug = req.get('orgSlug');
 
         return createContext(kauth, orgSlug, neo4jDriver);
       }
