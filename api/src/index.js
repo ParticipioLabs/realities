@@ -3,7 +3,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import Keycloak from 'keycloak-connect';
-import { KeycloakContext } from 'keycloak-connect-graphql';
+import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandler } from 'keycloak-connect-graphql';
 import platoCore from 'plato-core';
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
@@ -33,45 +33,63 @@ const keycloak = new Keycloak({}, {
 
 app.use('/graphql', keycloak.middleware());
 
+async function createContext(kauth, orgSlug, neo4jDriver) {
+  const coreDb = await getConnection(process.env.MONGO_URL);
+  const coreModels = getModels(coreDb);
+  const userId = kauth.accessToken && kauth.accessToken.content.sub;
+
+  const viewedOrg = await coreModels.Organization.findOne({
+    subdomain: orgSlug,
+  });
+  const viewedOrgId = viewedOrg.id;
+
+  // if we get a result back, it means that the user is a member of the org
+  const orgMembership = await coreModels.OrgMember.findOne({
+    userId,
+    organizationId: viewedOrgId,
+  });
+
+  return {
+    kauth,
+    user: {
+      email: kauth.accessToken && kauth.accessToken.content.email,
+      role: 'user',
+      isMemberOfViewedOrg: (orgMembership && orgMembership.organizationId) === viewedOrgId,
+    },
+    viewedOrgId,
+    driver: neo4jDriver,
+  };
+}
+
+const keycloakSubscriptionHandler = new KeycloakSubscriptionHandler({ keycloak, protect: false });
+
 createDriver().then((neo4jDriver) => {
   const server = new ApolloServer({
     schema,
-    context: async (ctx) => {
-      console.log({ ctx });
-      const { req } = ctx;
-      console.log('req undefined', req === undefined);
-      const kauth = new KeycloakContext({ req });
-      const coreDb = await getConnection(process.env.MONGO_URL);
-      const coreModels = getModels(coreDb);
-      const userId = kauth.accessToken && kauth.accessToken.content.sub;
+    subscriptions: {
+      onConnect: async (connectionParams) => {
+        const { orgSlug } = connectionParams;
 
-      const referer = req.get('referer');
+        const token = await keycloakSubscriptionHandler.onSubscriptionConnect(connectionParams);
+        const kauth = new KeycloakSubscriptionContext(token);
 
-      const refererUrl = new URL(referer);
-      const orgSlugMatch = refererUrl.pathname.match(/[^/]+/);
-      const orgSlug = orgSlugMatch ? orgSlugMatch[0] : '';
+        return createContext(kauth, orgSlug, neo4jDriver);
+      },
+    },
+    context: async ({ req, connection }) => {
+      if (req) {
+        const kauth = new KeycloakContext({ req });
 
-      const viewedOrg = await coreModels.Organization.findOne({
-        subdomain: orgSlug,
-      });
-      const viewedOrgId = viewedOrg.id;
+        // TODO: get from header instead
+        const referer = req.get('referer');
 
-      // if we get a result back, it means that the user is a member of the org
-      const orgMembership = await coreModels.OrgMember.findOne({
-        userId,
-        organizationId: viewedOrgId,
-      });
+        const refererUrl = new URL(referer);
+        const orgSlugMatch = refererUrl.pathname.match(/[^/]+/);
+        const orgSlug = orgSlugMatch ? orgSlugMatch[0] : '';
 
-      return {
-        kauth,
-        user: {
-          email: kauth.accessToken && kauth.accessToken.content.email,
-          role: 'user',
-          isMemberOfViewedOrg: (orgMembership && orgMembership.organizationId) === viewedOrgId,
-        },
-        viewedOrgId,
-        driver: neo4jDriver,
-      };
+        return createContext(kauth, orgSlug, neo4jDriver);
+      }
+      return connection.context;
     },
     tracing: true,
   });

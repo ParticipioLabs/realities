@@ -5,6 +5,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from '@apollo/client/cache';
 import { SET_CACHE } from 'services/queries';
+import { getOrgSlug } from 'services/location';
 import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
@@ -25,6 +26,7 @@ export default function apolloClient(token) {
       operation.setContext({
         headers: {
           Authorization: `Bearer ${token}`,
+          orgSlug: getOrgSlug(),
         },
       });
     }
@@ -39,6 +41,10 @@ export default function apolloClient(token) {
     uri: process.env.REACT_APP_GRAPHQL_SUBSCRIPTION,
     options: {
       reconnect: true,
+      connectionParams: {
+        Authorization: `Bearer ${token}`,
+        orgSlug: getOrgSlug(),
+      },
     },
   });
 
