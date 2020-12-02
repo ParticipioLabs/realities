@@ -36,14 +36,20 @@ app.use('/graphql', keycloak.middleware());
 createDriver().then((neo4jDriver) => {
   const server = new ApolloServer({
     schema,
-    context: async ({ req }) => {
+    context: async (ctx) => {
+      console.log({ ctx });
+      const { req } = ctx;
+      console.log('req undefined', req === undefined);
       const kauth = new KeycloakContext({ req });
       const coreDb = await getConnection(process.env.MONGO_URL);
       const coreModels = getModels(coreDb);
       const userId = kauth.accessToken && kauth.accessToken.content.sub;
 
-      // TODO: get this from the url that the user is on
-      const orgSlug = 'lodis';
+      const referer = req.get('referer');
+
+      const refererUrl = new URL(referer);
+      const orgSlugMatch = refererUrl.pathname.match(/[^/]+/);
+      const orgSlug = orgSlugMatch ? orgSlugMatch[0] : '';
 
       const viewedOrg = await coreModels.Organization.findOne({
         subdomain: orgSlug,
