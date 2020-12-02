@@ -42,11 +42,17 @@ createDriver().then((neo4jDriver) => {
       const coreModels = getModels(coreDb);
       const userId = kauth.accessToken && kauth.accessToken.content.sub;
 
-      // TODO: get the orgId that the user is viewing from one of the headers
-      const viewedOrgId = '5fae8532ef893e8126aa2443';
+      // TODO: get this from the url that the user is on
+      const orgSlug = 'lodis';
 
-      const orgMembership = await coreModels.OrganizationMembership.findOne({
-        keycloakId: userId,
+      const viewedOrg = await coreModels.Organization.findOne({
+        subdomain: orgSlug,
+      });
+      const viewedOrgId = viewedOrg.id;
+
+      // if we get a result back, it means that the user is a member of the org
+      const orgMembership = await coreModels.OrgMember.findOne({
+        userId,
         organizationId: viewedOrgId,
       });
 
