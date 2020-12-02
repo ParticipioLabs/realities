@@ -10,7 +10,9 @@ import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
 // removed from apollo
-// todo: replace?
+// todo: probably remove since apollo figures out the types automatically or
+// something like that. also remove the automatic generation of the imported
+// json file
 /* const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData,
 }); */
