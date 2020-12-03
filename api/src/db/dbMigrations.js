@@ -1,7 +1,29 @@
 /* eslint-disable no-await-in-loop */
 import { runQueryAndGetRecord } from './cypherUtils';
+import { getCoreModels } from '../services/platoCore';
 
 const currentVersion = 1;
+
+const migrateTo = {
+  v2: async () => {
+    // create the placeholder org in mongo if it isn't there already
+
+    const coreModels = await getCoreModels();
+
+    // TODO: throw if the env var isn't defined
+    const slug = process.env.REACT_APP_PLACEHOLDER_ORG_SLUG;
+
+    const maybeOrg = await coreModels.Organization.findOne({
+      subdomain: slug,
+    });
+
+    if (maybeOrg !== null) {
+      console.log(`Org ${slug} already exists in mongodb, skipping creation`);
+      return;
+    }
+    console.log(`Creating org ${slug} in mongodb`);
+  },
+};
 
 async function getDBVersion(driver) {
   // this also inits the RealitiesDBVersion node
@@ -39,8 +61,8 @@ export async function runDBMigrations(driver) {
   }
 
   while (dbVersion < currentVersion) {
-    // TODO: do one step of migration here
-    console.log(`Performing migration to database version ${dbVersion + 1}, not`);
+    console.log(`Performing migration to database version ${dbVersion + 1}`);
+    await migrateTo[`v${dbVersion + 1}`](driver);
 
     dbVersion += 1;
     await setDBVersion(driver, dbVersion);
