@@ -2,7 +2,7 @@
 import { runQueryAndGetRecord } from './cypherUtils';
 import { getCoreModels } from '../services/platoCore';
 
-const currentVersion = 1;
+const currentVersion = 2;
 
 const migrateTo = {
   v2: async () => {
@@ -10,8 +10,10 @@ const migrateTo = {
 
     const coreModels = await getCoreModels();
 
-    // TODO: throw if the env var isn't defined
-    const slug = process.env.REACT_APP_PLACEHOLDER_ORG_SLUG;
+    const slug = process.env.PLACEHOLDER_ORG_SLUG;
+    if (slug === undefined) {
+      throw Error('Please set the env var "PLACEHOLDER_ORG_SLUG"');
+    }
 
     const maybeOrg = await coreModels.Organization.findOne({
       subdomain: slug,
@@ -22,6 +24,13 @@ const migrateTo = {
       return;
     }
     console.log(`Creating org ${slug} in mongodb`);
+
+    const newOrg = new coreModels.Organization({
+      name: slug,
+      subdomain: slug,
+    });
+
+    await newOrg.save();
   },
 };
 
@@ -63,6 +72,7 @@ export async function runDBMigrations(driver) {
   while (dbVersion < currentVersion) {
     console.log(`Performing migration to database version ${dbVersion + 1}`);
     await migrateTo[`v${dbVersion + 1}`](driver);
+    console.log(`Successfully migrated db to version ${dbVersion + 1}`);
 
     dbVersion += 1;
     await setDBVersion(driver, dbVersion);
