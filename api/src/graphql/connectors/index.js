@@ -156,17 +156,16 @@ export async function createViewer({
   user, viewedOrg, driver, coreModels,
 }) {
   // creating user in core
-  const maybeUser = await coreModels.OrgMember.findOne({
+  const wantedUser = {
     userId: user.userId,
-  });
+    organizationId: viewedOrg.orgId,
+  };
+
+  const maybeUser = await coreModels.OrgMember.findOne(wantedUser);
 
   if (maybeUser === null) {
     // user doesn't exist in db
-    const newUser = new coreModels.OrgMember({
-      userId: user.userId,
-      organizationId: viewedOrg.orgId,
-    });
-
+    const newUser = new coreModels.OrgMember(wantedUser);
     await newUser.save();
   }
 
