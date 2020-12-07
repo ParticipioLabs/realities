@@ -152,7 +152,9 @@ export function createInfo(driver, { title }, infoUrl) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export async function createViewer(driver, user, coreModels, viewedOrgId) {
+export async function createViewer({
+  driver, user, coreModels, viewedOrgId,
+}) {
   // creating user in core
   const maybeUser = await coreModels.OrgMember.findOne({
     userId: user.userId,
