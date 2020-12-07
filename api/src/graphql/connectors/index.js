@@ -152,17 +152,42 @@ export function createInfo(driver, { title }, infoUrl) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function createViewer(driver, userEmail) {
+export async function createViewer({
+  user, viewedOrg, driver, coreModels,
+}) {
+  // creating user in core
+  const maybeUser = await coreModels.OrgMember.findOne({
+    userId: user.userId,
+  });
+
+  if (maybeUser === null) {
+    // user doesn't exist in db
+    const newUser = new coreModels.OrgMember({
+      userId: user.userId,
+      organizationId: viewedOrg.orgId,
+    });
+
+    await newUser.save();
+  }
+
+  // creating user in neo4j
   const queryParams = {
-    email: userEmail,
-    personId: uuidv4(),
+    email: user.email,
+    personId: user.userId,
   };
-  // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+  // nodeId used to be a random uuid, now it's the user's id from keycloak
+  // eventually we should probably switch to using this to identify a user
+  // instead of their email
+  // TODO: for now we'll set the nodeId ON MATCH as well but after every user
+  // is likely 'migrated' then we just have to do it ON CREATE
   const query = `
-    MERGE (person:Person {email:$email})
-    FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-      SET person += {nodeId:$personId, created:timestamp()})
-    RETURN person
+    MERGE (p:Person {email:$email})
+    ON MATCH SET
+      p.nodeId = $personId
+    ON CREATE SET
+      p.nodeId = $personId,
+      p.created = timestamp()
+    return p
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }

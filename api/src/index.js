@@ -4,12 +4,10 @@ import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import Keycloak from 'keycloak-connect';
 import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandler } from 'keycloak-connect-graphql';
-import platoCore from 'plato-core';
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
-
-const { db: { getConnection, getModels } } = platoCore;
+import { getCoreModels } from './services/platoCore';
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -34,8 +32,7 @@ const keycloak = new Keycloak({}, {
 app.use('/graphql', keycloak.middleware());
 
 async function createContext(kauth, orgSlug, neo4jDriver) {
-  const coreDb = await getConnection(process.env.MONGO_URL);
-  const coreModels = getModels(coreDb);
+  const coreModels = await getCoreModels();
   const userId = kauth.accessToken && kauth.accessToken.content.sub;
 
   const viewedOrg = await coreModels.Organization.findOne({
@@ -53,11 +50,15 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
     kauth,
     user: {
       email: kauth.accessToken && kauth.accessToken.content.email,
+      userId,
       role: 'user',
-      isMemberOfViewedOrg: (orgMembership && orgMembership.organizationId) === viewedOrgId,
     },
-    viewedOrgId,
+    viewedOrg: {
+      orgId: viewedOrgId,
+      userIsMemberOf: (orgMembership && orgMembership.organizationId) === viewedOrgId,
+    },
     driver: neo4jDriver,
+    coreModels,
   };
 }
 

@@ -1,7 +1,38 @@
 /* eslint-disable no-await-in-loop */
 import { runQueryAndGetRecord } from './cypherUtils';
+import { getCoreModels } from '../services/platoCore';
 
-const currentVersion = 1;
+const currentVersion = 2;
+
+const migrateTo = {
+  v2: async () => {
+    // create the placeholder org in mongo if it isn't there already
+
+    const coreModels = await getCoreModels();
+
+    const slug = process.env.PLACEHOLDER_ORG_SLUG;
+    if (slug === undefined) {
+      throw Error('Please set the env var "PLACEHOLDER_ORG_SLUG"');
+    }
+
+    const maybeOrg = await coreModels.Organization.findOne({
+      subdomain: slug,
+    });
+
+    if (maybeOrg !== null) {
+      console.log(`Org ${slug} already exists in mongodb, skipping creation`);
+      return;
+    }
+    console.log(`Creating org ${slug} in mongodb`);
+
+    const newOrg = new coreModels.Organization({
+      name: slug,
+      subdomain: slug,
+    });
+
+    await newOrg.save();
+  },
+};
 
 async function getDBVersion(driver) {
   // this also inits the RealitiesDBVersion node
@@ -39,8 +70,9 @@ export async function runDBMigrations(driver) {
   }
 
   while (dbVersion < currentVersion) {
-    // TODO: do one step of migration here
-    console.log(`Performing migration to database version ${dbVersion + 1}, not`);
+    console.log(`Performing migration to database version ${dbVersion + 1}`);
+    await migrateTo[`v${dbVersion + 1}`](driver);
+    console.log(`Successfully migrated db to version ${dbVersion + 1}`);
 
     dbVersion += 1;
     await setDBVersion(driver, dbVersion);
