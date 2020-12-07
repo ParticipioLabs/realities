@@ -155,18 +155,19 @@ export function createInfo(driver, { title }, infoUrl) {
 export async function createViewer({
   user, viewedOrg, driver, coreModels,
 }) {
-  // creating user in core
-  const maybeUser = await coreModels.OrgMember.findOne({
+  // creating user org membership in core
+  const wantedUser = {
     userId: user.userId,
-  });
+    organizationId: viewedOrg.orgId,
+  };
+
+  const maybeUser = await coreModels.OrgMember.findOne(wantedUser);
 
   if (maybeUser === null) {
-    // user doesn't exist in db
-    const newUser = new coreModels.OrgMember({
-      userId: user.userId,
-      organizationId: viewedOrg.orgId,
-    });
-
+    // user<->org pairing doesn't exist in db
+    // NOTE: there should be 1 OrgMember doc per user<->org pair.
+    // i.e. numUsers*numOrgs number of docs
+    const newUser = new coreModels.OrgMember(wantedUser);
     await newUser.save();
   }
 
