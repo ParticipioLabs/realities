@@ -149,9 +149,9 @@ const resolvers = {
     createViewer: combineResolvers(
       isAuthenticated,
       (obj, args, {
-        user, driver, coreModels, viewedOrgId,
+        user, viewedOrg, driver, coreModels,
       }) => createViewer({
-        driver, user, coreModels, viewedOrgId,
+        user, viewedOrg, driver, coreModels,
       }),
     ),
     updateNeed: combineResolvers(

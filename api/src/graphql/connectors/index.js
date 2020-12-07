@@ -153,7 +153,7 @@ export function createInfo(driver, { title }, infoUrl) {
 }
 
 export async function createViewer({
-  driver, user, coreModels, viewedOrgId,
+  user, viewedOrg, driver, coreModels,
 }) {
   // creating user in core
   const maybeUser = await coreModels.OrgMember.findOne({
@@ -164,7 +164,7 @@ export async function createViewer({
     // user doesn't exist in db
     const newUser = new coreModels.OrgMember({
       userId: user.userId,
-      organizationId: viewedOrgId,
+      organizationId: viewedOrg.orgId,
     });
 
     await newUser.save();
