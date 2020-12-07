@@ -171,20 +171,21 @@ export async function createViewer(driver, user, coreModels, viewedOrgId) {
   // creating user in neo4j
   const queryParams = {
     email: user.email,
-    // TODO: personId used to be a random uuid, now it's the user's id from keycloak
-    // have we used it anywhere before (except for user urls) and could we maybe
-    // have some kind of migration to replace the old ids?
-    // so far we've used the user's email as their unique id but would maybe be
-    // more sane to use a generic id
-    // ah in core we don't store the email at all so have to use the keycloak userId
     personId: user.userId,
   };
-  // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
+  // nodeId used to be a random uuid, now it's the user's id from keycloak
+  // eventually we should probably switch to using this to identify a user
+  // instead of their email
+  // TODO: for now we'll set the nodeId ON MATCH as well but after every user
+  // is likely 'migrated' then we just have to do it ON CREATE
   const query = `
-    MERGE (person:Person {email:$email})
-    FOREACH (doThis IN CASE WHEN not(exists(person.nodeId)) THEN [1] ELSE [] END |
-      SET person += {nodeId:$personId, created:timestamp()})
-    RETURN person
+    MERGE (p:Person {email:$email})
+    ON MATCH SET
+      p.nodeId = $personId
+    ON CREATE SET
+      p.nodeId = $personId,
+      p.created = timestamp()
+    return p
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
