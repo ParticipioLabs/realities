@@ -6,15 +6,15 @@ import apolloClient from 'services/apolloClient';
 import history from 'services/history';
 import { getOrgSlug } from 'services/location';
 
-const GET_VIEWER = gql`
-  query AuthCallback_person($email: String!) {
-    person(email: $email) {
-      nodeId
-      email
-      name
-    }
-  }
-`;
+// const GET_VIEWER = gql`
+//   query AuthCallback_person($email: String!) {
+//     person(email: $email) {
+//       nodeId
+//       email
+//       name
+//     }
+//   }
+// `;
 
 const CREATE_VIEWER = gql`
   mutation AuthCallback_createViewer {
@@ -46,19 +46,22 @@ const AuthCallback = () => {
       if (isLoggedIn && email) {
         const client = apolloClient(accessToken);
 
+        // TODO: for now while e.g. accounts are switching from random uuids to
+        // their keycloak user ids, we'll run the mutation on every login
+        // client
+        //   .query({ query: GET_VIEWER, variables: { email } })
+        //   .then(({ data }) => {
+        //     if (data.person) {
+        //       history.replace(`/${orgSlug}`);
+        //     } else {
         client
-          .query({ query: GET_VIEWER, variables: { email } })
-          .then(({ data }) => {
-            if (data.person) {
-              history.replace(`/${orgSlug}`);
-            } else {
-              client
-                .mutate({ mutation: CREATE_VIEWER })
-                .then(() => history.replace(`/${orgSlug}/profile`))
-                .catch((err) => console.log(err));
-            }
-          })
+          .mutate({ mutation: CREATE_VIEWER })
+          // .then(() => history.replace(`/${orgSlug}/profile`))
+          .then(() => history.replace(`/${orgSlug}`))
           .catch((err) => console.log(err));
+        //     }
+        //   })
+        //   .catch((err) => console.log(err));
       }
     }
   });

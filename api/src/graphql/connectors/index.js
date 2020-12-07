@@ -152,10 +152,32 @@ export function createInfo(driver, { title }, infoUrl) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function createViewer(driver, userEmail) {
+export async function createViewer(driver, user, coreModels, viewedOrgId) {
+  // creating user in core
+  const maybeUser = await coreModels.OrgMember.findOne({
+    userId: user.userId,
+  });
+
+  if (maybeUser === null) {
+    // user doesn't exist in db
+    const newUser = new coreModels.OrgMember({
+      userId: user.userId,
+      organizationId: viewedOrgId,
+    });
+
+    await newUser.save();
+  }
+
+  // creating user in neo4j
   const queryParams = {
-    email: userEmail,
-    personId: uuidv4(),
+    email: user.email,
+    // TODO: personId used to be a random uuid, now it's the user's id from keycloak
+    // have we used it anywhere before (except for user urls) and could we maybe
+    // have some kind of migration to replace the old ids?
+    // so far we've used the user's email as their unique id but would maybe be
+    // more sane to use a generic id
+    // ah in core we don't store the email at all so have to use the keycloak userId
+    personId: user.userId,
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `

@@ -50,11 +50,13 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
     kauth,
     user: {
       email: kauth.accessToken && kauth.accessToken.content.email,
+      userId,
       role: 'user',
       isMemberOfViewedOrg: (orgMembership && orgMembership.organizationId) === viewedOrgId,
     },
     viewedOrgId,
     driver: neo4jDriver,
+    coreModels,
   };
 }
 
