@@ -2,7 +2,7 @@
 import { runQueryAndGetRecord } from './cypherUtils';
 import { getCoreModels } from '../services/platoCore';
 
-const currentVersion = 2;
+const currentVersion = 3;
 
 const migrateTo = {
   v2: async () => {
@@ -31,6 +31,29 @@ const migrateTo = {
     });
 
     await newOrg.save();
+  },
+  v3: async (driver) => {
+    // create an Org node for the placeholder org
+
+    const coreModels = await getCoreModels();
+
+    const slug = process.env.PLACEHOLDER_ORG_SLUG;
+    if (slug === undefined) {
+      throw Error('Please set the env var "PLACEHOLDER_ORG_SLUG"');
+    }
+
+    const theOrg = await coreModels.Organization.findOne({
+      subdomain: slug,
+    });
+
+    if (theOrg === null) {
+      throw Error(`Can't find org ${slug} in core`);
+    }
+
+    const query = `
+      CREATE (:Org { orgId: $orgId })
+    `;
+    await runQueryAndGetRecord(driver.session(), query, { orgId: `${theOrg._id}` });
   },
 };
 
