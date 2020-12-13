@@ -102,8 +102,10 @@ export function createResponsibility(driver, { title, needId }, { email, orgId }
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
+    MATCH (org:Org {orgId:$orgId})
     MERGE (n:ResponsibilityTemplate)
     ON CREATE SET n.description = 'Describe the responsibility here'
+    MERGE (org)-[:HAS]->(n)
     WITH n.description AS desc
     MATCH (need:Need {nodeId: $needId})
     WITH need, desc
