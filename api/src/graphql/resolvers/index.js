@@ -160,9 +160,9 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver, user }) => {
+      async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
-        const need = await updateReality(driver, args, user);
+        const need = await updateReality(driver, args, viewedOrg.orgId);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
         if (need && notify) {
           sendUpdateMail(
@@ -178,9 +178,9 @@ const resolvers = {
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver, user }) => {
+      async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
-        const responsibility = await updateReality(driver, args);
+        const responsibility = await updateReality(driver, args, viewedOrg.orgId);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
         if (responsibility && notify) {
           sendUpdateMail(

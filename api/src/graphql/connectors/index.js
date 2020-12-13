@@ -1,4 +1,5 @@
 import uuidv4 from 'uuid/v4';
+import _ from 'lodash';
 import {
   runQueryAndGetRecords,
   runQueryAndGetRecord,
@@ -199,10 +200,11 @@ export async function createViewer({
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function updateReality(driver, args) {
+export function updateReality(driver, args, orgId) {
   // Use cypher FOREACH hack to only set realizer
   // if the Person node could be found
   const query = `
+    MATCH (org:Org {orgId:$orgId})
     MATCH (reality {nodeId: $nodeId})
     MATCH (oldguide:Person)-[g:GUIDES]->(reality)
     MATCH (guide:Person {email: $guideEmail})
@@ -210,6 +212,7 @@ export function updateReality(driver, args) {
     OPTIONAL MATCH (realizer:Person {email: $realizerEmail})
     FOREACH(doThis IN CASE WHEN NOT $description = reality.description THEN [1] ELSE [] END | 
       CREATE (d:Info {text: reality.description, created: timestamp()})-[:DESCRIBED {created: timestamp()}]->(reality)
+      CREATE (org)-[:HAS]->(d)
     )
     FOREACH(doThis IN CASE WHEN NOT oldguide.email = guide.email THEN [1] ELSE [] END | 
       CREATE (oldguide)-[:GUIDED {created: timestamp()}]->(reality)
@@ -228,7 +231,11 @@ export function updateReality(driver, args) {
       CREATE (realizer)-[:REALIZES]->(reality))
     RETURN reality
   `;
-  return runQueryAndGetRecord(driver.session(), query, args);
+
+  // https://github.com/Edgeryders-Participio/realities/issues/160
+  const params = _.clone(args);
+  params.orgId = orgId;
+  return runQueryAndGetRecord(driver.session(), query, params);
 }
 
 export function changeFulfills(driver, { responsibilityId, needId }) {
