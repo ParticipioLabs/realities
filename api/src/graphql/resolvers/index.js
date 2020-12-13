@@ -140,8 +140,12 @@ const resolvers = {
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, { title, needId }, { user, driver }) => {
-        const responsibility = await createResponsibility(driver, { title, needId }, user.email);
+      async (obj, { title, needId }, { user, driver, viewedOrg }) => {
+        const responsibility = await createResponsibility(
+          driver,
+          { title, needId },
+          { email: user.email, orgId: viewedOrg.orgId },
+        );
         pubsub.publish(REALITY_CREATED, { realityCreated: responsibility });
         return responsibility;
       },
