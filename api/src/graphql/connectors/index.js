@@ -71,16 +71,19 @@ export function findNodeByRelationshipAndLabel(
   return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId });
 }
 
-export function createNeed(driver, { title }, userEmail) {
+export function createNeed(driver, { title }, { user, viewedOrg }) {
   const queryParams = {
     title,
-    email: userEmail,
+    email: user.email,
+    orgId: viewedOrg.orgId,
     needId: uuidv4(),
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
+    MATCH (org:Org {orgId:$orgId})
     MATCH (person:Person {email:$email})
     CREATE (need:Need {title:$title, nodeId:$needId, created:timestamp()})
+    CREATE (org)-[:HAS]->(need)
     CREATE (person)-[:GUIDES]->(need)
     CREATE (person)-[:REALIZES]->(need)
     RETURN need

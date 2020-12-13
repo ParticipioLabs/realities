@@ -132,8 +132,8 @@ const resolvers = {
   Mutation: {
     createNeed: combineResolvers(
       isAuthenticated,
-      async (obj, { title }, { user, driver }) => {
-        const need = await createNeed(driver, { title }, user.email);
+      async (obj, { title }, { user, driver, viewedOrg }) => {
+        const need = await createNeed(driver, { title }, { user, viewedOrg });
         pubsub.publish(REALITY_CREATED, { realityCreated: need });
         return need;
       },
