@@ -2,7 +2,7 @@ import React from 'react';
 import { Router } from 'react-router-dom';
 import history from 'services/history';
 import { AuthProvider, UserManager } from 'oidc-react';
-import Oidc, { WebStorageStateStore } from 'oidc-client';
+import Oidc from 'oidc-client';
 import useAuth from 'services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
@@ -26,7 +26,9 @@ const redirectUri = process.env.REACT_APP_KEYCLOAK_CALLBACK_URL;
 // arguments from
 // https://github.com/bjerkio/oidc-react/blob/53c5adef53fe2603bd8507bb27fd3616fbd7e7c1/src/AuthContext.tsx#L46
 const userManager = new UserManager({
-  userStore: new WebStorageStateStore({ store: window.localStorage }),
+  // disabling for now
+  // https://github.com/Edgeryders-Participio/realities/issues/162
+  // userStore: new WebStorageStateStore({ store: window.localStorage }),
   authority: `${process.env.REACT_APP_KEYCLOAK_SERVER_URL}/realms/${process.env.REACT_APP_KEYCLOAK_REALM}`,
   client_id: process.env.REACT_APP_KEYCLOAK_CLIENT,
   redirect_uri: redirectUri,
