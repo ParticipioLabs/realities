@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop */
-import { runQueryAndGetRecord } from './cypherUtils';
+import { runQueryAndGetRecord, runQueryAndGetRecords } from './cypherUtils';
 import { getCoreModels } from '../services/platoCore';
 
-const currentVersion = 3;
+const currentVersion = 4;
 
 const migrateTo = {
   v2: async () => {
@@ -54,6 +54,36 @@ const migrateTo = {
       CREATE (:Org { orgId: $orgId })
     `;
     await runQueryAndGetRecord(driver.session(), query, { orgId: `${theOrg._id}` });
+  },
+  v4: async (driver) => {
+    // add HAS rels between the placeholder org and all (or most) nodes
+
+    const coreModels = await getCoreModels();
+
+    const slug = process.env.PLACEHOLDER_ORG_SLUG;
+    if (slug === undefined) {
+      throw Error('Please set the env var "PLACEHOLDER_ORG_SLUG"');
+    }
+
+    const theOrg = await coreModels.Organization.findOne({
+      subdomain: slug,
+    });
+
+    if (theOrg === null) {
+      throw Error(`Can't find org ${slug} in core`);
+    }
+
+    // not doing on ResponsibilityTemplate because we already add the rel every
+    // time we make a resp
+    // we only want info nodes that are resp text history
+    const query = `
+      MATCH (org:Org {orgId:$orgId})
+      MATCH (n)
+        WHERE n:Need OR n:Responsibility OR (n:Info AND EXISTS (n.text))
+      MERGE (org)-[:HAS]->(n)
+      return n
+    `;
+    await runQueryAndGetRecords(driver.session(), query, { orgId: `${theOrg._id}` });
   },
 };
 
