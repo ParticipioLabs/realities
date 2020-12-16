@@ -132,16 +132,20 @@ const resolvers = {
   Mutation: {
     createNeed: combineResolvers(
       isAuthenticated,
-      async (obj, { title }, { user, driver }) => {
-        const need = await createNeed(driver, { title }, user.email);
+      async (obj, { title }, { user, driver, viewedOrg }) => {
+        const need = await createNeed(driver, { title }, { user, viewedOrg });
         pubsub.publish(REALITY_CREATED, { realityCreated: need });
         return need;
       },
     ),
     createResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, { title, needId }, { user, driver }) => {
-        const responsibility = await createResponsibility(driver, { title, needId }, user.email);
+      async (obj, { title, needId }, { user, driver, viewedOrg }) => {
+        const responsibility = await createResponsibility(
+          driver,
+          { title, needId },
+          { email: user.email, orgId: viewedOrg.orgId },
+        );
         pubsub.publish(REALITY_CREATED, { realityCreated: responsibility });
         return responsibility;
       },
@@ -156,9 +160,9 @@ const resolvers = {
     ),
     updateNeed: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver, user }) => {
+      async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
-        const need = await updateReality(driver, args, user);
+        const need = await updateReality(driver, args, viewedOrg.orgId);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
         if (need && notify) {
           sendUpdateMail(
@@ -174,9 +178,9 @@ const resolvers = {
     ),
     updateResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, args, { driver, user }) => {
+      async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
-        const responsibility = await updateReality(driver, args);
+        const responsibility = await updateReality(driver, args, viewedOrg.orgId);
         pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
         if (responsibility && notify) {
           sendUpdateMail(

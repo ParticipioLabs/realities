@@ -1,4 +1,5 @@
 import uuidv4 from 'uuid/v4';
+import _ from 'lodash';
 import {
   runQueryAndGetRecords,
   runQueryAndGetRecord,
@@ -71,16 +72,19 @@ export function findNodeByRelationshipAndLabel(
   return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId });
 }
 
-export function createNeed(driver, { title }, userEmail) {
+export function createNeed(driver, { title }, { user, viewedOrg }) {
   const queryParams = {
     title,
-    email: userEmail,
+    email: user.email,
+    orgId: viewedOrg.orgId,
     needId: uuidv4(),
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
+    MATCH (org:Org {orgId:$orgId})
     MATCH (person:Person {email:$email})
     CREATE (need:Need {title:$title, nodeId:$needId, created:timestamp()})
+    CREATE (org)-[:HAS]->(need)
     CREATE (person)-[:GUIDES]->(need)
     CREATE (person)-[:REALIZES]->(need)
     RETURN need
@@ -88,20 +92,24 @@ export function createNeed(driver, { title }, userEmail) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function createResponsibility(driver, { title, needId }, userEmail) {
+export function createResponsibility(driver, { title, needId }, { email, orgId }) {
   const queryParams = {
     title,
     needId,
-    email: userEmail,
+    email,
+    orgId,
     responsibilityId: uuidv4(),
   };
   // Use cypher FOREACH hack to only set nodeId for person if it isn't already set
   const query = `
+    MATCH (org:Org {orgId:$orgId})
     MERGE (n:ResponsibilityTemplate)
     ON CREATE SET n.description = 'Describe the responsibility here'
+    MERGE (org)-[:HAS]->(n)
     WITH n.description AS desc
     MATCH (need:Need {nodeId: $needId})
     WITH need, desc
+    MATCH (org:Org {orgId:$orgId})
     MATCH (person:Person {email:$email})
     CREATE (resp:Responsibility {
       title:$title,
@@ -110,6 +118,7 @@ export function createResponsibility(driver, { title, needId }, userEmail) {
       created:timestamp()
     })-[r:FULFILLS]->(need)
     CREATE (person)-[:GUIDES]->(resp)
+    CREATE (org)-[:HAS]->(resp)
     RETURN resp
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
@@ -193,10 +202,11 @@ export async function createViewer({
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function updateReality(driver, args) {
+export function updateReality(driver, args, orgId) {
   // Use cypher FOREACH hack to only set realizer
   // if the Person node could be found
   const query = `
+    MATCH (org:Org {orgId:$orgId})
     MATCH (reality {nodeId: $nodeId})
     MATCH (oldguide:Person)-[g:GUIDES]->(reality)
     MATCH (guide:Person {email: $guideEmail})
@@ -204,6 +214,7 @@ export function updateReality(driver, args) {
     OPTIONAL MATCH (realizer:Person {email: $realizerEmail})
     FOREACH(doThis IN CASE WHEN NOT $description = reality.description THEN [1] ELSE [] END | 
       CREATE (d:Info {text: reality.description, created: timestamp()})-[:DESCRIBED {created: timestamp()}]->(reality)
+      CREATE (org)-[:HAS]->(d)
     )
     FOREACH(doThis IN CASE WHEN NOT oldguide.email = guide.email THEN [1] ELSE [] END | 
       CREATE (oldguide)-[:GUIDED {created: timestamp()}]->(reality)
@@ -222,7 +233,11 @@ export function updateReality(driver, args) {
       CREATE (realizer)-[:REALIZES]->(reality))
     RETURN reality
   `;
-  return runQueryAndGetRecord(driver.session(), query, args);
+
+  // https://github.com/Edgeryders-Participio/realities/issues/160
+  const params = _.clone(args);
+  params.orgId = orgId;
+  return runQueryAndGetRecord(driver.session(), query, params);
 }
 
 export function changeFulfills(driver, { responsibilityId, needId }) {
