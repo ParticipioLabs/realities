@@ -3,6 +3,7 @@ import { combineResolvers } from 'graphql-resolvers';
 import { PubSub } from 'apollo-server';
 
 import {
+  findNodesByLabelAnyOrg,
   findNodesByLabel,
   findNodeByLabelAndId,
   findNodeByLabelAndProperty,
@@ -44,7 +45,7 @@ const resolvers = {
   Query: {
     persons(obj, { search }, { driver }) {
       if (search) return searchPersons(driver, search);
-      return findNodesByLabel(driver, 'Person');
+      return findNodesByLabelAnyOrg(driver, 'Person');
     },
     person(obj, { nodeId, email }, { driver }) {
       if (email) return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
@@ -54,17 +55,17 @@ const resolvers = {
         'were both undefined. Please provide at least one.';
       return new Error(errorMessage);
     },
-    needs(obj, { search }, { driver }) {
+    needs(obj, { search }, { driver, viewedOrg }) {
       if (search) return searchRealities(driver, 'Need', search);
-      return findNodesByLabel(driver, 'Need');
+      return findNodesByLabel(driver, 'Need', viewedOrg.orgId);
     },
     need(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(obj, { search, fulfillsNeedId }, { driver }) {
+    responsibilities(obj, { search, fulfillsNeedId }, { driver, viewedOrg }) {
       if (search) return searchRealities(driver, 'Responsibility', search);
       if (fulfillsNeedId) return findNodesByRelationshipAndLabel(driver, fulfillsNeedId, 'FULFILLS', 'Responsibility', 'IN');
-      return findNodesByLabel(driver, 'Responsibility');
+      return findNodesByLabel(driver, 'Responsibility', viewedOrg.orgId);
     },
     responsibility(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);

@@ -7,13 +7,22 @@ import {
   runQueryAndGetRecordWithFields,
 } from '../../db/cypherUtils';
 
-export function findNodesByLabel(driver, label) {
+export function findNodesByLabelAnyOrg(driver, label) {
   const query = `
     MATCH (n:${label})
     WHERE NOT EXISTS(n.deleted)
     RETURN n ORDER BY n.created DESC
   `;
   return runQueryAndGetRecords(driver.session(), query, { label });
+}
+
+export function findNodesByLabel(driver, label, orgId) {
+  const query = `
+    MATCH (:Org {orgId:$orgId})-[:HAS]->(n:${label})
+    WHERE NOT EXISTS(n.deleted)
+    RETURN n ORDER BY n.created DESC
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { label, orgId });
 }
 
 export function findNodeByLabelAndId(driver, label, nodeId) {
