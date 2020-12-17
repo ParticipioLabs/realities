@@ -162,25 +162,9 @@ export function createInfo(driver, { title }, infoUrl) {
 }
 
 export async function createViewer({
-  user, viewedOrg, driver, coreModels,
+  user, driver,
 }) {
-  // creating user org membership in core
-  const wantedUser = {
-    userId: user.userId,
-    organizationId: viewedOrg.orgId,
-  };
-
-  const maybeUser = await coreModels.OrgMember.findOne(wantedUser);
-
-  if (maybeUser === null) {
-    // user<->org pairing doesn't exist in db
-    // NOTE: there should be 1 OrgMember doc per user<->org pair.
-    // i.e. numUsers*numOrgs number of docs
-    const newUser = new coreModels.OrgMember(wantedUser);
-    await newUser.save();
-  }
-
-  // creating user in neo4j
+  // idempotently creates user in neo4j
   const queryParams = {
     email: user.email,
     personId: user.userId,

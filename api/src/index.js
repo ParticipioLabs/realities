@@ -7,7 +7,7 @@ import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandl
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
-import { getCoreModels } from './services/platoCore';
+import { getCoreModels, createOrgMembership } from './services/platoCore';
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -40,11 +40,8 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
   });
   const viewedOrgId = viewedOrg.id;
 
-  // if we get a result back, it means that the user is a member of the org
-  const orgMembership = await coreModels.OrgMember.findOne({
-    userId,
-    organizationId: viewedOrgId,
-  });
+  // for now we'll let all users automatically join all orgs
+  const orgMembership = await createOrgMembership({ coreModels, userId, orgId: viewedOrgId });
 
   return {
     kauth,
