@@ -52,33 +52,37 @@ function getRelationshipQuery(relationship, label, direction) {
     label === ''
       ? '(n)'
       : `(n:${label})`;
+
+  const rightHandPerson = label === 'Person';
+
   const query = `
-    MATCH ({nodeId: $nodeId})${relationshipFragment}${labelFragment}
+    MATCH (org:Org {orgId:$orgId})
+    MATCH ${rightHandPerson ? '(org)-[:HAS]->' : ''}({nodeId: $nodeId})${relationshipFragment}${labelFragment}${rightHandPerson ? '' : '<-[:HAS]-(org)'}
     WHERE NOT EXISTS(n.deleted)
     RETURN n ORDER BY n.created DESC`;
   return query;
 }
 
 export function findNodesByRelationshipAndLabel(
-  driver,
+  { driver, orgId },
   originNodeId,
   relationship,
   label,
   direction,
 ) {
   const query = getRelationshipQuery(relationship, label, direction);
-  return runQueryAndGetRecords(driver.session(), query, { nodeId: originNodeId });
+  return runQueryAndGetRecords(driver.session(), query, { nodeId: originNodeId, orgId });
 }
 
 export function findNodeByRelationshipAndLabel(
-  driver,
+  { driver, orgId },
   originNodeId,
   relationship,
   label,
   direction,
 ) {
   const query = getRelationshipQuery(relationship, label, direction);
-  return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId });
+  return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId, orgId });
 }
 
 export function createNeed(driver, { title }, { user, viewedOrg }) {
