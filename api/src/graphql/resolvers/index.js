@@ -1,6 +1,6 @@
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
-import { PubSub } from 'apollo-server';
+import { PubSub, withFilter } from 'apollo-server';
 
 import {
   findNodesByLabelAnyOrg,
@@ -35,12 +35,26 @@ const REALITY_CREATED = 'REALITY_CREATED';
 const REALITY_DELETED = 'REALITY_DELETED';
 const REALITY_UPDATED = 'REALITY_UPDATED';
 
+function subWithFilter(type) {
+  return {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([type]),
+      (payload, variables, context) => {
+        if (payload.orgId === undefined) {
+          console.error('orgId not passed into subscription publish', payload);
+        }
+        return payload.orgId === context.viewedOrg.orgId;
+      },
+    ),
+  };
+}
+
 const resolvers = {
   // root entry point to GraphQL service
   Subscription: {
-    realityCreated: { subscribe: () => pubsub.asyncIterator([REALITY_CREATED]) },
-    realityDeleted: { subscribe: () => pubsub.asyncIterator([REALITY_DELETED]) },
-    realityUpdated: { subscribe: () => pubsub.asyncIterator([REALITY_UPDATED]) },
+    realityCreated: subWithFilter(REALITY_CREATED),
+    realityDeleted: subWithFilter(REALITY_DELETED),
+    realityUpdated: subWithFilter(REALITY_UPDATED),
   },
   Query: {
     persons(obj, { search }, { driver }) {
@@ -135,7 +149,13 @@ const resolvers = {
       isAuthenticated,
       async (obj, { title }, { user, driver, viewedOrg }) => {
         const need = await createNeed(driver, { title }, { user, viewedOrg });
-        pubsub.publish(REALITY_CREATED, { realityCreated: need });
+        pubsub.publish(REALITY_CREATED, {
+          realityCreated: need,
+          // this isn't actually passed along to the user, since it's not in
+          // the graphql schema i think. but we use it for filtering in the
+          // subscriptions
+          orgId: viewedOrg.orgId,
+        });
         return need;
       },
     ),
