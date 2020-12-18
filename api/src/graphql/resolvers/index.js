@@ -167,7 +167,7 @@ const resolvers = {
           { title, needId },
           { email: user.email, orgId: viewedOrg.orgId },
         );
-        pubsub.publish(REALITY_CREATED, { realityCreated: responsibility });
+        pubsub.publish(REALITY_CREATED, { realityCreated: responsibility, orgId: viewedOrg.orgId });
         return responsibility;
       },
     ),
@@ -184,7 +184,7 @@ const resolvers = {
       async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
         const need = await updateReality(driver, args, viewedOrg.orgId);
-        pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: need, orgId: viewedOrg.orgId });
         if (need && notify) {
           sendUpdateMail(
             driver,
@@ -202,7 +202,7 @@ const resolvers = {
       async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
         const responsibility = await updateReality(driver, args, viewedOrg.orgId);
-        pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility, orgId: viewedOrg.orgId });
         if (responsibility && notify) {
           sendUpdateMail(
             driver,
@@ -227,18 +227,18 @@ const resolvers = {
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
     softDeleteNeed: combineResolvers(
       isAuthenticated,
-      async (obj, { nodeId }, { driver }) => {
+      async (obj, { nodeId }, { driver, viewedOrg: { orgId } }) => {
         const need = await softDeleteNode(driver, { nodeId });
-        pubsub.publish(REALITY_DELETED, { realityDeleted: need });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: need, orgId });
         return need;
       },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, { nodeId }, { driver }) => {
+      async (obj, { nodeId }, { driver, viewedOrg: { orgId } }) => {
         const responsibility = await softDeleteNode(driver, { nodeId });
-        pubsub.publish(REALITY_DELETED, { realityDeleted: responsibility });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: responsibility, orgId });
         return responsibility;
       },
     ),
