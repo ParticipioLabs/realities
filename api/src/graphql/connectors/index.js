@@ -327,13 +327,14 @@ export function searchPersons(driver, term) {
   return runQueryAndGetRecords(driver.session(), query, { term });
 }
 
-export function searchRealities(driver, label, term) {
+export function searchRealities(driver, label, term, orgId) {
   const query = `
-    MATCH (n:${label})
+    MATCH (org:Org {orgId:$orgId})
+    MATCH (org)-[:HAS]->(n:${label})
     WHERE toLower(n.title) CONTAINS toLower($term) AND NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return runQueryAndGetRecords(driver.session(), query, { term });
+  return runQueryAndGetRecords(driver.session(), query, { term, orgId });
 }
 
 export function getPeopleTwoStepsFromReality(driver, { nodeId }) {

@@ -69,17 +69,17 @@ const resolvers = {
         'were both undefined. Please provide at least one.';
       return new Error(errorMessage);
     },
-    needs(obj, { search }, { driver, viewedOrg }) {
-      if (search) return searchRealities(driver, 'Need', search);
-      return findNodesByLabel(driver, 'Need', viewedOrg.orgId);
+    needs(obj, { search }, { driver, viewedOrg: { orgId } }) {
+      if (search) return searchRealities(driver, 'Need', search, orgId);
+      return findNodesByLabel(driver, 'Need', orgId);
     },
     need(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(obj, { search, fulfillsNeedId }, { driver, viewedOrg }) {
-      if (search) return searchRealities(driver, 'Responsibility', search);
+    responsibilities(obj, { search, fulfillsNeedId }, { driver, viewedOrg: { orgId } }) {
+      if (search) return searchRealities(driver, 'Responsibility', search, orgId);
       if (fulfillsNeedId) return findNodesByRelationshipAndLabel(driver, fulfillsNeedId, 'FULFILLS', 'Responsibility', 'IN');
-      return findNodesByLabel(driver, 'Responsibility', viewedOrg.orgId);
+      return findNodesByLabel(driver, 'Responsibility', orgId);
     },
     responsibility(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
