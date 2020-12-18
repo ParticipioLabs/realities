@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Container, Row, Col, Card, CardBody, CardTitle,
 } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 const OrgSelect = () => (
   <Container>
@@ -10,7 +11,7 @@ const OrgSelect = () => (
       {
         [...Array(10)].map(() => (
           <Col className="py-2" sm={6} md={4}>
-            <Card>
+            <Card tag={Link} to="/potato">
               <CardBody>
                 <CardTitle>
                   orgname here
