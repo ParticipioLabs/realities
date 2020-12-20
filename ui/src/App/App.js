@@ -3,16 +3,16 @@ import { Router } from 'react-router-dom';
 import history from 'services/history';
 import { AuthProvider, UserManager } from 'oidc-react';
 import Oidc from 'oidc-client';
-import useAuth from 'services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
+import { useOrgSlug } from 'services/location';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
 
 const ApolloSetup = () => {
-  const { accessToken } = useAuth();
+  const orgSlug = useOrgSlug();
 
   return (
-    <ApolloProvider client={apolloClient(accessToken)}>
+    <ApolloProvider client={apolloClient(orgSlug)}>
       <AuthRoutesContainer />
     </ApolloProvider>
   );

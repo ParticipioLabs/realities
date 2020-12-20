@@ -6,12 +6,15 @@ export default function useAuth() {
 
   const redirect = `${process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}?orgSlug=${getOrgSlug()}`;
 
+  const accessToken = auth.userData && auth.userData.access_token;
+  window.sessionStorage.setItem('accessToken', accessToken);
+
   return {
     login: () => auth.signIn({ redirect_uri: redirect }),
     logout: () => auth.signOutRedirect({ post_logout_redirect_uri: redirect }),
     isLoggedIn: auth.userData !== null, /* && auth.userData.expired === false
     this kicks in after a bit but you're still logged in after a refresh?? */
-    accessToken: auth.userData && auth.userData.access_token,
+    accessToken,
     email: auth.userData && auth.userData.profile.email,
   };
 }

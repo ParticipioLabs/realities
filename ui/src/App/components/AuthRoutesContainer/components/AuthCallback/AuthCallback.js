@@ -18,7 +18,7 @@ const CREATE_VIEWER = gql`
 
 const AuthCallback = () => {
   const {
-    isLoggedIn, email, accessToken,
+    isLoggedIn, email,
   } = useAuth();
 
   const orgSlug = getOrgSlug();
@@ -35,7 +35,7 @@ const AuthCallback = () => {
       }
 
       if (isLoggedIn && email) {
-        const client = apolloClient(accessToken);
+        const client = apolloClient(orgSlug);
 
         client
           // CREATE_VIEWER is idempotent so it doesn't hurt to call it every time

@@ -1,4 +1,6 @@
-// eslint-disable-next-line import/prefer-default-export
+import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+
 export function getOrgSlug() {
   // when possible (most of the time) you should use
   // const { orgSlug } = useParams();
@@ -14,4 +16,21 @@ export function getOrgSlug() {
     return firstPart;
   }
   return new URLSearchParams(window.location.search).get('orgSlug');
+}
+
+export function useOrgSlug() {
+  // for when you want getOrgSlug to be a bit more reactive
+
+  const [orgSlug, setOrgSlug] = useState(getOrgSlug());
+  const history = useHistory();
+
+  useEffect(() => history.listen(() => {
+    const gottenSlug = getOrgSlug();
+
+    if (gottenSlug !== orgSlug) {
+      setOrgSlug(gottenSlug);
+    }
+  }));
+
+  return orgSlug;
 }
