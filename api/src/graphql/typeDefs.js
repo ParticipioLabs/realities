@@ -21,6 +21,7 @@ const typeDefs = `
     need(nodeId: ID!): Need
     responsibilities(fulfillsNeedId: ID, search: String): [Responsibility]
     responsibility(nodeId: ID!): Responsibility
+    orgs: [Org]
     infos(search: String): [Info]
     info(url: String!): [Info]
   }
@@ -162,6 +163,12 @@ const typeDefs = `
     needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
     deliberations: [Info]
+  }
+
+  type Org {
+    orgId: ID!
+    name: String
+    orgSlug: String
   }
 
   type Info {

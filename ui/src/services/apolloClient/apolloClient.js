@@ -19,7 +19,9 @@ import { resolvers, defaults } from './localState';
 
 export default function apolloClient(token) {
   const cache = new InMemoryCache({
-    dataIdFromObject: (object) => `${object.__typename}:${object.nodeId}`,
+    // remember to fetch nodeId/orgId even if we don't use it, because of
+    // https://stackoverflow.com/questions/48840223/apollo-duplicates-first-result-to-every-node-in-array-of-edges
+    dataIdFromObject: (object) => `${object.__typename}:${object.nodeId}:${object.orgId}`,
     // fragmentMatcher,
   });
 

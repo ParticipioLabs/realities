@@ -84,6 +84,14 @@ const resolvers = {
     responsibility(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
     },
+    async orgs(obj, args, { coreModels }) {
+      const dbOrgs = await coreModels.Organization.find({});
+      return dbOrgs.map(org => ({
+        orgId: `${org._id}`,
+        name: org.name,
+        orgSlug: org.subdomain,
+      }));
+    },
   },
   Person: {
     created({ created }) {
