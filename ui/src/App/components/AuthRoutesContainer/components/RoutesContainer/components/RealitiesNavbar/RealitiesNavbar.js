@@ -12,18 +12,21 @@ import {
   NavLink,
   UncontrolledDropdown,
 } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { FaChevronLeft } from 'react-icons/fa';
 import useAuth from 'services/useAuth';
 import { useOrgSlug } from 'services/location';
 import Search from 'components/Search';
 import ViewerName from 'components/ViewerName';
+import IconButton from 'components/IconButton';
 
 const StyledNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
 `;
 
 const RealitiesNavbar = () => {
+  const history = useHistory();
   const orgSlug = useOrgSlug();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +39,13 @@ const RealitiesNavbar = () => {
 
   return (
     <Navbar color="faded" light expand="md">
+      <IconButton
+        dark
+        style={{ visibility: atHome ? 'hidden' : '' }}
+        onClick={() => history.push('/')}
+      >
+        <FaChevronLeft />
+      </IconButton>
       <StyledNavbarBrand tag={Link} to={`/${orgSlug}`}>
         Realities
       </StyledNavbarBrand>
