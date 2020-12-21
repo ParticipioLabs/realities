@@ -22,6 +22,7 @@ const typeDefs = `
     responsibilities(fulfillsNeedId: ID, search: String): [Responsibility]
     responsibility(nodeId: ID!): Responsibility
     orgs: [Org]
+    org(orgSlug: String): Org
     infos(search: String): [Info]
     info(url: String!): [Info]
   }
@@ -167,8 +168,8 @@ const typeDefs = `
 
   type Org {
     orgId: ID!
-    name: String
-    orgSlug: String
+    name: String!
+    orgSlug: String!
   }
 
   type Info {

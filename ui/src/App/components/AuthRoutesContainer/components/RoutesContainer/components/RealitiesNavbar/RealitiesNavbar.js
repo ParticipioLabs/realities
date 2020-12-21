@@ -13,6 +13,7 @@ import {
   UncontrolledDropdown,
 } from 'reactstrap';
 import { Link, useHistory } from 'react-router-dom';
+import { gql, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { FaChevronLeft } from 'react-icons/fa';
 import useAuth from 'services/useAuth';
@@ -20,9 +21,19 @@ import { useOrgSlug } from 'services/location';
 import Search from 'components/Search';
 import ViewerName from 'components/ViewerName';
 import IconButton from 'components/IconButton';
+import WrappedLoader from 'components/WrappedLoader';
 
 const StyledNavbarBrand = styled(NavbarBrand)`
   font-weight: bold;
+`;
+
+const GET_ORG = gql`
+  query NavBar_getOrg($orgSlug: String) {
+    org(orgSlug: $orgSlug) {
+      orgId
+      name
+    }
+  }
 `;
 
 const RealitiesNavbar = () => {
@@ -37,6 +48,14 @@ const RealitiesNavbar = () => {
 
   const atHome = window.location.pathname === '/';
 
+  const { loading, error, data } = useQuery(GET_ORG, {
+    variables: { orgSlug },
+    skip: atHome,
+  });
+
+  if (loading) return <WrappedLoader />;
+  if (error) return `Error! ${error.message}`;
+
   return (
     <Navbar color="faded" light expand="md">
       <IconButton
@@ -47,7 +66,7 @@ const RealitiesNavbar = () => {
         <FaChevronLeft />
       </IconButton>
       <StyledNavbarBrand tag={Link} to={`/${orgSlug}`}>
-        Realities
+        { atHome ? 'Realities' : data.org.name }
       </StyledNavbarBrand>
       <div className="flex-grow-1 mr-3 d-none d-md-block ">
         { atHome ? '' : (

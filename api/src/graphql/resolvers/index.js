@@ -87,10 +87,18 @@ const resolvers = {
     async orgs(obj, args, { coreModels }) {
       const dbOrgs = await coreModels.Organization.find({});
       return dbOrgs.map(org => ({
-        orgId: `${org._id}`,
+        orgId: org._id,
         name: org.name,
         orgSlug: org.subdomain,
       }));
+    },
+    async org(obj, { orgSlug }, { coreModels }) {
+      const org = await coreModels.Organization.findOne({ subdomain: orgSlug });
+      return {
+        orgId: org._id,
+        name: org.name,
+        orgSlug: org.subdomain,
+      };
     },
   },
   Person: {
