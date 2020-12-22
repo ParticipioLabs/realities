@@ -18,19 +18,26 @@ export function getOrgSlug() {
   return new URLSearchParams(window.location.search).get('orgSlug');
 }
 
-export function useOrgSlug() {
-  // for when you want getOrgSlug to be a bit more reactive
-
-  const [orgSlug, setOrgSlug] = useState(getOrgSlug());
+function useListenHistory(fn) {
+  const [state, setState] = useState(fn());
   const history = useHistory();
 
   useEffect(() => history.listen(() => {
-    const gottenSlug = getOrgSlug();
+    const newState = fn();
 
-    if (gottenSlug !== orgSlug) {
-      setOrgSlug(gottenSlug);
+    if (newState !== state) {
+      setState(newState);
     }
   }));
 
-  return orgSlug;
+  return state;
+}
+
+export function useOrgSlug() {
+  return useListenHistory(getOrgSlug);
+}
+
+export function useAtHome() {
+  const getAtHome = () => window.location.pathname === '/';
+  return useListenHistory(getAtHome);
 }

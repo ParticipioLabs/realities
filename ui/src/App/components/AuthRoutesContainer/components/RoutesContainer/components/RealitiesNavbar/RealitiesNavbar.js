@@ -17,7 +17,7 @@ import { gql, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { FaChevronLeft } from 'react-icons/fa';
 import useAuth from 'services/useAuth';
-import { useOrgSlug } from 'services/location';
+import { useOrgSlug, useAtHome } from 'services/location';
 import Search from 'components/Search';
 import ViewerName from 'components/ViewerName';
 import IconButton from 'components/IconButton';
@@ -46,7 +46,7 @@ const RealitiesNavbar = () => {
     isLoggedIn, login, logout,
   } = useAuth();
 
-  const atHome = window.location.pathname === '/';
+  const atHome = useAtHome();
 
   const { loading, error, data } = useQuery(GET_ORG, {
     variables: { orgSlug },

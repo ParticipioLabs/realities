@@ -32,7 +32,7 @@ const userManager = new UserManager({
   authority: `${process.env.REACT_APP_KEYCLOAK_SERVER_URL}/realms/${process.env.REACT_APP_KEYCLOAK_REALM}`,
   client_id: process.env.REACT_APP_KEYCLOAK_CLIENT,
   redirect_uri: redirectUri,
-  silent_redirect_uri: redirectUri,
+  silent_redirect_uri: `${redirectUri}?redirectTo=silent`,
   post_logout_redirect_uri: redirectUri,
   response_type: 'code',
   scope: 'openid',
