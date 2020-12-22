@@ -4,7 +4,7 @@ import Loader from 'react-loader';
 import useAuth from 'services/useAuth';
 import apolloClient from 'services/apolloClient';
 import history from 'services/history';
-import { getOrgSlug } from 'services/location';
+import { useOrgSlug } from 'services/location';
 
 const CREATE_VIEWER = gql`
   mutation AuthCallback_createViewer {
@@ -21,7 +21,7 @@ const AuthCallback = () => {
     isLoggedIn, email,
   } = useAuth();
 
-  const orgSlug = getOrgSlug();
+  const orgSlug = useOrgSlug();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

@@ -1,14 +1,15 @@
 import { useAuth as useOidc } from 'oidc-react';
-import { getOrgSlug, useAtHome } from 'services/location';
+import { useOrgSlug, useAtHome } from 'services/location';
 
 export default function useAuth() {
   const auth = useOidc();
   const atHome = useAtHome();
+  const orgSlug = useOrgSlug();
 
   const redirectTo = atHome ? 'home' : 'org';
   // this can also be 'silent' but that's set when setting up the AuthProvider
 
-  const redirect = `${process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}?redirectTo=${redirectTo}&orgSlug=${getOrgSlug()}`;
+  const redirect = `${process.env.REACT_APP_KEYCLOAK_CALLBACK_URL}?redirectTo=${redirectTo}&orgSlug=${orgSlug}`;
 
   const accessToken = auth.userData && auth.userData.access_token;
   window.sessionStorage.setItem('accessToken', accessToken);

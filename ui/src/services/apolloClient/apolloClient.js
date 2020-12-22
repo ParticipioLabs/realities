@@ -6,8 +6,6 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import { setContext } from '@apollo/client/link/context';
 import { InMemoryCache } from '@apollo/client/cache';
 import { SET_CACHE } from 'services/queries';
-import { getOrgSlug } from 'services/location';
-
 import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
@@ -26,7 +24,7 @@ function makeContext(orgSlug) {
   } : {};
 
   return {
-    orgSlug: orgSlug || getOrgSlug(),
+    orgSlug,
     ...authObj,
   };
 }
