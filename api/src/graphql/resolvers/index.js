@@ -1,8 +1,9 @@
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
-import { PubSub } from 'apollo-server';
+import { PubSub, withFilter } from 'apollo-server';
 
 import {
+  findNodesByLabelAnyOrg,
   findNodesByLabel,
   findNodeByLabelAndId,
   findNodeByLabelAndProperty,
@@ -34,17 +35,31 @@ const REALITY_CREATED = 'REALITY_CREATED';
 const REALITY_DELETED = 'REALITY_DELETED';
 const REALITY_UPDATED = 'REALITY_UPDATED';
 
+function subWithFilter(type) {
+  return {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([type]),
+      (payload, variables, context) => {
+        if (payload.orgId === undefined) {
+          console.error('orgId not passed into subscription publish', payload);
+        }
+        return payload.orgId === context.viewedOrg.orgId;
+      },
+    ),
+  };
+}
+
 const resolvers = {
   // root entry point to GraphQL service
   Subscription: {
-    realityCreated: { subscribe: () => pubsub.asyncIterator([REALITY_CREATED]) },
-    realityDeleted: { subscribe: () => pubsub.asyncIterator([REALITY_DELETED]) },
-    realityUpdated: { subscribe: () => pubsub.asyncIterator([REALITY_UPDATED]) },
+    realityCreated: subWithFilter(REALITY_CREATED),
+    realityDeleted: subWithFilter(REALITY_DELETED),
+    realityUpdated: subWithFilter(REALITY_UPDATED),
   },
   Query: {
     persons(obj, { search }, { driver }) {
       if (search) return searchPersons(driver, search);
-      return findNodesByLabel(driver, 'Person');
+      return findNodesByLabelAnyOrg(driver, 'Person');
     },
     person(obj, { nodeId, email }, { driver }) {
       if (email) return findNodeByLabelAndProperty(driver, 'Person', 'email', email);
@@ -54,37 +69,53 @@ const resolvers = {
         'were both undefined. Please provide at least one.';
       return new Error(errorMessage);
     },
-    needs(obj, { search }, { driver }) {
-      if (search) return searchRealities(driver, 'Need', search);
-      return findNodesByLabel(driver, 'Need');
+    needs(obj, { search }, { driver, viewedOrg: { orgId } }) {
+      if (search) return searchRealities(driver, 'Need', search, orgId);
+      return findNodesByLabel(driver, 'Need', orgId);
     },
     need(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Need', nodeId);
     },
-    responsibilities(obj, { search, fulfillsNeedId }, { driver }) {
-      if (search) return searchRealities(driver, 'Responsibility', search);
-      if (fulfillsNeedId) return findNodesByRelationshipAndLabel(driver, fulfillsNeedId, 'FULFILLS', 'Responsibility', 'IN');
-      return findNodesByLabel(driver, 'Responsibility');
+    responsibilities(obj, { search, fulfillsNeedId }, { driver, viewedOrg: { orgId } }) {
+      if (search) return searchRealities(driver, 'Responsibility', search, orgId);
+      if (fulfillsNeedId) return findNodesByRelationshipAndLabel({ driver, orgId }, fulfillsNeedId, 'FULFILLS', 'Responsibility', 'IN');
+      return findNodesByLabel(driver, 'Responsibility', orgId);
     },
     responsibility(obj, { nodeId }, { driver }) {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
+    },
+    async orgs(obj, args, { coreModels }) {
+      const dbOrgs = await coreModels.Organization.find({});
+      return dbOrgs.map(org => ({
+        orgId: org._id,
+        name: org.name,
+        orgSlug: org.subdomain,
+      }));
+    },
+    async org(obj, { orgSlug }, { coreModels }) {
+      const org = await coreModels.Organization.findOne({ subdomain: orgSlug });
+      return {
+        orgId: org._id,
+        name: org.name,
+        orgSlug: org.subdomain,
+      };
     },
   },
   Person: {
     created({ created }) {
       return created.toString();
     },
-    guidesNeeds({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Need');
+    guidesNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Need');
     },
-    realizesNeeds({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'REALIZES', 'Need');
+    realizesNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Need');
     },
-    guidesResponsibilities({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Responsibility');
+    guidesResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Responsibility');
     },
-    realizesResponsibilities({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'REALIZES', 'Responsibility');
+    realizesResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Responsibility');
     },
   },
   Reality: {
@@ -97,36 +128,36 @@ const resolvers = {
     deleted({ deleted }) {
       return deleted.toString();
     },
-    guide({ nodeId }, args, { driver }) {
-      return findNodeByRelationshipAndLabel(driver, nodeId, 'GUIDES', 'Person', 'IN');
+    guide({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Person', 'IN');
     },
-    realizer({ nodeId }, args, { driver }) {
-      return findNodeByRelationshipAndLabel(driver, nodeId, 'REALIZES', 'Person', 'IN');
+    realizer({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Person', 'IN');
     },
-    dependsOnNeeds({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Need');
+    dependsOnNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need');
     },
-    dependsOnResponsibilities({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Responsibility');
+    dependsOnResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility');
     },
-    needsThatDependOnThis({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Need', 'IN');
+    needsThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need', 'IN');
     },
-    responsibilitiesThatDependOnThis({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
+    responsibilitiesThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
     },
-    deliberations({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'HAS_DELIBERATION', 'Info');
+    deliberations({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'HAS_DELIBERATION', 'Info');
     },
   },
   Need: {
-    fulfilledBy({ nodeId }, args, { driver }) {
-      return findNodesByRelationshipAndLabel(driver, nodeId, 'FULFILLS', 'Responsibility', 'IN');
+    fulfilledBy({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'FULFILLS', 'Responsibility', 'IN');
     },
   },
   Responsibility: {
-    fulfills({ nodeId }, args, { driver }) {
-      return findNodeByRelationshipAndLabel(driver, nodeId, 'FULFILLS', 'Need');
+    fulfills({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'FULFILLS', 'Need');
     },
   },
   Mutation: {
@@ -134,7 +165,13 @@ const resolvers = {
       isAuthenticated,
       async (obj, { title }, { user, driver, viewedOrg }) => {
         const need = await createNeed(driver, { title }, { user, viewedOrg });
-        pubsub.publish(REALITY_CREATED, { realityCreated: need });
+        pubsub.publish(REALITY_CREATED, {
+          realityCreated: need,
+          // this isn't actually passed along to the user, since it's not in
+          // the graphql schema i think. but we use it for filtering in the
+          // subscriptions
+          orgId: viewedOrg.orgId,
+        });
         return need;
       },
     ),
@@ -146,7 +183,7 @@ const resolvers = {
           { title, needId },
           { email: user.email, orgId: viewedOrg.orgId },
         );
-        pubsub.publish(REALITY_CREATED, { realityCreated: responsibility });
+        pubsub.publish(REALITY_CREATED, { realityCreated: responsibility, orgId: viewedOrg.orgId });
         return responsibility;
       },
     ),
@@ -163,7 +200,7 @@ const resolvers = {
       async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
         const need = await updateReality(driver, args, viewedOrg.orgId);
-        pubsub.publish(REALITY_UPDATED, { realityUpdated: need });
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: need, orgId: viewedOrg.orgId });
         if (need && notify) {
           sendUpdateMail(
             driver,
@@ -181,7 +218,7 @@ const resolvers = {
       async (obj, args, { driver, user, viewedOrg }) => {
         const emailData = await getEmailData(driver, args);
         const responsibility = await updateReality(driver, args, viewedOrg.orgId);
-        pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility });
+        pubsub.publish(REALITY_UPDATED, { realityUpdated: responsibility, orgId: viewedOrg.orgId });
         if (responsibility && notify) {
           sendUpdateMail(
             driver,
@@ -206,18 +243,18 @@ const resolvers = {
     // TODO: Check if need is free of responsibilities and dependents before soft deleting
     softDeleteNeed: combineResolvers(
       isAuthenticated,
-      async (obj, { nodeId }, { driver }) => {
+      async (obj, { nodeId }, { driver, viewedOrg: { orgId } }) => {
         const need = await softDeleteNode(driver, { nodeId });
-        pubsub.publish(REALITY_DELETED, { realityDeleted: need });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: need, orgId });
         return need;
       },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
     softDeleteResponsibility: combineResolvers(
       isAuthenticated,
-      async (obj, { nodeId }, { driver }) => {
+      async (obj, { nodeId }, { driver, viewedOrg: { orgId } }) => {
         const responsibility = await softDeleteNode(driver, { nodeId });
-        pubsub.publish(REALITY_DELETED, { realityDeleted: responsibility });
+        pubsub.publish(REALITY_DELETED, { realityDeleted: responsibility, orgId });
         return responsibility;
       },
     ),

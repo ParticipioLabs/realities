@@ -13,7 +13,12 @@ const StyledFooter = styled.footer`
 
 const RealitiesFooter = () => (
   <StyledFooter className="text-muted">
-    A tool for tribal decentralised organisations.
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/Edgeryders-Participio/realities">Realities</a>
+    {' '}
+    is a tool for tribal decentralised organisations. It is a part of
+    {' '}
+    <a target="_blank" rel="noopener noreferrer" href="https://www.platoproject.org/eng">Plato Project</a>
+    .
   </StyledFooter>
 );
 

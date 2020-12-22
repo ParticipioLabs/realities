@@ -3,9 +3,9 @@ import {
 } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
+import { setContext } from '@apollo/client/link/context';
 import { InMemoryCache } from '@apollo/client/cache';
 import { SET_CACHE } from 'services/queries';
-import { getOrgSlug } from 'services/location';
 import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
@@ -17,27 +17,29 @@ import { resolvers, defaults } from './localState';
   introspectionQueryResultData,
 }); */
 
-export default function apolloClient(token) {
-  const cache = new InMemoryCache({
-    dataIdFromObject: (object) => `${object.__typename}:${object.nodeId}`,
-    // fragmentMatcher,
-  });
-
+function makeContext(orgSlug) {
+  const token = window.sessionStorage.getItem('accessToken');
   const authObj = token ? {
     Authorization: `Bearer ${token}`,
   } : {};
 
-  const context = {
-    orgSlug: getOrgSlug(),
+  return {
+    orgSlug,
     ...authObj,
   };
+}
 
-  const authMiddleware = new ApolloLink((operation, forward) => {
-    operation.setContext({
-      headers: context,
-    });
-    return forward(operation);
+export default function apolloClient(orgSlug) {
+  const cache = new InMemoryCache({
+    // remember to fetch nodeId/orgId even if we don't use it, because of
+    // https://stackoverflow.com/questions/48840223/apollo-duplicates-first-result-to-every-node-in-array-of-edges
+    dataIdFromObject: (object) => `${object.__typename}:${object.nodeId}:${object.orgId}`,
+    // fragmentMatcher,
   });
+
+  const authMiddleware = setContext(() => ({
+    headers: makeContext(orgSlug),
+  }));
 
   const httpLink = new HttpLink({
     uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
@@ -47,7 +49,8 @@ export default function apolloClient(token) {
     uri: process.env.REACT_APP_GRAPHQL_SUBSCRIPTION,
     options: {
       reconnect: true,
-      connectionParams: context,
+      // TODO: i don't think this gets a new token when the token's refreshed
+      connectionParams: makeContext(orgSlug),
     },
   });
 

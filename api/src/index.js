@@ -38,10 +38,12 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
   const viewedOrg = await coreModels.Organization.findOne({
     subdomain: orgSlug,
   });
-  const viewedOrgId = viewedOrg.id;
+  const viewedOrgId = viewedOrg && viewedOrg.id;
 
   // for now we'll let all users automatically join all orgs
-  const orgMembership = await createOrgMembership({ coreModels, userId, orgId: viewedOrgId });
+  // and we only call this if the user is actually viewing an org
+  const orgMembership = viewedOrg
+    && await createOrgMembership({ coreModels, userId, orgId: viewedOrgId });
 
   return {
     kauth,

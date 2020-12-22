@@ -7,13 +7,22 @@ import {
   runQueryAndGetRecordWithFields,
 } from '../../db/cypherUtils';
 
-export function findNodesByLabel(driver, label) {
+export function findNodesByLabelAnyOrg(driver, label) {
   const query = `
     MATCH (n:${label})
     WHERE NOT EXISTS(n.deleted)
     RETURN n ORDER BY n.created DESC
   `;
   return runQueryAndGetRecords(driver.session(), query, { label });
+}
+
+export function findNodesByLabel(driver, label, orgId) {
+  const query = `
+    MATCH (:Org {orgId:$orgId})-[:HAS]->(n:${label})
+    WHERE NOT EXISTS(n.deleted)
+    RETURN n ORDER BY n.created DESC
+  `;
+  return runQueryAndGetRecords(driver.session(), query, { label, orgId });
 }
 
 export function findNodeByLabelAndId(driver, label, nodeId) {
@@ -43,33 +52,37 @@ function getRelationshipQuery(relationship, label, direction) {
     label === ''
       ? '(n)'
       : `(n:${label})`;
+
+  const rightHandPerson = label === 'Person';
+
   const query = `
-    MATCH ({nodeId: $nodeId})${relationshipFragment}${labelFragment}
+    MATCH (org:Org {orgId:$orgId})
+    MATCH ${rightHandPerson ? '(org)-[:HAS]->' : ''}({nodeId: $nodeId})${relationshipFragment}${labelFragment}${rightHandPerson ? '' : '<-[:HAS]-(org)'}
     WHERE NOT EXISTS(n.deleted)
     RETURN n ORDER BY n.created DESC`;
   return query;
 }
 
 export function findNodesByRelationshipAndLabel(
-  driver,
+  { driver, orgId },
   originNodeId,
   relationship,
   label,
   direction,
 ) {
   const query = getRelationshipQuery(relationship, label, direction);
-  return runQueryAndGetRecords(driver.session(), query, { nodeId: originNodeId });
+  return runQueryAndGetRecords(driver.session(), query, { nodeId: originNodeId, orgId });
 }
 
 export function findNodeByRelationshipAndLabel(
-  driver,
+  { driver, orgId },
   originNodeId,
   relationship,
   label,
   direction,
 ) {
   const query = getRelationshipQuery(relationship, label, direction);
-  return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId });
+  return runQueryAndGetRecord(driver.session(), query, { nodeId: originNodeId, orgId });
 }
 
 export function createNeed(driver, { title }, { user, viewedOrg }) {
@@ -318,13 +331,14 @@ export function searchPersons(driver, term) {
   return runQueryAndGetRecords(driver.session(), query, { term });
 }
 
-export function searchRealities(driver, label, term) {
+export function searchRealities(driver, label, term, orgId) {
   const query = `
-    MATCH (n:${label})
+    MATCH (org:Org {orgId:$orgId})
+    MATCH (org)-[:HAS]->(n:${label})
     WHERE toLower(n.title) CONTAINS toLower($term) AND NOT EXISTS(n.deleted)
     RETURN n
   `;
-  return runQueryAndGetRecords(driver.session(), query, { term });
+  return runQueryAndGetRecords(driver.session(), query, { term, orgId });
 }
 
 export function getPeopleTwoStepsFromReality(driver, { nodeId }) {

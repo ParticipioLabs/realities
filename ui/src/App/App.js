@@ -3,16 +3,16 @@ import { Router } from 'react-router-dom';
 import history from 'services/history';
 import { AuthProvider, UserManager } from 'oidc-react';
 import Oidc from 'oidc-client';
-import useAuth from 'services/useAuth';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
+import { useOrgSlug } from 'services/location';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
 
 const ApolloSetup = () => {
-  const { accessToken } = useAuth();
+  const orgSlug = useOrgSlug();
 
   return (
-    <ApolloProvider client={apolloClient(accessToken)}>
+    <ApolloProvider client={apolloClient(orgSlug)}>
       <AuthRoutesContainer />
     </ApolloProvider>
   );
@@ -32,7 +32,7 @@ const userManager = new UserManager({
   authority: `${process.env.REACT_APP_KEYCLOAK_SERVER_URL}/realms/${process.env.REACT_APP_KEYCLOAK_REALM}`,
   client_id: process.env.REACT_APP_KEYCLOAK_CLIENT,
   redirect_uri: redirectUri,
-  silent_redirect_uri: redirectUri,
+  silent_redirect_uri: `${redirectUri}?redirectTo=silent`,
   post_logout_redirect_uri: redirectUri,
   response_type: 'code',
   scope: 'openid',
