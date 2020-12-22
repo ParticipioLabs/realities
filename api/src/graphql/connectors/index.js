@@ -174,6 +174,14 @@ export function createInfo(driver, { title }, infoUrl) {
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
+export function createOrg(driver, { orgId }) {
+  const query = `
+    MERGE (org:Org {orgId:$orgId})
+    RETURN org
+  `;
+  return runQueryAndGetRecord(driver.session(), query, { orgId });
+}
+
 export async function createViewer({
   user, driver,
 }) {
