@@ -8,6 +8,7 @@ import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
 import startSchedulers from './services/scheduler';
 import { getCoreModels, createOrgMembership } from './services/platoCore';
+import { createOrg } from './graphql/connectors';
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -39,6 +40,11 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
     subdomain: orgSlug,
   });
   const viewedOrgId = viewedOrg && viewedOrg.id;
+
+  if (viewedOrgId) {
+    // make sure that the org exists in neo4j
+    await createOrg(neo4jDriver, { orgId: viewedOrgId });
+  }
 
   // for now we'll let all users automatically join all orgs
   // and we only call this if the user is actually viewing an org
