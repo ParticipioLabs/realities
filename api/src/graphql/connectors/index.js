@@ -7,6 +7,14 @@ import {
   runQueryAndGetRecordWithFields,
 } from '../../db/cypherUtils';
 
+export function createConstraints(driver) {
+  const query = `
+  CREATE CONSTRAINT unique_org_orgid IF NOT EXISTS
+  ON (org:Org) ASSERT org.orgId IS UNIQUE
+  `;
+  return runQueryAndGetRecords(driver.session(), query, {});
+}
+
 export function findNodesByLabelAnyOrg(driver, label) {
   const query = `
     MATCH (n:${label})

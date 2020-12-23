@@ -1,6 +1,7 @@
 import neo4j from 'neo4j-driver';
 import dotenv from 'dotenv';
 import { runDBMigrations } from './dbMigrations';
+import { createConstraints } from '../graphql/connectors';
 
 dotenv.config({ silent: true });
 
@@ -14,6 +15,8 @@ async function createDriver() {
   );
 
   await runDBMigrations(driver);
+
+  await createConstraints(driver);
 
   return driver;
 }
