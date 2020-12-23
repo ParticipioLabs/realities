@@ -7,12 +7,25 @@ import {
   runQueryAndGetRecordWithFields,
 } from '../../db/cypherUtils';
 
-export function createConstraints(driver) {
-  const query = `
-  CREATE CONSTRAINT unique_org_orgid IF NOT EXISTS
-  ON (org:Org) ASSERT org.orgId IS UNIQUE
-  `;
-  return runQueryAndGetRecords(driver.session(), query, {});
+export async function createConstraints(driver) {
+  const queries = [
+    { label: 'Org', prop: 'orgId' },
+    { label: 'Info', prop: 'nodeId' },
+    { label: 'Need', prop: 'nodeId' },
+    { label: 'Person', prop: 'nodeId' },
+    { label: 'Responsibility', prop: 'nodeId' },
+  ]
+    .map(c => `
+      CREATE CONSTRAINT unique_${c.label.toLowerCase()}_${c.prop.toLowerCase()} IF NOT EXISTS
+        ON (n:${c.label}) ASSERT n.${c.prop} IS UNIQUE
+    `);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const query of queries) {
+    // eslint-disable-next-line no-await-in-loop
+    await runQueryAndGetRecords(driver.session(), query, {});
+  }
+  console.log('Finished creating constraints');
 }
 
 export function findNodesByLabelAnyOrg(driver, label) {
