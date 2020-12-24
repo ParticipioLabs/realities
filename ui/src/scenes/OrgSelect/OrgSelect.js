@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Container, Row, Col, Card, CardTitle, Button,
+  Container, Row, Col, Card, CardTitle,
 } from 'reactstrap';
-import { FaPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
 import WrappedLoader from 'components/WrappedLoader';
+import CreateOrgCard from './CreateOrgCard';
 
 const GET_ORGS = gql`
   query OrgSelect_getOrgs {
@@ -37,14 +37,8 @@ const OrgSelect = () => {
       Pick an organization
       <Row>
         <GridCol>
-          <Card body>
-            <CardTitle>
-              Create a new organization
-            </CardTitle>
-            <Button onClick={() => console.log('clicky')}>
-              <FaPlus />
-            </Button>
-          </Card>
+          {/* TODO: only show this if the user is logged in */}
+          <CreateOrgCard />
         </GridCol>
         {orgs.map((org) => (
           <GridCol key={org.orgId}>
