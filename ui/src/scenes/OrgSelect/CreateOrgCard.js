@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Card, CardTitle, Button, Form, FormGroup, Input, FormFeedback,
+  Card, CardTitle, Button, Form, FormGroup, Input, FormFeedback, Alert,
 } from 'reactstrap';
 import { FaPlus } from 'react-icons/fa';
 import { gql, useMutation } from '@apollo/client';
@@ -30,30 +30,37 @@ const CreateOrgCard = () => {
               name: yup.string().required('Organization name is required'),
               orgSlug: yup.string().required('Organization URL ID is required'),
             })}
-            onSubmit={async (values, { resetForm }) => {
+            onSubmit={async (values, { setFieldError }) => {
               // createNeed({ variables: { title: values.title } }).then(({ data }) => {
               //   resetForm();
               //   history.push(`/${params.orgSlug}/${data.createNeed.nodeId}`);
               // });
               console.log('values', values);
-              const { data } = createOrg({
-                variables: {
-                  name: values.name,
-                  orgSlug: values.orgSlug,
-                },
-              });
-              console.log('data', data);
+              try {
+                const { data } = await createOrg({
+                  variables: {
+                    name: values.name,
+                    orgSlug: values.orgSlug,
+                  },
+                });
+                console.log('data', data);
+              } catch (err) {
+                console.error("Couldn't create org:", err);
+                setFieldError('general', err.message);
+              }
             }}
           >
             {({
               values,
               errors,
+              touched,
               handleChange,
               handleBlur,
               handleSubmit,
               isSubmitting,
             }) => (
               <Form onSubmit={handleSubmit}>
+                {errors.general && <Alert color="danger">{errors.general}</Alert>}
                 <FormGroup>
                   <Input
                     name="name"
@@ -64,7 +71,7 @@ const CreateOrgCard = () => {
                     disabled={isSubmitting}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    invalid={!!errors.name}
+                    invalid={errors.name && touched.name}
                   />
                   <FormFeedback>{errors.name}</FormFeedback>
                 </FormGroup>
@@ -77,16 +84,10 @@ const CreateOrgCard = () => {
                     disabled={isSubmitting}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    invalid={!!errors.orgSlug}
+                    invalid={errors.orgSlug && touched.orgSlug}
                   />
                   <FormFeedback>{errors.orgSlug}</FormFeedback>
                 </FormGroup>
-                <Button
-                  size="sm"
-                  onClick={() => setCreating(false)}
-                >
-                  Cancel
-                </Button>
                 <Button
                   size="sm"
                   type="submit"

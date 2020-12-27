@@ -195,6 +195,17 @@ const resolvers = {
         user, viewedOrg, driver, coreModels,
       }),
     ),
+    createOrg: combineResolvers(
+      isAuthenticated,
+      (obj, { name, orgSlug }, { coreModels }) => {
+        console.log('creating new org', name, orgSlug);
+        throw Error('broke');
+        return {
+          orgId: '1234',
+          orgSlug: 'testtest',
+        };
+      },
+    ),
     updateNeed: combineResolvers(
       isAuthenticated,
       async (obj, args, { driver, user, viewedOrg }) => {
