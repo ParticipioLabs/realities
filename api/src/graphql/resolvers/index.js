@@ -35,6 +35,14 @@ const REALITY_CREATED = 'REALITY_CREATED';
 const REALITY_DELETED = 'REALITY_DELETED';
 const REALITY_UPDATED = 'REALITY_UPDATED';
 
+function orgFromCore(org) {
+  return {
+    orgId: org._id,
+    name: org.name,
+    orgSlug: org.subdomain,
+  };
+}
+
 function subWithFilter(type) {
   return {
     subscribe: withFilter(
@@ -86,19 +94,11 @@ const resolvers = {
     },
     async orgs(obj, args, { coreModels }) {
       const dbOrgs = await coreModels.Organization.find({});
-      return dbOrgs.map(org => ({
-        orgId: org._id,
-        name: org.name,
-        orgSlug: org.subdomain,
-      }));
+      return dbOrgs.map(orgFromCore);
     },
     async org(obj, { orgSlug }, { coreModels }) {
       const org = await coreModels.Organization.findOne({ subdomain: orgSlug });
-      return {
-        orgId: org._id,
-        name: org.name,
-        orgSlug: org.subdomain,
-      };
+      return orgFromCore(org);
     },
   },
   Person: {
@@ -197,13 +197,13 @@ const resolvers = {
     ),
     createOrg: combineResolvers(
       isAuthenticated,
-      (obj, { name, orgSlug }, { coreModels }) => {
-        console.log('creating new org', name, orgSlug);
-        throw Error('broke');
-        return {
-          orgId: '1234',
-          orgSlug: 'testtest',
-        };
+      async (obj, { name, orgSlug }, { coreModels }) => {
+        const newOrg = new coreModels.Organization({
+          name,
+          subdomain: orgSlug,
+        });
+        const resOrg = await newOrg.save();
+        return orgFromCore(resOrg);
       },
     ),
     updateNeed: combineResolvers(

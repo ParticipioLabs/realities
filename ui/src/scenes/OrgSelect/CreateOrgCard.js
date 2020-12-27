@@ -3,6 +3,7 @@ import {
   Card, CardTitle, Button, Form, FormGroup, Input, FormFeedback, Alert,
 } from 'reactstrap';
 import { FaPlus } from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
 import { gql, useMutation } from '@apollo/client';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -17,6 +18,7 @@ const CREATE_ORG = gql`
 `;
 
 const CreateOrgCard = () => {
+  const history = useHistory();
   const [creating, setCreating] = useState(false);
   const [createOrg] = useMutation(CREATE_ORG);
 
@@ -31,11 +33,6 @@ const CreateOrgCard = () => {
               orgSlug: yup.string().required('Organization URL ID is required'),
             })}
             onSubmit={async (values, { setFieldError }) => {
-              // createNeed({ variables: { title: values.title } }).then(({ data }) => {
-              //   resetForm();
-              //   history.push(`/${params.orgSlug}/${data.createNeed.nodeId}`);
-              // });
-              console.log('values', values);
               try {
                 const { data } = await createOrg({
                   variables: {
@@ -43,7 +40,8 @@ const CreateOrgCard = () => {
                     orgSlug: values.orgSlug,
                   },
                 });
-                console.log('data', data);
+                const { orgSlug } = data.createOrg;
+                history.push(`/${orgSlug}`);
               } catch (err) {
                 console.error("Couldn't create org:", err);
                 setFieldError('general', err.message);
