@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 function getOrgSlug() {
@@ -38,6 +38,6 @@ export function useOrgSlug() {
 }
 
 export function useAtHome() {
-  const getAtHome = () => window.location.pathname === '/';
-  return useListenHistory(getAtHome);
+  const location = useLocation();
+  return location.pathname === '/';
 }
