@@ -34,6 +34,10 @@ const typeDefs = `
       needId: ID!
     ): Responsibility 
     createViewer: Person
+    createOrg(
+      name: String
+      orgSlug: String
+    ): Org
     updateNeed(
       nodeId: ID!
       title: String!
