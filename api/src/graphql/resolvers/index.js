@@ -93,7 +93,7 @@ const resolvers = {
       return findNodeByLabelAndId(driver, 'Responsibility', nodeId);
     },
     async orgs(obj, args, { coreModels }) {
-      const dbOrgs = await coreModels.Organization.find({});
+      const dbOrgs = await coreModels.Organization.find({}).sort({ _id: -1 });
       return dbOrgs.map(orgFromCore);
     },
     async org(obj, { orgSlug }, { coreModels }) {
