@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
+import { useParams } from 'react-router-dom';
 import WrappedLoader from 'components/WrappedLoader';
 import ResponsibilityDetails from './components/ResponsibilityDetails';
 
@@ -18,6 +19,7 @@ const GET_RESPONSIBILITY = gql`
 `;
 
 const ResponsibilityDetailsContainer = ({ nodeId }) => {
+  const { orgSlug } = useParams();
   const { loading, error, data } = useQuery(GET_RESPONSIBILITY, {
     variables: { nodeId },
   });
@@ -35,7 +37,7 @@ const ResponsibilityDetailsContainer = ({ nodeId }) => {
     <ResponsibilityDetails
       title={title}
       description={description}
-      path={`/reality/${fulfills.nodeId}/${nodeId}`}
+      path={`/${orgSlug}/reality/${fulfills.nodeId}/${nodeId}`}
     />
   );
 };
