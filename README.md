@@ -44,9 +44,9 @@ Realities is split into a single-page web app built in React (found under `ui`) 
 
 We use various libraries on the back-end to set up our GraphQL API. On the front-end, we mainly use [Apollo Client](https://www.apollographql.com/docs/react/) to help us manage fetching and mutating data through the API.
 
-### Authentication with Auth0
+### Authentication with Keycloak
 
-We use [Auth0](https://auth0.com/) for Authentication and Authorization. When a user signs up or logs in on the front-end, they are taken through a flow where Auth0 creates a [Jason Web Token (JWT)](https://jwt.io/) that is returned to the front-end and stored in the browser's localStorage. We've created [rules in Auth0](https://auth0.com/docs/rules/current) that add the user's email and role (whether they are a Reality Admin or a normal user) securely to the JWT. The front-end sends the JWT to the back-end with every API call in an http header. The back-end validates the JWT, fetches the user's email and role from it and can then determine whether the user has permission to do whatever they are trying to do. 
+We use [Keycloak](https://www.keycloak.org/) for Authentication. When a user signs up or logs in on the front-end, they are taken through a flow where Keycloak creates a [Jason Web Token (JWT)](https://jwt.io/) that is returned to the front-end and stored in the browser. The front-end sends the JWT to the back-end with every API call in an http header. The back-end validates the JWT, fetches the user's id from it and can then determine whether the user has permission to do whatever they are trying to do. 
 
 ## Install and run locally
 
