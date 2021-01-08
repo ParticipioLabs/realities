@@ -40,6 +40,11 @@ const userManager = new UserManager({
   automaticSilentRenew: true,
 });
 
+// To show the user as logged in when they open a new tab and they're already
+// logged in. Though there are some bugs around this
+// https://github.com/Edgeryders-Participio/realities/issues/191
+userManager.signinSilent();
+
 userManager.events.addSilentRenewError((err) => {
   console.log('silent renew error', err);
 });
