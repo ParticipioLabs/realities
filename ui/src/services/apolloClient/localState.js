@@ -1,7 +1,6 @@
-
-// Want to add local state fields? Read about local state management with Apollo here:
-// https://www.apollographql.com/docs/link/links/state.html
-
+// local resolvers are deprecated (but we don't seem to be using them anyway)
+// read more about local state here
+// https://www.apollographql.com/docs/react/local-state/local-state-management/
 export const resolvers = {
   Query: {},
   Mutation: {},

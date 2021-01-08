@@ -6,10 +6,6 @@ The Realities front-end is a single-page React app. It fetches data from the bac
 
 Before your first commit, please take some time to read up on the conventions and structure of the front-end code. It's important that we work hard to maintain consistency in the codebase so that it stays manageable as it grows.
 
-### Bootstrapped with "Create React App"
-
-The front-end was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app). We have ejected from Create React App and started making changes, so not everything you read about Create React App with necessarily apply. However, we've left the auto-generated documentation for Create React App at the bottom of this README so that you can use it for inspiration. Do so with caution, since the information may be out of date for our project. 
-
 ### Code structure
 
 The structure of the frontend code is inspired by an [article written by Alexis Mangin](https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1). It'll allow us to keep the project organized as the codebase grows. 
@@ -32,9 +28,9 @@ Take the component `ExampleComponent`:
   - `components` directory - houses component directories for components that are direct children of `ExampleComponent`.
   - `ExampleComponent.test.js` - Jest tests for the component (we don't have many of these right now, but we probably should).
 
-### Importing with `@/`
+### Simple importing from `src`
 
-In order to make it easier to import shared components, services, etc. throughout the code, we have defined a custom alias in Webpack that works as a shorthand for the frontend's `src` directory. You can import a shared component by doing `import ExampleComponent from '@/components/ExampleComponent'` or a shared service using `import exampleService from '@/services/exampleService'`. Anything in `src` can be imported this way. 
+In order to make it easier to import shared components, services, etc. throughout the code, we have configured `jsonfig.json` so that writing something like `import ExampleComponent from 'components/ExampleComponent'` will import `ui/src/components/ExampleComponent`, no matter where you currently are in the ui directory tree. Anything in `ui/src` can be imported this way. 
 
 ### Presentational vs container components
 
@@ -50,7 +46,7 @@ A very common pattern is to wrap a presentational component with a container com
 
 [Flux](https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture) is another pattern that helps keep React apps sane when you need to manage state across many components. Simply put, it states that data only ever flows down (from parent containers to child containers). It never flows up (from children to parents). If you have child components that need to inform parent components of some sort of change, it should dispatch a mutation to a central state store (in our case that's [Apollo Client's](https://www.apollographql.com/docs/react/) cache). The parent container can then subscribe to changes to the specific part of the overall state that concerns it, and update when needed.
 
-We manage all this with Apollo Client and [React Router](https://reacttraining.com/react-router/web/guides/quick-start). Some of the app's state is held in the database itself, such as Need and Responsibility properties (changes to that state is made through Apollo Mutations). Some state is only held in the front-end, such as whether the 'new need' form is visible or hidden (we use [Apollo's local state](https://www.apollographql.com/docs/react/essentials/local-state.html)). Finally, some state is held in the URL, such as which Need or Responsibility is currently selected (we use React Router for that).
+We manage all this with Apollo Client and [React Router](https://reacttraining.com/react-router/web/guides/quick-start). Some of the app's state is held in the database itself, such as Need and Responsibility properties (changes to that state are made through Apollo Mutations). Some state is only held in the front-end, such as whether the 'new need' form is visible or hidden (we use [Apollo's local state](https://www.apollographql.com/docs/react/local-state/local-state-management/)). Finally, some state is held in the URL, such as which Need or Responsibility is currently selected (we use React Router for that).
 
 [Read more about Flux...](https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture)
 
@@ -64,25 +60,25 @@ We use [React Router](https://reacttraining.com/react-router/web/guides/quick-st
 
 ### Apollo Client
 
-We use [Apollo Client](https://www.apollographql.com/docs/react/) to help us fetch and mutate data via our GraphQL API. We also use it to store and mutate state that is completely held in the front-end via [local state management](https://www.apollographql.com/docs/react/essentials/local-state.html). 
+We use [Apollo Client](https://www.apollographql.com/docs/react/) to help us fetch and mutate data via our GraphQL API. We also use it to store and mutate state that is completely held in the front-end via [local state management](https://www.apollographql.com/docs/react/local-state/local-state-management/). 
 
 Our Apollo Client is set up in a service found under `/ui/src/services/apolloClient/`. `apolloClient.js` sets up the client and `localState.js` houses our local state. 
 
-In `apolloClient.js` we do a couple of notable things; (1) we add a logged in user's JWT as an authentication header to every request to the backend if it exists, and (2) we make sure that Apollo uses the property `nodeId` to identify objects fetched from the backend. By default, Apollo uses `id` or `_id` to normalize data in its cache, but our objects have the id property `nodeId` instead, so we use that. 
+In `apolloClient.js` we do a couple of notable things; (1) we add a logged in user's authentication token as an authentication header to every request to the backend if it exists, as well as the currently viewed org's orgSlug (the name of the org that you can see in the url). And (2) we make sure that Apollo uses the properties `nodeId` and `orgId` to identify objects fetched from the backend. By default, Apollo uses `id` or `_id` to normalize data in its cache, but our objects have the id properties `nodeId` and `orgId` instead, so we use those. 
 
-When fetching data from the back-end via Apollo, use the [Query](https://www.apollographql.com/docs/react/essentials/queries.html) component. 
+When fetching data from the back-end via Apollo, use the [useQuery](https://www.apollographql.com/docs/react/data/queries/) hook. 
 
-When mutating data in the backend via Apollo, use the [Mutation](https://www.apollographql.com/docs/react/essentials/mutations.html) component.
+When mutating data in the backend via Apollo, use the [useMutation](https://www.apollographql.com/docs/react/data/mutations/) hook.
 
 Sometimes, you'll have to manually update the Apollo cache after a mutation. Apollo will try to update the cache automatically if it has all the information it needs. For example, if you send a mutation that updates the title of a need, and the mutation returns that need with both its `nodeId` and new `title` in the response, Apollo will automatically update all instances of that need in the cache with the new title. However if you create a new need, Apollo might not automatically understand that it needs to add that need to various lists in the cache. That's when you need to manually update the cache. Read more about that in the Apollo docs, or look at the `CreateNeed` component for an example. 
 
 When manually updating the cache, you sometimes need to import the GraphQL query that was used to fetch the part of the cache you want to change. In those cases we define the query in a shared file rather than the component itself. These shared queries are found in the `queries` service. 
 
-### Authentication with Auth0
+### Authentication with Keycloak
 
-We use [Auth0](https://auth0.com/) for authentication. When a user logs in or signs up, they are taken through a flow where Auth0 generates a [JWT](https://jwt.io/) and redirects to http://realities.theborder.and.se/auth-callback, where we get the JWT and store it in localStorage. The `AuthRoutesContainer` component handles routing for the /auth-callback route and renders the `AuthCallback` component, which in turn uses the `auth` service (under `/ui/src/services/`) to get and store the JWT.
+We use [Keycloak](https://www.keycloak.org/) for authentication. When a user logs in or signs up, they are taken through a flow where Keycloak generates a [JWT](https://jwt.io/) and redirects to e.g. https://realities.platoproject.org/auth-callback, where we get the JWT and use oidc-react to parse and store it, and run some other login logic. The `AuthRoutesContainer` component handles routing for the /auth-callback route and renders the `AuthCallback` component, and all of this is wrapped in oidc-react's `AuthProvider` component in `ui/src/App/App.js` which parses the JWT and stores the info from it.
 
-We have a [Higher Order Component (HOC)](https://reactjs.org/docs/higher-order-components.html) named `withAuth` that can be used to provide components with props related to authentication. It provides a `login` and `logout` function, an `isLoggedIn` flag and the user's `email`. 
+We have a [react hook](https://reactjs.org/docs/hooks-overview.html) named `useAuth` that can be used to provide components with info and functionality related to authentication. It provides a `login` and `logout` function, an `isLoggedIn` flag, the user's `email`, and `accessToken`. 
 
 ### CSS and Styling
 
