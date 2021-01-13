@@ -1,22 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Router } from 'react-router-dom';
 import history from 'services/history';
-import { AuthProvider, UserManager } from 'oidc-react';
+import { AuthProvider, UserManager, useAuth as useOidc } from 'oidc-react';
 import Oidc from 'oidc-client';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
 import { useOrgSlug } from 'services/location';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
-
-const ApolloSetup = () => {
-  const orgSlug = useOrgSlug();
-
-  return (
-    <ApolloProvider client={apolloClient(orgSlug)}>
-      <AuthRoutesContainer />
-    </ApolloProvider>
-  );
-};
 
 const redirectUri = process.env.REACT_APP_KEYCLOAK_CALLBACK_URL;
 
@@ -40,10 +30,32 @@ const userManager = new UserManager({
   automaticSilentRenew: true,
 });
 
+const ApolloSetup = () => {
+  const orgSlug = useOrgSlug();
+  const oidc = useOidc();
+
+  // if the user has e.g. logged out in another tab
+  useEffect(() => {
+    const signedOutHandler = () => {
+      console.log('user signed out event');
+      oidc.signOut();
+    };
+    userManager.events.addUserSignedOut(signedOutHandler);
+    return () => userManager.events.removeUserSignedOut(signedOutHandler);
+  }, [oidc]);
+
+  return (
+    <ApolloProvider client={apolloClient(orgSlug)}>
+      <AuthRoutesContainer />
+    </ApolloProvider>
+  );
+};
+
 // To show the user as logged in when they open a new tab and they're already
-// logged in. Though there are some bugs around this
-// https://github.com/Edgeryders-Participio/realities/issues/191
-userManager.signinSilent();
+// logged in
+userManager.signinSilent().catch((err) => {
+  console.log('silent sign in failed:', err);
+});
 
 userManager.events.addSilentRenewError((err) => {
   console.log('silent renew error', err);
