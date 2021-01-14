@@ -13,7 +13,7 @@ import ChangeFulfills from 'components/ChangeFulfills';
 import FullscreenDetailViewBody from './components/FullscreenDetailViewBody';
 
 const DetailViewCardHeader = styled(CardHeader)`
-  background-color: ${props => props.color};
+  background-color: ${(props) => props.color};
   color: white;
   display: flex;
   flex-direction: row;
@@ -44,56 +44,56 @@ const DetailView = ({
   onClickCancel,
   onClickNavigate,
 }) => (
-    <Card>
-      <DetailViewCardHeader
-        color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
-      >
-        <HeaderButton onClick={onClickNavigate}>
-          <FaBars />
-        </HeaderButton>
-        <HeaderText>
-          {node.__typename}
-        </HeaderText>
-        {isLoggedIn && (
-          showEdit ? (
-            <HeaderButton onClick={onClickCancel}>
-              <FaTimesCircle />
-            </HeaderButton>
-          ) : (
-              <HeaderButton onClick={onClickEdit}>
-                <FaEdit />
-              </HeaderButton>
-            )
-        )}
-      </DetailViewCardHeader>
-      {showEdit ? (
-        <CardBody>
-          <EditDetailsContainer node={node} />
-          <Divider />
-          {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
-          <Deliberations
-            showAddRemove
-            nodeType={node.__typename}
-            nodeId={node.nodeId}
-            deliberations={node.deliberations}
-          />
-          <Dependencies
-            showAddRemove
-            nodeType={node.__typename}
-            nodeId={node.nodeId}
-            dependencies={[
-              ...(node.dependsOnNeeds || []),
-              ...(node.dependsOnResponsibilities || []),
-            ]}
-          />
-          <Divider />
-          <DeleteNodeContainer nodeType={node.__typename} nodeId={node.nodeId} />
-        </CardBody>
-      ) : (
-          <FullscreenDetailViewBody node={node} />
-        )}
-    </Card>
-  );
+  <Card>
+    <DetailViewCardHeader
+      color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
+    >
+      <HeaderButton onClick={onClickNavigate}>
+        <FaBars />
+      </HeaderButton>
+      <HeaderText>
+        {node.__typename}
+      </HeaderText>
+      {isLoggedIn && (
+        showEdit ? (
+          <HeaderButton onClick={onClickCancel}>
+            <FaTimesCircle />
+          </HeaderButton>
+        ) : (
+          <HeaderButton onClick={onClickEdit}>
+            <FaEdit />
+          </HeaderButton>
+        )
+      )}
+    </DetailViewCardHeader>
+    {showEdit ? (
+      <CardBody>
+        <EditDetailsContainer node={node} />
+        <Divider />
+        {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
+        <Deliberations
+          showAddRemove
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          deliberations={node.deliberations}
+        />
+        <Dependencies
+          showAddRemove
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          dependencies={[
+            ...(node.dependsOnNeeds || []),
+            ...(node.dependsOnResponsibilities || []),
+          ]}
+        />
+        <Divider />
+        <DeleteNodeContainer node={node} />
+      </CardBody>
+    ) : (
+      <FullscreenDetailViewBody node={node} />
+    )}
+  </Card>
+);
 
 DetailView.propTypes = {
   node: PropTypes.shape({
