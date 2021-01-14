@@ -26,7 +26,8 @@ const SOFT_DELETE_RESPONSIBILITY = gql`
   }
 `;
 
-const DeleteNodeContainer = ({ nodeType, nodeId }) => {
+const DeleteNodeContainer = ({ node }) => {
+  const { __typename: nodeType, nodeId } = node;
   const history = useHistory();
   const params = useParams();
   const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
@@ -74,26 +75,38 @@ const DeleteNodeContainer = ({ nodeType, nodeId }) => {
     },
   );
 
+  const isNeedAndHasResponsibilities = (nodeType === 'Need')
+    && (node.fulfilledBy.length > 0);
+
   return (
     <DeleteNodeButton
       nodeType={nodeType}
       confirmationModalIsOpen={confirmationModalIsOpen}
       onToggleConfirmationModal={() => setConfirmationModalIsOpen(!confirmationModalIsOpen)}
       onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId } })}
-      loading={loading}
+      disabled={loading || isNeedAndHasResponsibilities}
+      disabledReason={isNeedAndHasResponsibilities ? "You can't delete a Need that still contains Responsibilities" : ''}
       error={error && error.toString()}
     />
   );
 };
 
 DeleteNodeContainer.propTypes = {
-  nodeType: PropTypes.string,
-  nodeId: PropTypes.string,
+  node: PropTypes.shape({
+    __typename: PropTypes.string,
+    nodeId: PropTypes.string,
+    fulfilledBy: PropTypes.arrayOf(PropTypes.shape({
+      nodeId: PropTypes.string,
+    })),
+  }),
 };
 
 DeleteNodeContainer.defaultProps = {
-  nodeType: 'Need',
-  nodeId: '',
+  node: {
+    __typename: 'need',
+    nodeId: '',
+    fulfilledBy: [],
+  },
 };
 
 export default DeleteNodeContainer;

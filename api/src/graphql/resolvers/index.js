@@ -255,12 +255,17 @@ const resolvers = {
     softDeleteNeed: combineResolvers(
       isAuthenticated,
       async (obj, { nodeId }, { driver, viewedOrg: { orgId } }) => {
+        const resps = await findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'FULFILLS', 'Responsibility', 'IN');
+        if (resps.length > 0) {
+          throw new Error("Can't delete a need that still has responsibilities");
+        }
         const need = await softDeleteNode(driver, { nodeId });
         pubsub.publish(REALITY_DELETED, { realityDeleted: need, orgId });
         return need;
       },
     ),
     // TODO: Check if responsibility is free of dependents before soft deleting
+    // it doesn't crash or anything but might be better ux
     softDeleteResponsibility: combineResolvers(
       isAuthenticated,
       async (obj, { nodeId }, { driver, viewedOrg: { orgId } }) => {

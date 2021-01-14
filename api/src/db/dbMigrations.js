@@ -2,7 +2,7 @@
 import { runQueryAndGetRecord, runQueryAndGetRecords } from './cypherUtils';
 import { getCoreModels } from '../services/platoCore';
 
-const currentVersion = 4;
+const currentVersion = 5;
 
 const migrateTo = {
   v2: async () => {
@@ -84,6 +84,17 @@ const migrateTo = {
       return n
     `;
     await runQueryAndGetRecords(driver.session(), query, { orgId: `${theOrg._id}` });
+  },
+  v5: async (driver) => {
+    // deletes undeleted resps belonging to deleted needs
+    const query = `
+    MATCH (n:Need)<-[:FULFILLS]-(r:Responsibility)
+    WHERE EXISTS (n.deleted)
+      AND NOT EXISTS (r.deleted)
+    SET r.deleted=timestamp()
+    RETURN r
+    `;
+    await runQueryAndGetRecords(driver.session(), query, {});
   },
 };
 

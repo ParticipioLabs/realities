@@ -50,10 +50,10 @@ const createDetailViewQuery = (nodeType) => gql`
           nodeId
         }
       }
-      ${nodeType === 'responsibility' ? `fulfills {
+      ${nodeType === 'responsibility' ? 'fulfills' : 'fulfilledBy'} {
         nodeId
         title
-      }` : ''}
+      }
     }
     showDetailedEditView @client
   }
