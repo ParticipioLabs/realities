@@ -85,6 +85,7 @@ const DeleteNodeContainer = ({ node }) => {
       onToggleConfirmationModal={() => setConfirmationModalIsOpen(!confirmationModalIsOpen)}
       onConfirmSoftDelete={() => softDeleteNode({ variables: { nodeId } })}
       disabled={loading || isNeedAndHasResponsibilities}
+      disabledReason={isNeedAndHasResponsibilities ? "You can't delete a Need that still contains Responsibilities" : ''}
       error={error && error.toString()}
     />
   );
