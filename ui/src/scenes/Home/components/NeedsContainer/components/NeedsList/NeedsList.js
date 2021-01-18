@@ -11,6 +11,10 @@ const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
+const SelectedNeedGroup = styled(ListGroup)`
+  margin-bottom: 0.5rem;
+`;
+
 const NeedsListGroupHeader = styled(ListGroupItem)`
   display: flex;
   justify-content: space-between;
@@ -74,16 +78,17 @@ const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
   }], ['asc']);
   return (
     <div>
-      <NeedsListGroup>
-        {sortedNeeds.filter((need) => need.nodeId === selectedNeedId).map((need) => (
+      {sortedNeeds.filter((need) => need.nodeId === selectedNeedId).map((need) => (
+        <SelectedNeedGroup key={1}>
           <NeedsListGroupHeader
-            key={selectedNeedId}
             active
           >
             {need.title}
             {renderMissingRealizersAmount(need)}
           </NeedsListGroupHeader>
-        ))}
+        </SelectedNeedGroup>
+      ))}
+      <NeedsListGroup>
         {sortedNeeds.map((need) => (
           <NeedsListGroupItem
             key={need.nodeId}

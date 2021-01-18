@@ -11,6 +11,10 @@ const ResponsibilitiesListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
+const SelectedResponsibilitiesListGroup = styled(ListGroup)`
+  margin-bottom: 0.5rem;
+`;
+
 const ResponsibilitiesListGroupHeader = styled(ListGroupItem)`
   display: flex;
   justify-content: space-between;
@@ -60,18 +64,19 @@ const ResponsibilitiesList = ({
   }], ['asc']);
   return (
     <div>
-      <ResponsibilitiesListGroup>
-        {sortedResponsibilities
-          .filter((responsibility) => responsibility.nodeId === selectedResponsibilityId)
-          .map((responsibility) => (
+      {sortedResponsibilities
+        .filter((responsibility) => responsibility.nodeId === selectedResponsibilityId)
+        .map((responsibility) => (
+          <SelectedResponsibilitiesListGroup key={1}>
             <ResponsibilitiesListGroupHeader
-              key={selectedResponsibilityId}
               active
             >
               {responsibility.title}
               {renderMissingRealizerIcon(responsibility)}
             </ResponsibilitiesListGroupHeader>
-          ))}
+          </SelectedResponsibilitiesListGroup>
+        ))}
+      <ResponsibilitiesListGroup>
         {sortedResponsibilities.map((responsibility) => (
           <ResponsibilitiesListGroupItem
             key={responsibility.nodeId}
