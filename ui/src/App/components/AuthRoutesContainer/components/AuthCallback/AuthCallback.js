@@ -29,6 +29,8 @@ const AuthCallback = () => {
     // https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
     // so instead of grabbing a url from the url we just use a simple id like this
     const redirectTo = params.get('redirectTo');
+    // maybe when the user clicks login/logout we can store the current path in
+    // sessionstorage and then on this page get that value?
 
     // we don't want to spam this part of the script
     // so we'll just do it when the user manually logs in/out

@@ -6,7 +6,6 @@ import {
 import Home from 'scenes/Home';
 import RealityDetails from 'scenes/RealityDetails';
 import Graph from 'scenes/Graph';
-import About from 'scenes/About';
 import Profile from 'scenes/Profile';
 import UserProfile from 'scenes/UserProfile';
 import OrgSelect from 'scenes/OrgSelect';
@@ -17,7 +16,6 @@ const RoutesContainer = () => (
   <div>
     <RealitiesNavbar />
     <Switch>
-      <Route exact path="/:orgSlug/about" component={About} />
       <Route exact path="/:orgSlug/graph" component={Graph} />
       <Route exact path="/:orgSlug/profile" component={Profile} />
       <Route exact path="/:orgSlug/profile/:personId" component={UserProfile} />

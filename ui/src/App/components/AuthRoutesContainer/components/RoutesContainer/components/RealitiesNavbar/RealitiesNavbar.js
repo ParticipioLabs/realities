@@ -76,15 +76,10 @@ const RealitiesNavbar = () => {
       <NavbarToggler onClick={() => setIsOpen(!isOpen)} />
       <Collapse isOpen={isOpen} navbar className="flex-grow-0">
         <Nav className="ml-auto" navbar>
-          {atHome ? '' : (
-            <>
-              <NavItem>
-                <NavLink tag={Link} to={`/${orgSlug}/graph`}>Graph</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to={`/${orgSlug}/about`}>About</NavLink>
-              </NavItem>
-            </>
+          {!atHome && (
+            <NavItem>
+              <NavLink tag={Link} to={`/${orgSlug}/graph`}>Graph</NavLink>
+            </NavItem>
           )}
           { isLoggedIn ? (
             <UncontrolledDropdown nav>
