@@ -292,9 +292,9 @@ const resolvers = {
     ),
     addRealityHasDeliberation: combineResolvers(
       isAuthenticated,
-      (obj, { from, to }, { driver }) => {
+      (obj, { from, to }, { driver, viewedOrg: { orgId } }) => {
         const normalizedTo = { url: NormalizeUrl(to.url, { stripHash: true }) };
-        return addRealityHasDeliberation(driver, { from, to: normalizedTo });
+        return addRealityHasDeliberation(driver, { from, to: normalizedTo, orgId });
       },
     ),
     removeRealityHasDeliberation: combineResolvers(

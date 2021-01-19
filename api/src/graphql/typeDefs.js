@@ -90,10 +90,6 @@ const typeDefs = `
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
     ): _ResponsibilityDependsOnResponsibilitiesPayload
-    createInfo(
-      title: String
-      url: String!
-    ): Info
     updateInfo(
       url: String!
       title: String!
