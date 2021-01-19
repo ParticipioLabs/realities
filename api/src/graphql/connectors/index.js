@@ -158,11 +158,12 @@ export function createResponsibility(driver, { title, needId }, { email, orgId }
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function addRealityHasDeliberation(driver, { from, to }) {
+export function addRealityHasDeliberation(driver, { from, to, orgId }) {
   const queryParams = {
     realityId: from.nodeId,
     infoUrl: to.url,
     infoId: uuidv4(),
+    orgId,
   };
   // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
   const query = `
@@ -172,7 +173,9 @@ export function addRealityHasDeliberation(driver, { from, to }) {
     FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
       SET info += {nodeId:$infoId, created:timestamp()})
     WITH reality, info
+    MATCH (org:Org {orgId:$orgId})
     MERGE (reality)-[:HAS_DELIBERATION]->(info)
+    MERGE (org)-[:HAS]->(info)
     RETURN reality as from, info as to
   `;
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);

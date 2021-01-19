@@ -59,7 +59,7 @@ const DetailViewBody = ({ node }) => (
     </CardSection>
 
     <CardSection>
-      <LabelSpan>Discussions on Talk:</LabelSpan>
+      <LabelSpan>Related discussions:</LabelSpan>
       <Deliberations
         nodeType={node.__typename}
         nodeId={node.nodeId}
