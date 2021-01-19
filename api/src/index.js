@@ -6,7 +6,6 @@ import Keycloak from 'keycloak-connect';
 import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandler } from 'keycloak-connect-graphql';
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
-import startSchedulers from './services/scheduler';
 import { getCoreModels, createOrgMembership } from './services/platoCore';
 import { createOrg } from './graphql/connectors';
 
@@ -104,7 +103,4 @@ createDriver().then((neo4jDriver) => {
     console.log(`GraphQL Server is now running on http://localhost:${API_PORT}/graphql`);
     console.log(`View GraphQL Playground at http://localhost:${API_PORT}/graphql`);
   });
-
-  // Start the schedulers that download data from various APIs.
-  startSchedulers();
 });
