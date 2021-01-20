@@ -6,6 +6,7 @@ import Oidc from 'oidc-client';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from 'services/apolloClient';
 import { useOrgSlug } from 'services/location';
+import WrappedLoader from 'components/WrappedLoader';
 import AuthRoutesContainer from './components/AuthRoutesContainer';
 
 const redirectUri = process.env.REACT_APP_KEYCLOAK_CALLBACK_URL;
@@ -30,6 +31,9 @@ const userManager = new UserManager({
   automaticSilentRenew: true,
 });
 
+let prevOrgSlug = null;
+let apollo = null;
+
 const ApolloSetup = () => {
   const orgSlug = useOrgSlug();
   const oidc = useOidc();
@@ -44,8 +48,14 @@ const ApolloSetup = () => {
     return () => userManager.events.removeUserSignedOut(signedOutHandler);
   }, [oidc]);
 
+  if (orgSlug === null) return <WrappedLoader />;
+  if (orgSlug !== prevOrgSlug) {
+    prevOrgSlug = orgSlug;
+    apollo = apolloClient(orgSlug);
+  }
+
   return (
-    <ApolloProvider client={apolloClient(orgSlug)}>
+    <ApolloProvider client={apollo}>
       <AuthRoutesContainer />
     </ApolloProvider>
   );
