@@ -19,10 +19,12 @@
     "postinstall": "npm install --prefix api && npm install --prefix ui",
     "build": "npm run build --prefix api && npm run build --prefix ui",
     "test:run:neo": "sudo docker run --env=NEO4J_AUTH=none --publish=7574:7474 --publish=7787:7687 neo4j:4.2.1",
-    "test:run:mongo": "sudo docker run --publish=28017:27017 mongo:4.4.3"
+    "test:run:mongo": "sudo docker run --publish=28017:27017 mongo:4.4.3",
+    "test:run:deps": "sudo concurrently --kill-others \"npm run test:run:neo\" \"npm run test:run:mongo\""
   },
   "dependencies": {
     "concurrently": "^3.5.1",
-    "normalize-url": "^4.0.0"
+    "normalize-url": "^4.0.0",
+    "start-server-and-test": "^1.11.7"
   }
 }
