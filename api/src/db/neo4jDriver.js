@@ -1,10 +1,7 @@
 import neo4j from 'neo4j-driver';
-import dotenv from 'dotenv';
 import { runDBMigrations } from './dbMigrations';
 import { createConstraints } from '../graphql/connectors';
 import { runQueryAndGetRecords } from './cypherUtils';
-
-dotenv.config({ silent: true });
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 

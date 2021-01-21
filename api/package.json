@@ -8,7 +8,6 @@
   },
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
-    "test": "mocha",
     "init-loomio": "npx babel-node --presets es2015 scripts/initLoomio.js",
     "build": "better-npm-run build",
     "serve": "better-npm-run serve"
@@ -48,7 +47,6 @@
     "keycloak-connect-graphql": "^0.6.3",
     "lodash": "^4.17.11",
     "mime": "^2.0.3",
-    "mocha": "^4.0.1",
     "neo4j-driver": "4.1.1",
     "nodemon": "^1.12.4",
     "normalize-url": "^4.0.0",

@@ -5,6 +5,7 @@
   "homepage": "",
   "scripts": {
     "start": "react-scripts start",
+    "start:test": "better-npm-run start:test",
     "build": "better-npm-run build",
     "lint": "eslint ."
   },
@@ -13,6 +14,15 @@
       "command": "react-scripts build",
       "env": {
         "NODE_ENV": "production"
+      }
+    },
+    "start:test": {
+      "command": "react-scripts start",
+      "env": {
+        "REACT_APP_GRAPHQL_ENDPOINT": "http://localhost:3101/graphql",
+        "REACT_APP_GRAPHQL_SUBSCRIPTION": "ws://localhost:3101/graphql",
+        "REACT_APP_KEYCLOAK_CALLBACK_URL": "http://localhost:3001/auth-callback",
+        "PORT": "3001"
       }
     }
   },
