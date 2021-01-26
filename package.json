@@ -25,12 +25,11 @@
     "test:run:servers": "sudo pwd && concurrently \"npm run test:run:deps\" \"npm run test:run:app\"",
     "test:open": "cypress open",
     "test:run": "cypress run",
-    "test": "start-server-and-test cat 3001 test:run"
+    "test": "./scripts/wait.sh 3001 && npm run test:run"
   },
   "dependencies": {
     "concurrently": "^3.5.1",
     "cypress": "6.3.0",
-    "normalize-url": "^4.0.0",
-    "start-server-and-test": "^1.11.7"
+    "normalize-url": "^4.0.0"
   }
 }
