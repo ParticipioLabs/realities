@@ -22,6 +22,7 @@
     "test:run:mongo": "sudo docker run --publish=28017:27017 mongo:4.4.3",
     "test:run:deps": "sudo concurrently --kill-others \"npm run test:run:neo\" \"npm run test:run:mongo\"",
     "test:run:app": "concurrently --kill-others \"NODE_ENV=test npm start --prefix api\" \"./scripts/wait.sh 3101 && npm run start:test --prefix ui\"",
+    "test:run:servers": "sudo pwd && concurrently --kill-others \"npm run test:run:deps\" \"npm run test:run:app\"",
     "test": "echo not yet"
   },
   "dependencies": {
