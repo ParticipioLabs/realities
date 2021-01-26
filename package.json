@@ -22,11 +22,12 @@
     "test:run:mongo": "sudo docker rm -f mongo-realities-test ; sudo docker run --name mongo-realities-test --publish=28017:27017 mongo:4.4.3",
     "test:run:deps": "sudo concurrently \"npm run test:run:neo\" \"npm run test:run:mongo\"",
     "test:run:app": "concurrently --kill-others \"NODE_ENV=test npm start --prefix api\" \"./scripts/wait.sh 3101 && npm run start:test --prefix ui\"",
-    "test:run:servers": "sudo pwd && concurrently \"npm run test:run:deps\" \"npm run test:run:app\""
+    "test:run:servers": "sudo pwd && concurrently \"npm run test:run:deps\" \"npm run test:run:app\"",
+    "test:open": "cypress open"
   },
   "dependencies": {
     "concurrently": "^3.5.1",
-    "normalize-url": "^4.0.0",
-    "start-server-and-test": "^1.11.7"
+    "cypress": "6.3.0",
+    "normalize-url": "^4.0.0"
   }
 }
