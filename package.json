@@ -24,11 +24,13 @@
     "test:run:app": "concurrently --kill-others \"NODE_ENV=test npm start --prefix api\" \"./scripts/wait.sh 3101 && npm run start:test --prefix ui\"",
     "test:run:servers": "sudo pwd && concurrently \"npm run test:run:deps\" \"npm run test:run:app\"",
     "test:open": "cypress open",
-    "test": "cypress run"
+    "test:run": "cypress run",
+    "test": "start-server-and-test cat 3001 test:run"
   },
   "dependencies": {
     "concurrently": "^3.5.1",
     "cypress": "6.3.0",
-    "normalize-url": "^4.0.0"
+    "normalize-url": "^4.0.0",
+    "start-server-and-test": "^1.11.7"
   }
 }
