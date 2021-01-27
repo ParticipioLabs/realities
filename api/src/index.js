@@ -1,7 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import fs from 'fs';
 import { createServer } from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import Keycloak from 'keycloak-connect';
@@ -11,25 +9,7 @@ import schema from './graphql/schema';
 import { getCoreModels, createOrgMembership } from './services/platoCore';
 import { createOrg } from './graphql/connectors';
 
-// copying how cra loads .env files
-// https://github.com/facebook/create-react-app/blob/7e4949a20fc828577fb7626a3262832422f3ae3b/packages/react-scripts/config/env.js#L25-L49
-// https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const dotenvPath = path.resolve(process.cwd(), '.env');
-const dotenvFiles = [
-  `${dotenvPath}.${NODE_ENV}.local`,
-  NODE_ENV !== 'test' && `${dotenvPath}.local`,
-  `${dotenvPath}.${NODE_ENV}`,
-  dotenvPath,
-].filter(Boolean);
-dotenvFiles.forEach((dotenvFile) => {
-  if (fs.existsSync(dotenvFile)) {
-    // eslint-disable-next-line global-require
-    require('dotenv').config({
-      path: dotenvFile,
-    });
-  }
-});
+require('dotenv').config();
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -38,6 +18,7 @@ const { PORT } = process.env;
 const API_PORT = PORT || 3100;
 const app = express();
 
+const NODE_ENV = process.env.NODE_ENV || 'development';
 if (NODE_ENV.includes('prod')) {
   app.use(cors());
 }

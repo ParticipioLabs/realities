@@ -21,7 +21,7 @@
     "test:run:neo": "sudo docker rm -f neo-realities-test ; sudo docker run --name neo-realities-test --env=NEO4J_AUTH=none --publish=7574:7474 --publish=7787:7687 neo4j:4.2.1",
     "test:run:mongo": "sudo docker rm -f mongo-realities-test ; sudo docker run --name mongo-realities-test --publish=28017:27017 mongo:4.4.3",
     "test:run:deps": "sudo npx concurrently \"npm run test:run:neo\" \"npm run test:run:mongo\"",
-    "test:run:app": "concurrently --kill-others \"NODE_ENV=test npm start --prefix api\" \"./scripts/wait.sh 3101 && npm run start:test --prefix ui\"",
+    "test:run:app": "concurrently --kill-others \"npm run test:build --prefix api && npm run test:serve --prefix api\" \"./scripts/wait.sh 3101 && npm run start:test --prefix ui\"",
     "test:run:servers": "sudo pwd && concurrently \"npm run test:run:deps\" \"npm run test:run:app\"",
     "test:open": "cypress open",
     "test:run": "cypress run",

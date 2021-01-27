@@ -10,7 +10,9 @@
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
     "init-loomio": "npx babel-node --presets es2015 scripts/initLoomio.js",
     "build": "better-npm-run build",
-    "serve": "better-npm-run serve"
+    "serve": "better-npm-run serve",
+    "test:build": "better-npm-run test:build",
+    "test:serve": "better-npm-run test:serve"
   },
   "betterScripts": {
     "build": {
@@ -23,6 +25,23 @@
       "command": "node build/bundle.js",
       "env": {
         "NODE_ENV": "production"
+      }
+    },
+    "test:build": {
+      "command": "webpack",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    "test:serve": {
+      "command": "node build/bundle.js",
+      "env": {
+        "NODE_ENV": "test",
+        "DB_URL": "bolt://127.0.0.1:7787",
+        "DB_USERNAME": "",
+        "DB_PASSWORD": "",
+        "MONGO_URL": "mongodb://localhost:28017/platotest",
+        "PORT": "3101"
       }
     }
   },
