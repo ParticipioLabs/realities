@@ -26,7 +26,10 @@ const ListForm = ({
   isSubmitting,
 }) => (
   <Wrapper>
-    <Form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={handleSubmit}
+      data-cy="list-form"
+    >
       <StyledFormGroup>
         <Input
           name={inputName}
@@ -45,6 +48,7 @@ const ListForm = ({
               handleSubmit();
             }
           }}
+          data-cy="list-form-name-input"
         />
       </StyledFormGroup>
       <Button

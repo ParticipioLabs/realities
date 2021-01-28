@@ -44,7 +44,9 @@ const DetailView = ({
   onClickCancel,
   onClickFullscreen,
 }) => (
-  <Card>
+  <Card
+    data-cy="detail-view"
+  >
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
     >

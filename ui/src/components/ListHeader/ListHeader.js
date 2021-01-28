@@ -6,7 +6,7 @@ import { FaPlus } from 'react-icons/fa';
 import IconButton from 'components/IconButton';
 
 const StyledHeader = styled(Card)`
-  background-color: ${props => props.color || '#999'};
+  background-color: ${(props) => props.color || '#999'};
   color: white;
   flex-direction: row;
   font-size: 1.25rem;
@@ -25,17 +25,21 @@ const ListHeader = ({
   onButtonClick,
   color,
 }) => (
-    <StyledHeader color={color}>
-      <ListHeaderText>
-        {text}
-      </ListHeaderText>
-      { showButton &&
-        <IconButton onClick={onButtonClick}>
+  <StyledHeader color={color}>
+    <ListHeaderText>
+      {text}
+    </ListHeaderText>
+    { showButton
+        && (
+        <IconButton
+          onClick={onButtonClick}
+          data-cy="list-header-plus-btn"
+        >
           <FaPlus />
         </IconButton>
-      }
-    </StyledHeader>
-  );
+        )}
+  </StyledHeader>
+);
 
 ListHeader.propTypes = {
   text: PropTypes.string,
