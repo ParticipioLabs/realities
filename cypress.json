@@ -1,1 +1,4 @@
-{}
+{
+  "chromeWebSecurityCOMMENT": "when disabling this we're allowed to visit multiple sites. we do this to be able to do the SSO login. *don't* abuse this too much, it goes against cypress best practices to jump around on different sites. TODO: find a way to do SSO without this setting",
+  "chromeWebSecurity": false
+}
