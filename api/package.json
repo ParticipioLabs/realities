@@ -8,7 +8,6 @@
   },
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
-    "init-loomio": "npx babel-node --presets es2015 scripts/initLoomio.js",
     "build": "better-npm-run build",
     "serve": "better-npm-run serve",
     "test:build": "better-npm-run test:build",
