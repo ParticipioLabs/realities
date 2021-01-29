@@ -6,7 +6,7 @@ import Keycloak from 'keycloak-connect';
 import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandler } from 'keycloak-connect-graphql';
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
-import { getCoreModels, createOrgMembership } from './services/platoCore';
+import { getCoreModels, createOrgMembership, ensureCoreConnection } from './services/platoCore';
 import { createOrg } from './graphql/connectors';
 
 require('dotenv').config();
@@ -71,7 +71,10 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
 
 const keycloakSubscriptionHandler = new KeycloakSubscriptionHandler({ keycloak, protect: false });
 
-createDriver().then((neo4jDriver) => {
+ensureCoreConnection().then(async () => {
+  // won't return until there's a connection to the neo4j server
+  const neo4jDriver = await createDriver();
+
   const server = new ApolloServer({
     schema,
     subscriptions: {
