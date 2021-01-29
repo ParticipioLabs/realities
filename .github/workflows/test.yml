@@ -21,3 +21,10 @@ jobs:
     - run: npm ci
     - run: npm run test:run:servers &
     - run: npm test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: cypress-artifacts
+        path: |
+          realities/cypress/screenshots/
+          realities/cypress/videos/
