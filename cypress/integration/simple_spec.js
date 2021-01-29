@@ -29,6 +29,9 @@ describe('Test basic functionality', () => {
       .type(userPass)
       .get('#kc-form-login')
       .submit()
+      .root()
+      // waiting to get back to the homepage
+      .contains('Pick an organization', { timeout: 10 * 1000 })
 
       .get('[data-cy=create-org-plus-btn]')
       .click()
