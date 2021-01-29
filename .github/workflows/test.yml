@@ -26,5 +26,5 @@ jobs:
       with:
         name: cypress-artifacts
         path: |
-          realities/cypress/screenshots/
-          realities/cypress/videos/
+          cypress/screenshots/
+          cypress/videos/
