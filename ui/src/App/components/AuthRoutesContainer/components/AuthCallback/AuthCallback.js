@@ -17,9 +17,15 @@ const CREATE_VIEWER = gql`
 `;
 
 const AuthCallback = () => {
+  const auth = useAuth();
   const {
     isLoggedIn, email,
-  } = useAuth();
+  } = auth;
+  // } = useAuth();
+  console.log('useAuth', {
+    ...auth,
+    accessToken: typeof auth.accessToken === 'string' ? auth.accessToken.slice(0, 10) : auth.accessToken,
+  });
 
   const orgSlug = useOrgSlug();
 
@@ -64,7 +70,7 @@ const AuthCallback = () => {
               history.replace(baseToUrl);
             }
           })
-          .catch((err) => console.error(err));
+          .catch((err) => console.error('error in CREATE_VIEWER mutation:', err));
       }
     }
   });
