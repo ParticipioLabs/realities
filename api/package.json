@@ -39,6 +39,7 @@
         "DB_URL": "bolt://127.0.0.1:7787",
         "DB_USERNAME": "",
         "DB_PASSWORD": "",
+        "KEYCLOAK_SERVER_URL": "https://auth.platoproject.org/auth/",
         "KEYCLOAK_REALM": "platotest",
         "KEYCLOAK_CLIENT": "realitiestest",
         "MONGO_URL": "mongodb://localhost:28017/platotest",

@@ -23,11 +23,15 @@ if (NODE_ENV.includes('prod')) {
   app.use(cors());
 }
 
+const { KEYCLOAK_REALM, KEYCLOAK_SERVER_URL, KEYCLOAK_CLIENT } = process.env;
+if (!KEYCLOAK_REALM || !KEYCLOAK_SERVER_URL || !KEYCLOAK_CLIENT) {
+  throw new Error('Missing required keycloak env var, see documentation');
+}
 const keycloak = new Keycloak({}, {
-  realm: process.env.KEYCLOAK_REALM,
-  'auth-server-url': process.env.KEYCLOAK_SERVER_URL,
+  realm: KEYCLOAK_REALM,
+  'auth-server-url': KEYCLOAK_SERVER_URL,
   'ssl-required': 'external',
-  resource: process.env.KEYCLOAK_CLIENT,
+  resource: KEYCLOAK_CLIENT,
   'public-client': true,
   'confidential-port': 0,
 });
