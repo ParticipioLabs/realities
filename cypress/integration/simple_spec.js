@@ -13,6 +13,10 @@ describe('Test basic functionality', () => {
     const needName = randomString();
 
     cy
+      .intercept({
+        url: 'https://auth.platoproject.org/auth/realms/platotest/protocol/openid-connect/userinfo',
+      }).as('loginUserinfo')
+
       .visit('localhost:3001')
       .contains('Pick an organization')
       .root()
@@ -29,6 +33,7 @@ describe('Test basic functionality', () => {
       .type(userPass)
       .get('#kc-form-login')
       .submit()
+      .wait('@loginUserinfo')
       .root()
       // waiting to get back to the homepage
       .contains('Pick an organization', { timeout: 10 * 1000 })
