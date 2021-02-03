@@ -29,7 +29,10 @@
   },
   "dependencies": {
     "concurrently": "^3.5.1",
-    "cypress": "6.3.0",
     "normalize-url": "^4.0.0"
+  },
+  "devDependencies": {
+    "cypress": "6.3.0",
+    "cypress-terminal-report": "^2.4.0"
   }
 }

@@ -64,7 +64,7 @@ const AuthCallback = () => {
               history.replace(baseToUrl);
             }
           })
-          .catch((err) => console.log(err));
+          .catch((err) => console.error(err));
       }
     }
   });
