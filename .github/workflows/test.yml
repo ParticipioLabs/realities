@@ -19,8 +19,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npm run test:run:servers &
-    - run: npm test
+    - run: |
+        npm run test:run:servers &
+        npm test
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
