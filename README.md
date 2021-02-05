@@ -85,7 +85,14 @@ $ npm install
 $ npm start
 ```
 
-You can also `cd` into the `ui` and `api` directories separately and `npm start` them individually. That may be more practical during development since you'll get separate logs for the front-end and back-end. 
+You can also `cd` into the `ui` and `api` directories separately and `npm start` them individually. That may be more practical during development since you'll get separate logs for the front-end and back-end.
+
+### Testing locally
+
+Tests in CI should run automatically but if you want to run them on your local machine you can run:
+
+1. `npm run test:run:servers` This will launch (using docker) neo4j, mongodb, the realities API, the realities UI. It'll use fresh and temporary databases that'll disappear once you ctrl-c this command.
+2. `npm test` This will run the e2e tests (pretending to be a user clicking around in the app) in the terminal. While developing/debugging tests it can also be useful to run `npm run test:open` to get a UI where you can see what the test runner is doing in the app.
 
 ## License
 
