@@ -17,15 +17,9 @@ const CREATE_VIEWER = gql`
 `;
 
 const AuthCallback = () => {
-  const auth = useAuth();
   const {
     isLoggedIn, email,
-  } = auth;
-  // } = useAuth();
-  console.log('useAuth', {
-    ...auth,
-    accessToken: typeof auth.accessToken === 'string' ? auth.accessToken.slice(0, 10) : auth.accessToken,
-  });
+  } = useAuth();
 
   const orgSlug = useOrgSlug();
 
