@@ -8,10 +8,10 @@
   },
   "scripts": {
     "start": "concurrently --kill-others \"webpack --watch\" \"nodemon build/bundle.js\"",
-    "test": "mocha",
-    "init-loomio": "npx babel-node --presets es2015 scripts/initLoomio.js",
     "build": "better-npm-run build",
-    "serve": "better-npm-run serve"
+    "serve": "better-npm-run serve",
+    "test:build": "better-npm-run test:build",
+    "test:serve": "better-npm-run test:serve"
   },
   "betterScripts": {
     "build": {
@@ -24,6 +24,26 @@
       "command": "node build/bundle.js",
       "env": {
         "NODE_ENV": "production"
+      }
+    },
+    "test:build": {
+      "command": "webpack",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    "test:serve": {
+      "command": "node build/bundle.js",
+      "env": {
+        "NODE_ENV": "test",
+        "DB_URL": "bolt://127.0.0.1:7787",
+        "DB_USERNAME": "",
+        "DB_PASSWORD": "",
+        "KEYCLOAK_SERVER_URL": "https://auth.platoproject.org/auth/",
+        "KEYCLOAK_REALM": "platotest",
+        "KEYCLOAK_CLIENT": "realitiestest",
+        "MONGO_URL": "mongodb://localhost:28017/platotest",
+        "PORT": "3101"
       }
     }
   },
@@ -48,7 +68,6 @@
     "keycloak-connect-graphql": "^0.6.3",
     "lodash": "^4.17.11",
     "mime": "^2.0.3",
-    "mocha": "^4.0.1",
     "neo4j-driver": "4.1.1",
     "nodemon": "^1.12.4",
     "normalize-url": "^4.0.0",

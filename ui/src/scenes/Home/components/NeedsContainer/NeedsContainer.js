@@ -33,7 +33,9 @@ const NeedsContainer = () => {
   const { needId, orgSlug } = useParams();
 
   return (
-    <div>
+    <div
+      data-cy="needs-container"
+    >
       <ListHeader
         text="Needs"
         color={colors.need}

@@ -6,25 +6,32 @@ import Keycloak from 'keycloak-connect';
 import { KeycloakContext, KeycloakSubscriptionContext, KeycloakSubscriptionHandler } from 'keycloak-connect-graphql';
 import createDriver from './db/neo4jDriver';
 import schema from './graphql/schema';
-import { getCoreModels, createOrgMembership } from './services/platoCore';
+import { getCoreModels, createOrgMembership, ensureCoreConnection } from './services/platoCore';
 import { createOrg } from './graphql/connectors';
+
+require('dotenv').config();
 
 // Max listeners for a pub/sub
 require('events').EventEmitter.defaultMaxListeners = 15;
 
-const { NODE_ENV, PORT } = process.env;
-const API_PORT = NODE_ENV && NODE_ENV.includes('prod') ? PORT || 3000 : 3100;
+const { PORT } = process.env;
+const API_PORT = PORT || 3100;
 const app = express();
 
-if (!NODE_ENV || NODE_ENV.includes('dev')) {
+const NODE_ENV = process.env.NODE_ENV || 'development';
+if (NODE_ENV.includes('prod')) {
   app.use(cors());
 }
 
+const { KEYCLOAK_REALM, KEYCLOAK_SERVER_URL, KEYCLOAK_CLIENT } = process.env;
+if (!KEYCLOAK_REALM || !KEYCLOAK_SERVER_URL || !KEYCLOAK_CLIENT) {
+  throw new Error('Missing required keycloak env var, see documentation');
+}
 const keycloak = new Keycloak({}, {
-  realm: process.env.KEYCLOAK_REALM,
-  'auth-server-url': process.env.KEYCLOAK_SERVER_URL,
+  realm: KEYCLOAK_REALM,
+  'auth-server-url': KEYCLOAK_SERVER_URL,
   'ssl-required': 'external',
-  resource: process.env.KEYCLOAK_CLIENT,
+  resource: KEYCLOAK_CLIENT,
   'public-client': true,
   'confidential-port': 0,
 });
@@ -68,7 +75,10 @@ async function createContext(kauth, orgSlug, neo4jDriver) {
 
 const keycloakSubscriptionHandler = new KeycloakSubscriptionHandler({ keycloak, protect: false });
 
-createDriver().then((neo4jDriver) => {
+ensureCoreConnection().then(async () => {
+  // won't return until there's a connection to the neo4j server
+  const neo4jDriver = await createDriver();
+
   const server = new ApolloServer({
     schema,
     subscriptions: {

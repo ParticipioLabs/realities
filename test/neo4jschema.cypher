@@ -1,3 +1,5 @@
+// TODO: use this file (modify it to follow the current schema first) as
+// a fixture for our e2e tests
 MERGE
   (SafeBurn:Need {title:'Demo: Safe Burn', description:'Create a safe event for all participants.', status:'green', deliberationLink:'https://www.loomio.org/g/cbghMtnL/borderland-realities', nodeId:'2dea1e7d-2e02-4aea-9d17-d42e980beb85'})
 MERGE

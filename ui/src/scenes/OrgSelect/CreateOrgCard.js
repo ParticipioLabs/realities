@@ -70,6 +70,7 @@ const CreateOrgCard = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     invalid={errors.name && touched.name}
+                    data-cy="create-org-orgname-input"
                   />
                   <FormFeedback>{errors.name}</FormFeedback>
                 </FormGroup>
@@ -83,6 +84,7 @@ const CreateOrgCard = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     invalid={errors.orgSlug && touched.orgSlug}
+                    data-cy="create-org-orgslug-input"
                   />
                   <FormFeedback>{errors.orgSlug}</FormFeedback>
                 </FormGroup>
@@ -102,7 +104,10 @@ const CreateOrgCard = () => {
             <CardTitle>
               Create a new organization
             </CardTitle>
-            <Button onClick={() => setCreating(true)}>
+            <Button
+              onClick={() => setCreating(true)}
+              data-cy="create-org-plus-btn"
+            >
               <FaPlus />
             </Button>
           </>

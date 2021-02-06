@@ -2,6 +2,19 @@ import platoCore from 'plato-core';
 
 const { db: { getConnection, getModels } } = platoCore;
 
+export async function ensureCoreConnection() {
+  let connected = false;
+  while (!connected) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await getConnection(process.env.MONGO_URL);
+      connected = true;
+    } catch (err) {
+      console.log('Connection to mongodb server failed, trying again');
+    }
+  }
+}
+
 export async function getCoreModels() {
   const coreDb = await getConnection(process.env.MONGO_URL);
   return getModels(coreDb);
