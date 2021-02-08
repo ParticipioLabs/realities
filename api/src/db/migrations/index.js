@@ -94,4 +94,13 @@ export const migrateTo = {
     `;
     await runQueryAndGetRecords(driver.session(), query, {});
   },
+  v6: async (driver) => {
+    // removes all deliberationLink properties on needs and resps since they're
+    // in practice always empty strings. this feature has been moved into being
+    // stored on a separate Info node instead
+    const query = `
+    MATCH (n) WHERE EXISTS(n.deliberationLink) REMOVE n.deliberationLink RETURN n LIMIT 25
+    `;
+    await runQueryAndGetRecords(driver.session(), query, {});
+  },
 };
