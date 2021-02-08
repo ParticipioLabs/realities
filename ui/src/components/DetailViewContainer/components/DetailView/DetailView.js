@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Card, CardBody, CardHeader } from 'reactstrap';
-import { FaEdit, FaTimesCircle, FaBars } from 'react-icons/fa';
+import {
+  FaEdit, FaTimesCircle, FaExpand, FaBars,
+} from 'react-icons/fa';
 import colors from 'styles/colors';
 import IconButton from 'components/IconButton';
 import Dependencies from 'components/Dependencies';
@@ -10,7 +12,7 @@ import Deliberations from 'components/Deliberations';
 import EditDetailsContainer from 'components/EditDetailsContainer';
 import DeleteNodeContainer from 'components/DeleteNodeContainer';
 import ChangeFulfills from 'components/ChangeFulfills';
-import FullscreenDetailViewBody from './components/FullscreenDetailViewBody';
+import DetailViewBody from './components/DetailViewBody';
 
 const DetailViewCardHeader = styled(CardHeader)`
   background-color: ${(props) => props.color};
@@ -38,18 +40,23 @@ const Divider = styled.div`
 
 const DetailView = ({
   node,
+  fullscreen,
   showEdit,
   isLoggedIn,
   onClickEdit,
   onClickCancel,
-  onClickNavigate,
+  onClickFullscreen,
 }) => (
-  <Card>
+  <Card
+    data-cy="detail-view"
+  >
     <DetailViewCardHeader
       color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
     >
-      <HeaderButton onClick={onClickNavigate}>
-        <FaBars />
+      <HeaderButton onClick={onClickFullscreen}>
+        {fullscreen
+          ? <FaBars />
+          : <FaExpand />}
       </HeaderButton>
       <HeaderText>
         {node.__typename}
@@ -90,7 +97,7 @@ const DetailView = ({
         <DeleteNodeContainer node={node} />
       </CardBody>
     ) : (
-      <FullscreenDetailViewBody node={node} />
+      <DetailViewBody node={node} />
     )}
   </Card>
 );
@@ -130,11 +137,12 @@ DetailView.propTypes = {
       }),
     })),
   }),
+  fullscreen: PropTypes.bool,
   showEdit: PropTypes.bool,
   isLoggedIn: PropTypes.bool,
   onClickEdit: PropTypes.func,
   onClickCancel: PropTypes.func,
-  onClickNavigate: PropTypes.func,
+  onClickFullscreen: PropTypes.func,
 };
 
 DetailView.defaultProps = {
@@ -156,11 +164,12 @@ DetailView.defaultProps = {
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
+  fullscreen: false,
   showEdit: false,
   isLoggedIn: false,
   onClickEdit: () => null,
   onClickCancel: () => null,
-  onClickNavigate: () => null,
+  onClickFullscreen: () => null,
 };
 
 export default DetailView;

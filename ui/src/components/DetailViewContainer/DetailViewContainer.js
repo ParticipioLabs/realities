@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
 import { useHistory, useParams } from 'react-router-dom';
 import useAuth from 'services/useAuth';
@@ -61,7 +62,7 @@ const createDetailViewQuery = (nodeType) => gql`
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
-const DetailViewContainer = () => {
+const DetailViewContainer = ({ fullscreen }) => {
   const auth = useAuth();
   const history = useHistory();
   const params = useParams();
@@ -91,11 +92,18 @@ const DetailViewContainer = () => {
   if (skip) return null;
   if (loading) return <WrappedLoader />;
   if (error) return `Error! ${error.message}`;
+
+  const fullscreenToggleUrl = fullscreen
+    ? `/${params.orgSlug}/${params.needId}/${params.responsibilityId || ''}`
+    : `/${params.orgSlug}/reality/${params.needId}/${params.responsibilityId || ''}`;
+  const onClickFullscreen = () => history.push(fullscreenToggleUrl);
+
   const node = !params.responsibilityId ? data.need : data.responsibility;
   if (!node) return null;
   return (
     <DetailView
       node={node}
+      fullscreen={fullscreen}
       showEdit={data.showDetailedEditView}
       isLoggedIn={auth.isLoggedIn}
       onClickEdit={() => client.writeQuery({
@@ -110,9 +118,17 @@ const DetailViewContainer = () => {
           showDetailedEditView: false,
         },
       })}
-      onClickFullscreen={() => history.push(`/${params.orgSlug}/reality/${params.needId}/${params.responsibilityId || ''}`)}
+      onClickFullscreen={onClickFullscreen}
     />
   );
+};
+
+DetailViewContainer.propTypes = {
+  fullscreen: PropTypes.bool,
+};
+
+DetailViewContainer.defaultProps = {
+  fullscreen: false,
 };
 
 export default DetailViewContainer;

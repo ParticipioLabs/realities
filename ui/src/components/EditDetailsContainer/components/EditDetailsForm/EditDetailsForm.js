@@ -150,8 +150,16 @@ EditDetailsForm.propTypes = {
   values: PropTypes.shape({
     title: PropTypes.string,
     description: PropTypes.string,
-    guide: PropTypes.string,
-    realizer: PropTypes.string,
+    guide: PropTypes.shape({
+      nodeId: PropTypes.string,
+      email: PropTypes.string,
+      name: PropTypes.string,
+    }),
+    realizer: PropTypes.shape({
+      nodeId: PropTypes.string,
+      email: PropTypes.string,
+      name: PropTypes.string,
+    }),
   }),
   errors: PropTypes.shape({
     title: PropTypes.string,
@@ -177,8 +185,16 @@ EditDetailsForm.defaultProps = {
   values: {
     title: '',
     description: '',
-    guide: '',
-    realizer: '',
+    guide: {
+      nodeId: '',
+      email: '',
+      name: '',
+    },
+    realizer: {
+      nodeId: '',
+      email: '',
+      name: '',
+    },
   },
   errors: {
     title: '',
