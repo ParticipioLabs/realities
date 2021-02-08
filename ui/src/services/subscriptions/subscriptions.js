@@ -42,7 +42,6 @@ export const REALITIES_DELETE_SUBSCRIPTION = gql`
         email
       }
       description
-      deliberationLink
     }
   }
 `;
@@ -53,7 +52,6 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
       nodeId
       title
       description
-      deliberationLink
       guide {
         nodeId
         email

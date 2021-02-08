@@ -6,14 +6,13 @@ import { Formik } from 'formik';
 import { SET_CACHE } from 'services/queries';
 import EditDetailsForm from './components/EditDetailsForm';
 
-const createEditDetailsMutation = nodeType => gql`
+const createEditDetailsMutation = (nodeType) => gql`
   mutation EditDetailsContainer_update${nodeType}(
     $nodeId: ID!
     $title: String!
     $guideEmail: String!
     $realizerEmail: String
     $description: String
-    $deliberationLink: String
   ) {
     update${nodeType}(
       nodeId: $nodeId
@@ -21,12 +20,10 @@ const createEditDetailsMutation = nodeType => gql`
       guideEmail: $guideEmail
       realizerEmail: $realizerEmail
       description: $description
-      deliberationLink: $deliberationLink
     ) {
       nodeId
       title
       description
-      deliberationLink
       guide {
         nodeId
         email
@@ -51,7 +48,6 @@ const EditDetailsContainer = ({ node }) => {
         guide: node.guide || null,
         realizer: node.realizer || null,
         description: node.description || '',
-        deliberationLink: node.deliberationLink || '',
       }}
       enableReinitialize
       validationSchema={yup.object().shape({
@@ -63,7 +59,6 @@ const EditDetailsContainer = ({ node }) => {
           email: yup.string(),
         }).nullable(),
         description: yup.string().nullable(),
-        deliberationLink: yup.string().nullable(),
       })}
       onSubmit={(values, { resetForm }) => {
         updateNode({
@@ -73,7 +68,6 @@ const EditDetailsContainer = ({ node }) => {
             guideEmail: values.guide && values.guide.email,
             realizerEmail: values.realizer && values.realizer.email,
             description: values.description,
-            deliberationLink: values.deliberationLink,
           },
         }).then(() => {
           resetForm();
@@ -96,23 +90,23 @@ const EditDetailsContainer = ({ node }) => {
         setFieldValue,
         isSubmitting,
       }) => (
-          <EditDetailsForm
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            handleSubmit={handleSubmit}
-            setFieldValue={setFieldValue}
-            isSubmitting={isSubmitting}
-            cancel={() => client.writeQuery({
-              query: SET_CACHE,
-              data: {
-                showDetailedEditView: false,
-              },
-            })}
-          />
-        )}
+        <EditDetailsForm
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          handleSubmit={handleSubmit}
+          setFieldValue={setFieldValue}
+          isSubmitting={isSubmitting}
+          cancel={() => client.writeQuery({
+            query: SET_CACHE,
+            data: {
+              showDetailedEditView: false,
+            },
+          })}
+        />
+      )}
     </Formik>
   );
 };
@@ -123,7 +117,6 @@ EditDetailsContainer.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
-    deliberationLink: PropTypes.string,
     guide: PropTypes.shape({
       nodeId: PropTypes.string,
       email: PropTypes.string,
@@ -155,7 +148,6 @@ EditDetailsContainer.defaultProps = {
     nodeId: '',
     title: '',
     description: '',
-    deliberationLink: '',
     guide: {
       nodeId: '',
       email: '',

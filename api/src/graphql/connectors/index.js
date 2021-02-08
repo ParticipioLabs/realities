@@ -237,7 +237,6 @@ export function updateReality(driver, args, orgId) {
     SET reality += {
       title: $title,
       description: $description,
-      deliberationLink: $deliberationLink
     }
     DELETE g, r
     CREATE (guide)-[:GUIDES]->(reality)

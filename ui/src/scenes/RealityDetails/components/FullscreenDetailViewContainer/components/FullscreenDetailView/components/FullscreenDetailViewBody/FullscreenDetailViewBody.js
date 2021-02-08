@@ -112,7 +112,6 @@ FullscreenDetailViewBody.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
-    deliberationLink: PropTypes.string,
     guide: PropTypes.shape({
       nodeId: PropTypes.string,
       email: PropTypes.string,
@@ -123,7 +122,7 @@ FullscreenDetailViewBody.propTypes = {
       email: PropTypes.string,
       name: PropTypes.string,
     }),
-    hasDeliberations: PropTypes.arrayOf(PropTypes.shape({
+    deliberations: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
       title: PropTypes.string,
@@ -163,7 +162,6 @@ FullscreenDetailViewBody.defaultProps = {
     nodeId: '',
     title: '',
     description: '',
-    deliberationLink: '',
     guide: {
       nodeId: '',
       email: '',
@@ -174,7 +172,7 @@ FullscreenDetailViewBody.defaultProps = {
       email: '',
       name: '',
     },
-    hasDeliberations: [],
+    deliberations: [],
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },

@@ -12,7 +12,6 @@ const createDetailViewQuery = (nodeType) => gql`
       nodeId
       title
       description
-      deliberationLink
       guide {
         nodeId
         email

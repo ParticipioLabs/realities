@@ -44,7 +44,6 @@ const typeDefs = `
       guideEmail: String!
       realizerEmail: String
       description: String
-      deliberationLink: String
     ): Need
     updateResponsibility(
       nodeId: ID!
@@ -52,7 +51,6 @@ const typeDefs = `
       guideEmail: String!
       realizerEmail: String
       description: String
-      deliberationLink: String
     ): Responsibility
     changeFulfills(responsibilityId: ID!, needId: ID!): Responsibility
     updateViewerName(name: String!): Person
@@ -120,7 +118,6 @@ const typeDefs = `
     nodeId: ID!
     title: String!
     description: String
-    deliberationLink: String
     created: String
     deleted: String
     guide: Person
@@ -136,7 +133,6 @@ const typeDefs = `
     nodeId: ID!
     title: String!
     description: String
-    deliberationLink: String
     created: String
     deleted: String
     guide: Person
@@ -153,7 +149,6 @@ const typeDefs = `
     nodeId: ID!
     title: String!
     description: String
-    deliberationLink: String
     created: String
     deleted: String
     guide: Person
