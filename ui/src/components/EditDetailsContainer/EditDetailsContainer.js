@@ -6,19 +6,19 @@ import { Formik } from 'formik';
 import { SET_CACHE } from 'services/queries';
 import EditDetailsForm from './components/EditDetailsForm';
 
-const createEditDetailsMutation = (nodeType) => gql`
+const createEditDetailsMutation = (nodeType, isResp) => gql`
   mutation EditDetailsContainer_update${nodeType}(
     $nodeId: ID!
     $title: String!
     $guideEmail: String!
-    $realizerEmail: String
+    ${isResp ? '$realizerEmail: String' : ''}
     $description: String
   ) {
     update${nodeType}(
       nodeId: $nodeId
       title: $title
       guideEmail: $guideEmail
-      realizerEmail: $realizerEmail
+      ${isResp ? 'realizerEmail: $realizerEmail' : ''}
       description: $description
     ) {
       nodeId
@@ -29,17 +29,17 @@ const createEditDetailsMutation = (nodeType) => gql`
         email
         name
       }
-      realizer {
+      ${isResp ? `realizer {
         nodeId
         email
         name
-      }
+      }` : ''}
     }
   }
 `;
 
-const EditDetailsContainer = ({ node }) => {
-  const [updateNode, { client }] = useMutation(createEditDetailsMutation(node.__typename));
+const EditDetailsContainer = ({ node, isResp }) => {
+  const [updateNode, { client }] = useMutation(createEditDetailsMutation(node.__typename, isResp));
 
   return (
     <Formik
@@ -91,6 +91,7 @@ const EditDetailsContainer = ({ node }) => {
         isSubmitting,
       }) => (
         <EditDetailsForm
+          isResp={isResp}
           values={values}
           errors={errors}
           touched={touched}
@@ -141,6 +142,7 @@ EditDetailsContainer.propTypes = {
       }),
     })),
   }),
+  isResp: PropTypes.bool,
 };
 
 EditDetailsContainer.defaultProps = {
@@ -161,6 +163,7 @@ EditDetailsContainer.defaultProps = {
     dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
+  isResp: false,
 };
 
 export default EditDetailsContainer;

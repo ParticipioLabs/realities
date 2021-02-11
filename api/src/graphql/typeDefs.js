@@ -42,7 +42,6 @@ const typeDefs = `
       nodeId: ID!
       title: String!
       guideEmail: String!
-      realizerEmail: String
       description: String
     ): Need
     updateResponsibility(

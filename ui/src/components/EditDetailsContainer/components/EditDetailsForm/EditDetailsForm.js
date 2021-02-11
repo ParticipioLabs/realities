@@ -34,6 +34,7 @@ const StyledForm = styled(Form)`
 `;
 
 const EditDetailsForm = ({
+  isResp,
   values,
   errors,
   touched,
@@ -63,7 +64,7 @@ const EditDetailsForm = ({
       </FormFeedback>
     </FormGroup>
     <Row>
-      <Col md="6">
+      <Col md={isResp ? '6' : '12'}>
         <FormGroup>
           <Label for="editDetailsGuide">
             Guide
@@ -87,6 +88,7 @@ const EditDetailsForm = ({
           </FormFeedback>
         </FormGroup>
       </Col>
+      {isResp && (
       <Col md="6">
         <Label for="editDetailsRealizer">
           Realizer
@@ -109,6 +111,7 @@ const EditDetailsForm = ({
           {touched.realizer && errors.realizer}
         </FormFeedback>
       </Col>
+      )}
     </Row>
     <FormGroup>
       <Label for="editDetailsDescription">
@@ -147,6 +150,7 @@ const EditDetailsForm = ({
 );
 
 EditDetailsForm.propTypes = {
+  isResp: PropTypes.bool,
   values: PropTypes.shape({
     title: PropTypes.string,
     description: PropTypes.string,
@@ -170,8 +174,19 @@ EditDetailsForm.propTypes = {
   touched: PropTypes.shape({
     title: PropTypes.bool,
     description: PropTypes.bool,
-    guide: PropTypes.bool,
-    realizer: PropTypes.bool,
+    guide: PropTypes.shape({
+      nodeId: PropTypes.bool,
+      email: PropTypes.bool,
+      name: PropTypes.bool,
+    }),
+    realizer: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.shape({
+        nodeId: PropTypes.bool,
+        email: PropTypes.bool,
+        name: PropTypes.bool,
+      }),
+    ]),
   }),
   handleChange: PropTypes.func,
   handleBlur: PropTypes.func,
@@ -182,6 +197,7 @@ EditDetailsForm.propTypes = {
 };
 
 EditDetailsForm.defaultProps = {
+  isResp: false,
   values: {
     title: '',
     description: '',
@@ -205,8 +221,16 @@ EditDetailsForm.defaultProps = {
   touched: {
     title: false,
     description: false,
-    guide: false,
-    realizer: false,
+    guide: {
+      nodeId: false,
+      email: false,
+      name: false,
+    },
+    realizer: {
+      nodeId: false,
+      email: false,
+      name: false,
+    },
   },
   handleChange: () => null,
   handleBlur: () => null,

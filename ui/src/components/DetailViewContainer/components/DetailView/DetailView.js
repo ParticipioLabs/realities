@@ -46,61 +46,70 @@ const DetailView = ({
   onClickEdit,
   onClickCancel,
   onClickFullscreen,
-}) => (
-  <Card
-    data-cy="detail-view"
-  >
-    <DetailViewCardHeader
-      color={node.__typename === 'Responsibility' ? colors.responsibility : colors.need}
+}) => {
+  const isResp = node.__typename === 'Responsibility';
+
+  return (
+    <Card
+      data-cy="detail-view"
     >
-      <HeaderButton onClick={onClickFullscreen}>
-        {fullscreen
-          ? <FaBars />
-          : <FaExpand />}
-      </HeaderButton>
-      <HeaderText>
-        {node.__typename}
-      </HeaderText>
-      {isLoggedIn && (
-        showEdit ? (
-          <HeaderButton onClick={onClickCancel}>
-            <FaTimesCircle />
-          </HeaderButton>
-        ) : (
-          <HeaderButton onClick={onClickEdit}>
-            <FaEdit />
-          </HeaderButton>
-        )
+      <DetailViewCardHeader
+        color={isResp ? colors.responsibility : colors.need}
+      >
+        <HeaderButton onClick={onClickFullscreen}>
+          {fullscreen
+            ? <FaBars />
+            : <FaExpand />}
+        </HeaderButton>
+        <HeaderText>
+          {node.__typename}
+        </HeaderText>
+        {isLoggedIn && (
+          showEdit ? (
+            <HeaderButton onClick={onClickCancel}>
+              <FaTimesCircle />
+            </HeaderButton>
+          ) : (
+            <HeaderButton onClick={onClickEdit}>
+              <FaEdit />
+            </HeaderButton>
+          )
+        )}
+      </DetailViewCardHeader>
+      {showEdit ? (
+        <CardBody>
+          <EditDetailsContainer node={node} isResp={isResp} />
+          <Divider />
+          {isResp
+            && (
+            <>
+              <ChangeFulfills node={node} />
+              <Deliberations
+                showAddRemove
+                nodeType={node.__typename}
+                nodeId={node.nodeId}
+                deliberations={node.deliberations}
+              />
+              <Dependencies
+                showAddRemove
+                nodeType={node.__typename}
+                nodeId={node.nodeId}
+                dependencies={[
+                  ...(node.dependsOnNeeds || []),
+                  ...(node.dependsOnResponsibilities || []),
+                ]}
+              />
+              <Divider />
+            </>
+            )}
+          <DeleteNodeContainer node={node} />
+        </CardBody>
+      ) : (
+        <DetailViewBody node={node} isResp={isResp} />
       )}
-    </DetailViewCardHeader>
-    {showEdit ? (
-      <CardBody>
-        <EditDetailsContainer node={node} />
-        <Divider />
-        {node.__typename === 'Responsibility' && <ChangeFulfills node={node} />}
-        <Deliberations
-          showAddRemove
-          nodeType={node.__typename}
-          nodeId={node.nodeId}
-          deliberations={node.deliberations}
-        />
-        <Dependencies
-          showAddRemove
-          nodeType={node.__typename}
-          nodeId={node.nodeId}
-          dependencies={[
-            ...(node.dependsOnNeeds || []),
-            ...(node.dependsOnResponsibilities || []),
-          ]}
-        />
-        <Divider />
-        <DeleteNodeContainer node={node} />
-      </CardBody>
-    ) : (
-      <DetailViewBody node={node} />
-    )}
-  </Card>
-);
+    </Card>
+  );
+};
 
 DetailView.propTypes = {
   node: PropTypes.shape({

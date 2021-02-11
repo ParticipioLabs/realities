@@ -236,7 +236,7 @@ export function updateReality(driver, args, orgId) {
     )
     SET reality += {
       title: $title,
-      description: $description,
+      description: $description
     }
     DELETE g, r
     CREATE (guide)-[:GUIDES]->(reality)
@@ -247,6 +247,7 @@ export function updateReality(driver, args, orgId) {
 
   // https://github.com/Edgeryders-Participio/realities/issues/160
   const params = _.clone(args);
+  params.realizerEmail = params.realizerEmail || '';
   params.orgId = orgId;
   return runQueryAndGetRecord(driver.session(), query, params);
 }

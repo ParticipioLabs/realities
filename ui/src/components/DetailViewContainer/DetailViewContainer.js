@@ -7,7 +7,9 @@ import WrappedLoader from 'components/WrappedLoader';
 import { SET_CACHE } from 'services/queries';
 import DetailView from './components/DetailView';
 
-const createDetailViewQuery = (nodeType) => gql`
+const createDetailViewQuery = (nodeType) => {
+  const isResp = nodeType === 'responsibility';
+  return gql`
   query DetailViewContainer_${nodeType}($nodeId: ID!) {
     ${nodeType}(nodeId: $nodeId) {
       nodeId
@@ -18,7 +20,7 @@ const createDetailViewQuery = (nodeType) => gql`
         email
         name
       }
-      realizer {
+      ${isResp ? `realizer {
         nodeId
         email
         name
@@ -49,8 +51,8 @@ const createDetailViewQuery = (nodeType) => gql`
         fulfills {
           nodeId
         }
-      }
-      ${nodeType === 'responsibility' ? 'fulfills' : 'fulfilledBy'} {
+      }` : ''}
+      ${isResp ? 'fulfills' : 'fulfilledBy'} {
         nodeId
         title
       }
@@ -58,6 +60,7 @@ const createDetailViewQuery = (nodeType) => gql`
     showDetailedEditView @client
   }
 `;
+};
 
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
