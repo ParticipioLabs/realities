@@ -158,25 +158,25 @@ export function createResponsibility(driver, { title, needId }, { email, orgId }
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function addRealityHasDeliberation(driver, { from, to, orgId }) {
+export function addRespHasDeliberation(driver, { from, to, orgId }) {
   const queryParams = {
-    realityId: from.nodeId,
+    respId: from.nodeId,
     infoUrl: to.url,
     infoId: uuidv4(),
     orgId,
   };
   // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
   const query = `
-    MATCH (reality {nodeId: $realityId})
-    WITH reality
+    MATCH (resp:Responsibility {nodeId: $respId})
+    WITH resp
     MERGE (info:Info {url: $infoUrl})
     FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
       SET info += {nodeId:$infoId, created:timestamp()})
-    WITH reality, info
+    WITH resp, info
     MATCH (org:Org {orgId:$orgId})
-    MERGE (reality)-[:HAS_DELIBERATION]->(info)
+    MERGE (resp)-[:HAS_DELIBERATION]->(info)
     MERGE (org)-[:HAS]->(info)
-    RETURN reality as from, info as to
+    RETURN resp as from, info as to
   `;
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
 }
@@ -328,7 +328,7 @@ export function removeDeliberation(driver, { from, to }) {
     toUrl: to.url,
   };
   const query = `
-    MATCH (from {nodeId: $fromId})-[r:HAS_DELIBERATION]->(to {url: $toUrl})
+    MATCH (from:Responsibility {nodeId: $fromId})-[r:HAS_DELIBERATION]->(to {url: $toUrl})
     DELETE r
     RETURN from, to
   `;

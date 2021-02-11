@@ -57,37 +57,39 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
         email
         name
       }
-      realizer {
-        nodeId
-        email
-        name
-      }
-      dependsOnNeeds {
-        nodeId
-        title
-      }
-      dependsOnResponsibilities {
-        nodeId
-        title
-        fulfills {
+      ... on Responsibility {
+        realizer {
           nodeId
+          email
+          name
         }
-      }
-      needsThatDependOnThis {
-        nodeId
-        title
-      }
-      responsibilitiesThatDependOnThis {
-        nodeId
-        title
-        fulfills {
+        dependsOnNeeds {
           nodeId
+          title
         }
-      }
-      deliberations {
-        nodeId
-        url
-        title
+        dependsOnResponsibilities {
+          nodeId
+          title
+          fulfills {
+            nodeId
+          }
+        }
+        needsThatDependOnThis {
+          nodeId
+          title
+        }
+        responsibilitiesThatDependOnThis {
+          nodeId
+          title
+          fulfills {
+            nodeId
+          }
+        }
+        deliberations {
+          nodeId
+          url
+          title
+        }
       }
       ... on Need {
         fulfilledBy {

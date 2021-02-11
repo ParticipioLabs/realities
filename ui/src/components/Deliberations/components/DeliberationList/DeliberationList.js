@@ -11,7 +11,7 @@ const StyledListGroup = styled(ListGroup)`
 
 const StyledListGroupItem = styled(ListGroupItem)`
   position: relative;
-  ${props => props.showremove && 'padding-right: 6em;'}
+  ${(props) => props.showremove && 'padding-right: 6em;'}
 `;
 
 const RemoveWrapper = styled.span`
@@ -35,22 +35,22 @@ const DeliberationList = ({ deliberations, showRemove }) => {
           url,
         },
       }) => (
-          <StyledListGroupItem
-            key={nodeId}
-            tag="div"
-            action
-            onClick={() => handleClick(url)}
-            showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
-          >
-            <TypeBadge nodeType={__typename} />
-            {title || url}
-            {showRemove && (
-              <RemoveWrapper>
-                <RemoveDeliberation nodeType={__typename} nodeId={nodeId} url={url} />
-              </RemoveWrapper>
-            )}
-          </StyledListGroupItem>
-        ))}
+        <StyledListGroupItem
+          key={nodeId}
+          tag="div"
+          action
+          onClick={() => handleClick(url)}
+          showremove={showRemove ? 'true' : '' /* styled component doesn't want a boolean */}
+        >
+          <TypeBadge nodeType={__typename} />
+          {title || url}
+          {showRemove && (
+          <RemoveWrapper>
+            <RemoveDeliberation url={url} />
+          </RemoveWrapper>
+          )}
+        </StyledListGroupItem>
+      ))}
     </StyledListGroup>
   );
 };

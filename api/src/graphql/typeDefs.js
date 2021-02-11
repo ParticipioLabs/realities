@@ -92,14 +92,14 @@ const typeDefs = `
       title: String!
     ): Info
     softDeleteInfo(url: String!): Info
-    addRealityHasDeliberation(
-      from: _RealityInput!
+    addRespHasDeliberation(
+      from: _ResponsibilityInput!
       to: _InfoInput!
-    ): _RealityHasDeliberationPayload
-    removeRealityHasDeliberation(
-      from: _RealityInput!
+    ): _RespHasDeliberationPayload
+    removeRespHasDeliberation(
+      from: _ResponsibilityInput!
       to: _InfoInput!
-    ): _RealityHasDeliberationPayload
+    ): _RespHasDeliberationPayload
   }
 
   type Person {
@@ -125,7 +125,6 @@ const typeDefs = `
     dependsOnResponsibilities: [Responsibility]
     needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
-    deliberations: [Info]
   }
 
   type Need implements Reality {
@@ -141,7 +140,6 @@ const typeDefs = `
     dependsOnResponsibilities: [Responsibility]
     needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
-    deliberations: [Info]
   }
 
   type Responsibility implements Reality {
@@ -211,8 +209,8 @@ const typeDefs = `
     to: Responsibility
   }
 
-  type _RealityHasDeliberationPayload {
-    from: Reality
+  type _RespHasDeliberationPayload {
+    from: Responsibility
     to: Info
   }
 `;
