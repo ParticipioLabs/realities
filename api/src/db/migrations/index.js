@@ -103,10 +103,27 @@ export const migrateTo = {
     `;
     await runQueryAndGetRecords(driver.session(), query, {});
   },
+  // remove old edges from/to needs that we don't use anymore
   v7: async (driver) => {
     const query = `
     MATCH (:Need)-[d:DEPENDS_ON]-() DELETE d
     `;
     await runQueryAndGetRecords(driver.session(), query, {});
+  },
+  v8: async (driver) => {
+    const query1 = `
+    MATCH (:Need)-[d:REALIZES]-() DELETE d
+    `;
+    await runQueryAndGetRecords(driver.session(), query1, {});
+
+    const query2 = `
+    MATCH (:Need)-[d:REALIZED]-() DELETE d
+    `;
+    await runQueryAndGetRecords(driver.session(), query2, {});
+
+    const query3 = `
+    MATCH (:Need)-[d:HAS_DELIBERATION]-() DELETE d
+    `;
+    await runQueryAndGetRecords(driver.session(), query3, {});
   },
 };

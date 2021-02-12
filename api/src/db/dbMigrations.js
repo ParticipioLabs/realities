@@ -2,7 +2,7 @@
 import { runQueryAndGetRecord } from './cypherUtils';
 import { migrateTo } from './migrations/';
 
-const currentVersion = 7;
+const currentVersion = 8;
 
 async function getDBVersion(driver) {
   // this also inits the RealitiesDBVersion node
