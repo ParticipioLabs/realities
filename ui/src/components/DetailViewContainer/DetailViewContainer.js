@@ -21,37 +21,30 @@ const createDetailViewQuery = (nodeType) => {
         name
       }
       ${isResp ? `realizer {
-        nodeId
-        email
-        name
-      }
-      deliberations {
-        nodeId
-        title
-        url
-      }
-      dependsOnNeeds {
-        nodeId
-        title
-      }
-      dependsOnResponsibilities {
-        nodeId
-        title
-        fulfills {
           nodeId
+          email
+          name
         }
-      }
-      needsThatDependOnThis {
-        nodeId
-        title
-      }
-      responsibilitiesThatDependOnThis {
-        nodeId
-        title
-        fulfills {
+        deliberations {
           nodeId
+          title
+          url
         }
-      }` : ''}
+        dependsOnResponsibilities {
+          nodeId
+          title
+          fulfills {
+            nodeId
+          }
+        }
+        responsibilitiesThatDependOnThis {
+          nodeId
+          title
+          fulfills {
+            nodeId
+          }
+        }
+      ` : ''}
       ${isResp ? 'fulfills' : 'fulfilledBy'} {
         nodeId
         title

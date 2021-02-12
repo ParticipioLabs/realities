@@ -98,7 +98,7 @@ const ChangeFulfills = ({ node }) => {
           />
         ) : (
           <ListGroupItem onClick={() => history.push(`/${orgSlug}/${node.fulfills.nodeId}`)} action>
-            <TypeBadge nodeType={node.fulfills.__typename} />
+            <TypeBadge nodeType="Need" />
             {node.fulfills.title}
             <ButtonWrapper>
               <Button
@@ -140,11 +140,10 @@ ChangeFulfills.propTypes = {
       email: PropTypes.string,
       name: PropTypes.string,
     }),
-    dependsOnNeeds: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
+    fulfills: PropTypes.shape({
       nodeId: PropTypes.string,
       title: PropTypes.string,
-    })),
+    }),
     dependsOnResponsibilities: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
@@ -172,7 +171,10 @@ ChangeFulfills.defaultProps = {
       email: '',
       name: '',
     },
-    dependsOnNeeds: [],
+    fulfills: {
+      nodeId: '',
+      title: '',
+    },
     dependsOnResponsibilities: [],
   },
 };

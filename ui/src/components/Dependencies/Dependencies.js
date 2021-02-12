@@ -7,7 +7,6 @@ import DependencyList from './components/DependencyList';
 
 const Dependencies = withAuth(({
   auth,
-  nodeType,
   nodeId,
   dependencies,
   showAddRemove,
@@ -17,14 +16,14 @@ const Dependencies = withAuth(({
   return (
     <div>
       {auth.isLoggedIn && showAddRemove && (
-      <AddDependency nodeType={nodeType} nodeId={nodeId} />
+      <AddDependency nodeId={nodeId} />
       )}
       <DependencyList
         dependencies={dependencies.map((dep) => ({
           node: dep,
-          onClick: () => history.push(dep.__typename === 'Need'
-            ? `/${orgSlug}/${dep.nodeId}`
-            : `/${orgSlug}/${dep.fulfills.nodeId}/${dep.nodeId}`),
+          onClick: () => history.push(
+            `/${orgSlug}/${dep.fulfills.nodeId}/${dep.nodeId}`,
+          ),
         }))}
         showRemove={auth.isLoggedIn && showAddRemove}
       />
@@ -36,7 +35,6 @@ Dependencies.propTypes = {
   auth: PropTypes.shape({
     isLoggedIn: PropTypes.bool,
   }),
-  nodeType: PropTypes.string,
   nodeId: PropTypes.string,
   dependencies: PropTypes.arrayOf(PropTypes.shape({
     __typename: PropTypes.string,
@@ -53,7 +51,6 @@ Dependencies.defaultProps = {
   auth: {
     isLoggedIn: false,
   },
-  nodeType: 'Need',
   nodeId: '',
   dependencies: [],
   showAddRemove: false,

@@ -21,11 +21,6 @@ const NEED_FRAGMENT = gql`
       email
       name
     }
-    realizer {
-      nodeId
-      email
-      name
-    }
   }
 `;
 
@@ -54,18 +49,6 @@ const GET_NEED = gql`
       fulfilledBy {
         ...LocalGraphResponsibilityFields
       }
-      dependsOnNeeds {
-        ...LocalGraphNeedFields
-      }
-      dependsOnResponsibilities {
-        ...LocalGraphResponsibilityFields
-      }
-      needsThatDependOnThis {
-        ...LocalGraphNeedFields
-      }
-      responsibilitiesThatDependOnThis {
-        ...LocalGraphResponsibilityFields
-      }
     }
   }
   ${NEED_FRAGMENT}
@@ -80,14 +63,8 @@ const GET_RESPONSIBILITY = gql`
       fulfills {
         ...LocalGraphNeedFields
       }
-      dependsOnNeeds {
-        ...LocalGraphNeedFields
-      }
       dependsOnResponsibilities {
         ...LocalGraphResponsibilityFields
-      }
-      needsThatDependOnThis {
-        ...LocalGraphNeedFields
       }
       responsibilitiesThatDependOnThis {
         ...LocalGraphResponsibilityFields

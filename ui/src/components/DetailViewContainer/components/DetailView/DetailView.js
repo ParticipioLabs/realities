@@ -94,10 +94,7 @@ const DetailView = ({
                 showAddRemove
                 nodeType={node.__typename}
                 nodeId={node.nodeId}
-                dependencies={[
-                  ...(node.dependsOnNeeds || []),
-                  ...(node.dependsOnResponsibilities || []),
-                ]}
+                dependencies={node.dependsOnResponsibilities || []}
               />
               <Divider />
             </>
@@ -132,11 +129,6 @@ DetailView.propTypes = {
       email: PropTypes.string,
       name: PropTypes.string,
     }),
-    dependsOnNeeds: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
-      nodeId: PropTypes.string,
-      title: PropTypes.string,
-    })),
     dependsOnResponsibilities: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
@@ -170,7 +162,6 @@ DetailView.defaultProps = {
       email: '',
       name: '',
     },
-    dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
   fullscreen: false,

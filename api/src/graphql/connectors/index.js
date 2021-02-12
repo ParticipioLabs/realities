@@ -300,8 +300,8 @@ export function addDependency(driver, { from, to }) {
     toId: to.nodeId,
   };
   const query = `
-    MATCH (from {nodeId: $fromId})
-    MATCH (to {nodeId: $toId})
+    MATCH (from:Responsibility {nodeId: $fromId})
+    MATCH (to:Responsibility {nodeId: $toId})
     MERGE (from)-[:DEPENDS_ON]->(to)
     RETURN from, to
   `;
@@ -314,7 +314,7 @@ export function removeDependency(driver, { from, to }) {
     toId: to.nodeId,
   };
   const query = `
-    MATCH (from {nodeId: $fromId})-[r:DEPENDS_ON]->(to {nodeId: $toId})
+    MATCH (from:Responsibility {nodeId: $fromId})-[r:DEPENDS_ON]->(to:Responsibility {nodeId: $toId})
     DELETE r
     RETURN from, to
   `;

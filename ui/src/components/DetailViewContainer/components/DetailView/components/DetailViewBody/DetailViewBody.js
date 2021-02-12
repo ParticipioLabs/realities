@@ -78,10 +78,7 @@ const DetailViewBody = ({ node, isResp }) => (
         <Dependencies
           nodeType={node.__typename}
           nodeId={node.nodeId}
-          dependencies={[
-            ...(node.dependsOnNeeds || []),
-            ...(node.dependsOnResponsibilities || []),
-          ]}
+          dependencies={node.dependsOnResponsibilities || []}
         />
       </CardSection>
 
@@ -90,10 +87,7 @@ const DetailViewBody = ({ node, isResp }) => (
         <Dependencies
           nodeType={node.__typename}
           nodeId={node.nodeId}
-          dependencies={[
-            ...(node.needsThatDependOnThis || []),
-            ...(node.responsibilitiesThatDependOnThis || []),
-          ]}
+          dependencies={node.responsibilitiesThatDependOnThis || []}
         />
       </CardSection>
     </>
@@ -124,11 +118,6 @@ DetailViewBody.propTypes = {
       title: PropTypes.string,
       url: PropTypes.string,
     })),
-    dependsOnNeeds: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
-      nodeId: PropTypes.string,
-      title: PropTypes.string,
-    })),
     dependsOnResponsibilities: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
@@ -136,11 +125,6 @@ DetailViewBody.propTypes = {
       fulfills: PropTypes.shape({
         nodeId: PropTypes.string,
       }),
-    })),
-    needsThatDependOnThis: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
-      nodeId: PropTypes.string,
-      title: PropTypes.string,
     })),
     responsibilitiesThatDependOnThis: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
@@ -170,7 +154,6 @@ DetailViewBody.defaultProps = {
       name: '',
     },
     deliberations: [],
-    dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
   isResp: false,

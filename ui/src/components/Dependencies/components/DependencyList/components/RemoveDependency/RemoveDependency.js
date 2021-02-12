@@ -6,61 +6,7 @@ import {
   Button,
 } from 'reactstrap';
 
-const REMOVE_NEED_DEPENDS_ON_NEEDS = gql`
-  mutation RemoveDependency_removeNeedDependsOnNeedsMutation(
-    $from: _NeedInput!
-    $to: _NeedInput!
-  ) {
-    removeNeedDependsOnNeeds(from: $from, to: $to) {
-      from {
-        nodeId
-        dependsOnNeeds {
-          nodeId
-          title
-        }
-      }
-    }
-  }
-`;
-
-const REMOVE_NEED_DEPENDS_ON_RESPONSIBILITIES = gql`
-  mutation RemoveDependency_removeNeedDependsOnResponsibilitiesMutation(
-    $from: _NeedInput!
-    $to: _ResponsibilityInput!
-  ) {
-    removeNeedDependsOnResponsibilities(from: $from, to: $to) {
-      from {
-        nodeId
-        dependsOnResponsibilities {
-          nodeId
-          title
-          fulfills {
-            nodeId
-          }
-        }
-      }
-    }
-  }
-`;
-
-const REMOVE_RESPONSIBILITY_DEPENDS_ON_NEEDS = gql`
-  mutation RemoveDependency_removeResponsibilityDependsOnNeedsMutation(
-    $from: _ResponsibilityInput!
-    $to: _NeedInput!
-  ) {
-    removeResponsibilityDependsOnNeeds(from: $from, to: $to) {
-      from {
-        nodeId
-        dependsOnNeeds {
-          nodeId
-          title
-        }
-      }
-    }
-  }
-`;
-
-const REMOVE_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES = gql`
+const REMOVE_DEPENDENCY = gql`
   mutation RemoveDependency_removeResponsibilityDependsOnResponsibilitiesMutation(
     $from: _ResponsibilityInput!
     $to: _ResponsibilityInput!
@@ -80,18 +26,7 @@ const REMOVE_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES = gql`
   }
 `;
 
-const RemoveDependency = withRouter(({ match, nodeType, nodeId }) => {
-  const fromType = match.params.responsibilityId ? 'Responsibility' : 'Need';
-  const REMOVE_NEED_DEPENDENCY = fromType === 'Need'
-    ? REMOVE_NEED_DEPENDS_ON_NEEDS
-    : REMOVE_RESPONSIBILITY_DEPENDS_ON_NEEDS;
-  const REMOVE_RESPONSIBILITY_DEPENDENCY = fromType === 'Need'
-    ? REMOVE_NEED_DEPENDS_ON_RESPONSIBILITIES
-    : REMOVE_RESPONSIBILITY_DEPENDS_ON_RESPONSIBILITIES;
-  const REMOVE_DEPENDENCY = nodeType === 'Need'
-    ? REMOVE_NEED_DEPENDENCY
-    : REMOVE_RESPONSIBILITY_DEPENDENCY;
-
+const RemoveDependency = withRouter(({ match, nodeId }) => {
   const [removeDependency, { loading }] = useMutation(REMOVE_DEPENDENCY);
 
   return (

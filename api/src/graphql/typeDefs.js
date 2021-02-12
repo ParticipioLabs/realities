@@ -55,34 +55,10 @@ const typeDefs = `
     updateViewerName(name: String!): Person
     softDeleteNeed(nodeId: ID!): Need
     softDeleteResponsibility(nodeId: ID!): Responsibility
-    addNeedDependsOnNeeds(
-      from: _NeedInput!
-      to: _NeedInput!
-    ): _NeedDependsOnNeedsPayload
-    addNeedDependsOnResponsibilities(
-      from: _NeedInput!
-      to: _ResponsibilityInput!
-    ): _NeedDependsOnResponsibilitiesPayload
-    addResponsibilityDependsOnNeeds(
-      from: _ResponsibilityInput!
-      to: _NeedInput!
-    ): _ResponsibilityDependsOnNeedsPayload
     addResponsibilityDependsOnResponsibilities(
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
     ): _ResponsibilityDependsOnResponsibilitiesPayload
-    removeNeedDependsOnNeeds(
-      from: _NeedInput!
-      to: _NeedInput!
-    ): _NeedDependsOnNeedsPayload
-    removeNeedDependsOnResponsibilities(
-      from: _NeedInput!
-      to: _ResponsibilityInput!
-    ): _NeedDependsOnResponsibilitiesPayload
-    removeResponsibilityDependsOnNeeds(
-      from: _ResponsibilityInput!
-      to: _NeedInput!
-    ): _ResponsibilityDependsOnNeedsPayload
     removeResponsibilityDependsOnResponsibilities(
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
@@ -119,10 +95,6 @@ const typeDefs = `
     created: String
     deleted: String
     guide: Person
-    dependsOnNeeds: [Need]
-    dependsOnResponsibilities: [Responsibility]
-    needsThatDependOnThis: [Need]
-    responsibilitiesThatDependOnThis: [Responsibility]
   }
 
   type Need implements Reality {
@@ -133,10 +105,6 @@ const typeDefs = `
     deleted: String
     guide: Person
     fulfilledBy: [Responsibility]
-    dependsOnNeeds: [Need]
-    dependsOnResponsibilities: [Responsibility]
-    needsThatDependOnThis: [Need]
-    responsibilitiesThatDependOnThis: [Responsibility]
   }
 
   type Responsibility implements Reality {
@@ -148,9 +116,7 @@ const typeDefs = `
     guide: Person
     realizer: Person
     fulfills: Need
-    dependsOnNeeds: [Need]
     dependsOnResponsibilities: [Responsibility]
-    needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
     deliberations: [Info]
   }
@@ -184,21 +150,6 @@ const typeDefs = `
 
   input _InfoInput {
     url: String!
-  }
-
-  type _NeedDependsOnNeedsPayload {
-    from: Need
-    to: Need
-  }
-
-  type _NeedDependsOnResponsibilitiesPayload {
-    from: Need
-    to: Responsibility
-  }
-
-  type _ResponsibilityDependsOnNeedsPayload {
-    from: Responsibility
-    to: Need
   }
 
   type _ResponsibilityDependsOnResponsibilitiesPayload {

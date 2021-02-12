@@ -128,11 +128,6 @@ EditDetailsContainer.propTypes = {
       email: PropTypes.string,
       name: PropTypes.string,
     }),
-    dependsOnNeeds: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
-      nodeId: PropTypes.string,
-      title: PropTypes.string,
-    })),
     dependsOnResponsibilities: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
@@ -160,7 +155,6 @@ EditDetailsContainer.defaultProps = {
       email: '',
       name: '',
     },
-    dependsOnNeeds: [],
     dependsOnResponsibilities: [],
   },
   isResp: false,

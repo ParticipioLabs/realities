@@ -128,18 +128,6 @@ const resolvers = {
     guide({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Person', 'IN');
     },
-    dependsOnNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need');
-    },
-    dependsOnResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility');
-    },
-    needsThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need', 'IN');
-    },
-    responsibilitiesThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
-    },
   },
   Need: {
     fulfilledBy({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
@@ -155,6 +143,12 @@ const resolvers = {
     },
     deliberations({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'HAS_DELIBERATION', 'Info');
+    },
+    dependsOnResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility');
+    },
+    responsibilitiesThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
     },
   },
   Mutation: {
@@ -271,21 +265,13 @@ const resolvers = {
         return responsibility;
       },
     ),
-    addNeedDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
-    ),
-    addNeedDependsOnResponsibilities: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
-    ),
-    addResponsibilityDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
-    ),
     addResponsibilityDependsOnResponsibilities: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
+    ),
+    removeResponsibilityDependsOnResponsibilities: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
     ),
     addRespHasDeliberation: combineResolvers(
       isAuthenticated,
@@ -297,22 +283,6 @@ const resolvers = {
     removeRespHasDeliberation: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => removeDeliberation(driver, { from, to }),
-    ),
-    removeNeedDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
-    removeNeedDependsOnResponsibilities: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
-    removeResponsibilityDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
-    removeResponsibilityDependsOnResponsibilities: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
     ),
   },
 };

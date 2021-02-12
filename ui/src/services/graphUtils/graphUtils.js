@@ -79,10 +79,8 @@ function getSubGraph(originNode = {}) {
   pushRelatedNode(graph, originNode, originNode.guide, 'Guides', 'OUT');
   pushRelatedNode(graph, originNode, originNode.realizer, 'Realizes', 'OUT');
   pushRelatedNode(graph, originNode, originNode.fulfills, 'Fulfills', 'IN');
-  pushRelatedNode(graph, originNode, originNode.dependsOnNeeds, 'Depends on', 'IN');
   pushRelatedNode(graph, originNode, originNode.dependsOnResponsibilities, 'Depends on', 'IN');
   pushRelatedNode(graph, originNode, originNode.fulfilledBy, 'Fulfills', 'OUT');
-  pushRelatedNode(graph, originNode, originNode.needsThatDependOnThis, 'Depends on', 'OUT');
   pushRelatedNode(graph, originNode, originNode.responsibilitiesThatDependOnThis, 'Depends on', 'OUT');
 
   return graph;

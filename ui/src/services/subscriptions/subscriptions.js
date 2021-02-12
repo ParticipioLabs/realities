@@ -60,20 +60,12 @@ export const REALITIES_UPDATE_SUBSCRIPTION = gql`
           email
           name
         }
-        dependsOnNeeds {
-          nodeId
-          title
-        }
         dependsOnResponsibilities {
           nodeId
           title
           fulfills {
             nodeId
           }
-        }
-        needsThatDependOnThis {
-          nodeId
-          title
         }
         responsibilitiesThatDependOnThis {
           nodeId
