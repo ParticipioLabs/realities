@@ -42,9 +42,7 @@ const typeDefs = `
       nodeId: ID!
       title: String!
       guideEmail: String!
-      realizerEmail: String
       description: String
-      deliberationLink: String
     ): Need
     updateResponsibility(
       nodeId: ID!
@@ -52,40 +50,15 @@ const typeDefs = `
       guideEmail: String!
       realizerEmail: String
       description: String
-      deliberationLink: String
     ): Responsibility
     changeFulfills(responsibilityId: ID!, needId: ID!): Responsibility
     updateViewerName(name: String!): Person
     softDeleteNeed(nodeId: ID!): Need
     softDeleteResponsibility(nodeId: ID!): Responsibility
-    addNeedDependsOnNeeds(
-      from: _NeedInput!
-      to: _NeedInput!
-    ): _NeedDependsOnNeedsPayload
-    addNeedDependsOnResponsibilities(
-      from: _NeedInput!
-      to: _ResponsibilityInput!
-    ): _NeedDependsOnResponsibilitiesPayload
-    addResponsibilityDependsOnNeeds(
-      from: _ResponsibilityInput!
-      to: _NeedInput!
-    ): _ResponsibilityDependsOnNeedsPayload
     addResponsibilityDependsOnResponsibilities(
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
     ): _ResponsibilityDependsOnResponsibilitiesPayload
-    removeNeedDependsOnNeeds(
-      from: _NeedInput!
-      to: _NeedInput!
-    ): _NeedDependsOnNeedsPayload
-    removeNeedDependsOnResponsibilities(
-      from: _NeedInput!
-      to: _ResponsibilityInput!
-    ): _NeedDependsOnResponsibilitiesPayload
-    removeResponsibilityDependsOnNeeds(
-      from: _ResponsibilityInput!
-      to: _NeedInput!
-    ): _ResponsibilityDependsOnNeedsPayload
     removeResponsibilityDependsOnResponsibilities(
       from: _ResponsibilityInput!
       to: _ResponsibilityInput!
@@ -95,14 +68,14 @@ const typeDefs = `
       title: String!
     ): Info
     softDeleteInfo(url: String!): Info
-    addRealityHasDeliberation(
-      from: _RealityInput!
+    addRespHasDeliberation(
+      from: _ResponsibilityInput!
       to: _InfoInput!
-    ): _RealityHasDeliberationPayload
-    removeRealityHasDeliberation(
-      from: _RealityInput!
+    ): _RespHasDeliberationPayload
+    removeRespHasDeliberation(
+      from: _ResponsibilityInput!
       to: _InfoInput!
-    ): _RealityHasDeliberationPayload
+    ): _RespHasDeliberationPayload
   }
 
   type Person {
@@ -111,7 +84,6 @@ const typeDefs = `
     email: String!
     created: String
     guidesNeeds: [Need]
-    realizesNeeds: [Need]
     guidesResponsibilities: [Responsibility]
     realizesResponsibilities: [Responsibility]
   }
@@ -120,48 +92,31 @@ const typeDefs = `
     nodeId: ID!
     title: String!
     description: String
-    deliberationLink: String
     created: String
     deleted: String
     guide: Person
-    realizer: Person
-    dependsOnNeeds: [Need]
-    dependsOnResponsibilities: [Responsibility]
-    needsThatDependOnThis: [Need]
-    responsibilitiesThatDependOnThis: [Responsibility]
-    deliberations: [Info]
   }
 
   type Need implements Reality {
     nodeId: ID!
     title: String!
     description: String
-    deliberationLink: String
     created: String
     deleted: String
     guide: Person
-    realizer: Person
     fulfilledBy: [Responsibility]
-    dependsOnNeeds: [Need]
-    dependsOnResponsibilities: [Responsibility]
-    needsThatDependOnThis: [Need]
-    responsibilitiesThatDependOnThis: [Responsibility]
-    deliberations: [Info]
   }
 
   type Responsibility implements Reality {
     nodeId: ID!
     title: String!
     description: String
-    deliberationLink: String
     created: String
     deleted: String
     guide: Person
     realizer: Person
     fulfills: Need
-    dependsOnNeeds: [Need]
     dependsOnResponsibilities: [Responsibility]
-    needsThatDependOnThis: [Need]
     responsibilitiesThatDependOnThis: [Responsibility]
     deliberations: [Info]
   }
@@ -176,7 +131,7 @@ const typeDefs = `
     nodeId: ID!
     url: String!
     title: String
-    isDeliberationFor: [Reality]
+    isDeliberationFor: [Responsibility]
     created: String
     deleted: String
   }
@@ -197,28 +152,13 @@ const typeDefs = `
     url: String!
   }
 
-  type _NeedDependsOnNeedsPayload {
-    from: Need
-    to: Need
-  }
-
-  type _NeedDependsOnResponsibilitiesPayload {
-    from: Need
-    to: Responsibility
-  }
-
-  type _ResponsibilityDependsOnNeedsPayload {
-    from: Responsibility
-    to: Need
-  }
-
   type _ResponsibilityDependsOnResponsibilitiesPayload {
     from: Responsibility
     to: Responsibility
   }
 
-  type _RealityHasDeliberationPayload {
-    from: Reality
+  type _RespHasDeliberationPayload {
+    from: Responsibility
     to: Info
   }
 `;

@@ -120,7 +120,6 @@ export function createNeed(driver, { title }, { user, viewedOrg }) {
     CREATE (need:Need {title:$title, nodeId:$needId, created:timestamp()})
     CREATE (org)-[:HAS]->(need)
     CREATE (person)-[:GUIDES]->(need)
-    CREATE (person)-[:REALIZES]->(need)
     RETURN need
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
@@ -158,25 +157,25 @@ export function createResponsibility(driver, { title, needId }, { email, orgId }
   return runQueryAndGetRecord(driver.session(), query, queryParams);
 }
 
-export function addRealityHasDeliberation(driver, { from, to, orgId }) {
+export function addRespHasDeliberation(driver, { from, to, orgId }) {
   const queryParams = {
-    realityId: from.nodeId,
+    respId: from.nodeId,
     infoUrl: to.url,
     infoId: uuidv4(),
     orgId,
   };
   // Use cypher FOREACH hack to only set nodeId for info if it isn't already set
   const query = `
-    MATCH (reality {nodeId: $realityId})
-    WITH reality
+    MATCH (resp:Responsibility {nodeId: $respId})
+    WITH resp
     MERGE (info:Info {url: $infoUrl})
     FOREACH (doThis IN CASE WHEN not(exists(info.nodeId)) THEN [1] ELSE [] END |
       SET info += {nodeId:$infoId, created:timestamp()})
-    WITH reality, info
+    WITH resp, info
     MATCH (org:Org {orgId:$orgId})
-    MERGE (reality)-[:HAS_DELIBERATION]->(info)
+    MERGE (resp)-[:HAS_DELIBERATION]->(info)
     MERGE (org)-[:HAS]->(info)
-    RETURN reality as from, info as to
+    RETURN resp as from, info as to
   `;
   return runQueryAndGetRecordWithFields(driver.session(), query, queryParams);
 }
@@ -236,8 +235,7 @@ export function updateReality(driver, args, orgId) {
     )
     SET reality += {
       title: $title,
-      description: $description,
-      deliberationLink: $deliberationLink
+      description: $description
     }
     DELETE g, r
     CREATE (guide)-[:GUIDES]->(reality)
@@ -248,6 +246,7 @@ export function updateReality(driver, args, orgId) {
 
   // https://github.com/Edgeryders-Participio/realities/issues/160
   const params = _.clone(args);
+  params.realizerEmail = params.realizerEmail || '';
   params.orgId = orgId;
   return runQueryAndGetRecord(driver.session(), query, params);
 }
@@ -301,8 +300,8 @@ export function addDependency(driver, { from, to }) {
     toId: to.nodeId,
   };
   const query = `
-    MATCH (from {nodeId: $fromId})
-    MATCH (to {nodeId: $toId})
+    MATCH (from:Responsibility {nodeId: $fromId})
+    MATCH (to:Responsibility {nodeId: $toId})
     MERGE (from)-[:DEPENDS_ON]->(to)
     RETURN from, to
   `;
@@ -315,7 +314,7 @@ export function removeDependency(driver, { from, to }) {
     toId: to.nodeId,
   };
   const query = `
-    MATCH (from {nodeId: $fromId})-[r:DEPENDS_ON]->(to {nodeId: $toId})
+    MATCH (from:Responsibility {nodeId: $fromId})-[r:DEPENDS_ON]->(to:Responsibility {nodeId: $toId})
     DELETE r
     RETURN from, to
   `;
@@ -328,7 +327,7 @@ export function removeDeliberation(driver, { from, to }) {
     toUrl: to.url,
   };
   const query = `
-    MATCH (from {nodeId: $fromId})-[r:HAS_DELIBERATION]->(to {url: $toUrl})
+    MATCH (from:Responsibility {nodeId: $fromId})-[r:HAS_DELIBERATION]->(to {url: $toUrl})
     DELETE r
     RETURN from, to
   `;

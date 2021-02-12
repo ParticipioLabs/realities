@@ -6,9 +6,9 @@ import {
   Row,
 } from 'reactstrap';
 import Search from 'components/Search';
+import DetailViewContainer from 'components/DetailViewContainer';
 import NeedsContainer from './components/NeedsContainer';
 import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
-import DetailViewContainer from './components/DetailViewContainer';
 
 const SearchRow = styled(Row)`
   margin-bottom: 20px;

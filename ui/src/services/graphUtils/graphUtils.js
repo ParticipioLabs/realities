@@ -79,10 +79,8 @@ function getSubGraph(originNode = {}) {
   pushRelatedNode(graph, originNode, originNode.guide, 'Guides', 'OUT');
   pushRelatedNode(graph, originNode, originNode.realizer, 'Realizes', 'OUT');
   pushRelatedNode(graph, originNode, originNode.fulfills, 'Fulfills', 'IN');
-  pushRelatedNode(graph, originNode, originNode.dependsOnNeeds, 'Depends on', 'IN');
   pushRelatedNode(graph, originNode, originNode.dependsOnResponsibilities, 'Depends on', 'IN');
   pushRelatedNode(graph, originNode, originNode.fulfilledBy, 'Fulfills', 'OUT');
-  pushRelatedNode(graph, originNode, originNode.needsThatDependOnThis, 'Depends on', 'OUT');
   pushRelatedNode(graph, originNode, originNode.responsibilitiesThatDependOnThis, 'Depends on', 'OUT');
 
   return graph;
@@ -116,9 +114,6 @@ function getPersonGraph(originNode = {}) {
 
   pushRelatedNode(graph, originNode, originNode.guidesNeeds, 'Guides', 'IN');
   pushNodesToSubsequentNodes(originNode.nodeId, originNode.guidesNeeds, 'realizer', 'Realizes');
-
-  pushRelatedNode(graph, originNode, originNode.realizesNeeds, 'Realizes', 'IN');
-  pushNodesToSubsequentNodes(originNode.nodeId, originNode.realizesNeeds, 'guide', 'Guides');
 
   pushRelatedNode(graph, originNode, originNode.guidesResponsibilities, 'Guides', 'IN');
   pushNodesToSubsequentNodes(originNode.nodeId, originNode.guidesResponsibilities, 'realizer', 'Realizes');
@@ -161,7 +156,7 @@ function getPeopleFromResponsibilities(responsibilities) {
   const sortedPeople = _.sortBy(
     people,
     [
-      p => (p.realizesResponsibilities ? p.realizesResponsibilities.length : 0),
+      (p) => (p.realizesResponsibilities ? p.realizesResponsibilities.length : 0),
     ],
   );
 
@@ -188,10 +183,9 @@ function getMasterGraph({ responsibilities = [] }, highlightedEdge) {
   const nodeSpace = 100;
   const minSpaceBetweenCircles = 500;
 
-
   // Add unclaimed responsibilities as inner circle
   // ----------------------------------------------------------------------
-  const unclaimedResponsibilities = responsibilities.filter(r => !r.realizer);
+  const unclaimedResponsibilities = responsibilities.filter((r) => !r.realizer);
 
   const unclaimedRadius = getRadius(unclaimedResponsibilities.length, nodeSpace);
   const unclaimedThetaIncrement = getThetaIncrement(unclaimedResponsibilities.length);
@@ -206,7 +200,6 @@ function getMasterGraph({ responsibilities = [] }, highlightedEdge) {
       },
     );
   });
-
 
   // Add claimed responsibilities to middle circle and people to outer circle
   // ----------------------------------------------------------------------
@@ -267,7 +260,6 @@ function getMasterGraph({ responsibilities = [] }, highlightedEdge) {
     }
     pushNode(graph, person, { x: person.x, y: person.y });
   });
-
 
   // Add edges
   // ----------------------------------------------------------------------

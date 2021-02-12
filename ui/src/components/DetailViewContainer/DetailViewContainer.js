@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { gql, useQuery } from '@apollo/client';
 import { useHistory, useParams } from 'react-router-dom';
 import useAuth from 'services/useAuth';
@@ -6,51 +7,45 @@ import WrappedLoader from 'components/WrappedLoader';
 import { SET_CACHE } from 'services/queries';
 import DetailView from './components/DetailView';
 
-const createDetailViewQuery = (nodeType) => gql`
+const createDetailViewQuery = (nodeType) => {
+  const isResp = nodeType === 'responsibility';
+  return gql`
   query DetailViewContainer_${nodeType}($nodeId: ID!) {
     ${nodeType}(nodeId: $nodeId) {
       nodeId
       title
       description
-      deliberationLink
       guide {
         nodeId
         email
         name
       }
-      realizer {
-        nodeId
-        email
-        name
-      }
-      deliberations {
-        nodeId
-        title
-        url
-      }
-      dependsOnNeeds {
-        nodeId
-        title
-      }
-      dependsOnResponsibilities {
-        nodeId
-        title
-        fulfills {
+      ${isResp ? `realizer {
           nodeId
+          email
+          name
         }
-      }
-      needsThatDependOnThis {
-        nodeId
-        title
-      }
-      responsibilitiesThatDependOnThis {
-        nodeId
-        title
-        fulfills {
+        deliberations {
           nodeId
+          title
+          url
         }
-      }
-      ${nodeType === 'responsibility' ? 'fulfills' : 'fulfilledBy'} {
+        dependsOnResponsibilities {
+          nodeId
+          title
+          fulfills {
+            nodeId
+          }
+        }
+        responsibilitiesThatDependOnThis {
+          nodeId
+          title
+          fulfills {
+            nodeId
+          }
+        }
+      ` : ''}
+      ${isResp ? 'fulfills' : 'fulfilledBy'} {
         nodeId
         title
       }
@@ -58,11 +53,12 @@ const createDetailViewQuery = (nodeType) => gql`
     showDetailedEditView @client
   }
 `;
+};
 
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
-const DetailViewContainer = () => {
+const DetailViewContainer = ({ fullscreen }) => {
   const auth = useAuth();
   const history = useHistory();
   const params = useParams();
@@ -92,11 +88,18 @@ const DetailViewContainer = () => {
   if (skip) return null;
   if (loading) return <WrappedLoader />;
   if (error) return `Error! ${error.message}`;
+
+  const fullscreenToggleUrl = fullscreen
+    ? `/${params.orgSlug}/${params.needId}/${params.responsibilityId || ''}`
+    : `/${params.orgSlug}/reality/${params.needId}/${params.responsibilityId || ''}`;
+  const onClickFullscreen = () => history.push(fullscreenToggleUrl);
+
   const node = !params.responsibilityId ? data.need : data.responsibility;
   if (!node) return null;
   return (
     <DetailView
       node={node}
+      fullscreen={fullscreen}
       showEdit={data.showDetailedEditView}
       isLoggedIn={auth.isLoggedIn}
       onClickEdit={() => client.writeQuery({
@@ -111,9 +114,17 @@ const DetailViewContainer = () => {
           showDetailedEditView: false,
         },
       })}
-      onClickFullscreen={() => history.push(`/${params.orgSlug}/reality/${params.needId}/${params.responsibilityId || ''}`)}
+      onClickFullscreen={onClickFullscreen}
     />
   );
+};
+
+DetailViewContainer.propTypes = {
+  fullscreen: PropTypes.bool,
+};
+
+DetailViewContainer.defaultProps = {
+  fullscreen: false,
 };
 
 export default DetailViewContainer;

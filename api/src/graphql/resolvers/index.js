@@ -18,7 +18,7 @@ import {
   softDeleteNode,
   addDependency,
   removeDependency,
-  addRealityHasDeliberation,
+  addRespHasDeliberation,
   removeDeliberation,
   searchPersons,
   searchRealities,
@@ -108,9 +108,6 @@ const resolvers = {
     guidesNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Need');
     },
-    realizesNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Need');
-    },
     guidesResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Responsibility');
     },
@@ -131,24 +128,6 @@ const resolvers = {
     guide({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Person', 'IN');
     },
-    realizer({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Person', 'IN');
-    },
-    dependsOnNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need');
-    },
-    dependsOnResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility');
-    },
-    needsThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need', 'IN');
-    },
-    responsibilitiesThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
-    },
-    deliberations({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'HAS_DELIBERATION', 'Info');
-    },
   },
   Need: {
     fulfilledBy({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
@@ -156,8 +135,20 @@ const resolvers = {
     },
   },
   Responsibility: {
+    realizer({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Person', 'IN');
+    },
     fulfills({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'FULFILLS', 'Need');
+    },
+    deliberations({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'HAS_DELIBERATION', 'Info');
+    },
+    dependsOnResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility');
+    },
+    responsibilitiesThatDependOnThis({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Responsibility', 'IN');
     },
   },
   Mutation: {
@@ -274,48 +265,24 @@ const resolvers = {
         return responsibility;
       },
     ),
-    addNeedDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
-    ),
-    addNeedDependsOnResponsibilities: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
-    ),
-    addResponsibilityDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
-    ),
     addResponsibilityDependsOnResponsibilities: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => addDependency(driver, { from, to }),
     ),
-    addRealityHasDeliberation: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver, viewedOrg: { orgId } }) => {
-        const normalizedTo = { url: NormalizeUrl(to.url, { stripHash: true }) };
-        return addRealityHasDeliberation(driver, { from, to: normalizedTo, orgId });
-      },
-    ),
-    removeRealityHasDeliberation: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDeliberation(driver, { from, to }),
-    ),
-    removeNeedDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
-    removeNeedDependsOnResponsibilities: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
-    removeResponsibilityDependsOnNeeds: combineResolvers(
-      isAuthenticated,
-      (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
-    ),
     removeResponsibilityDependsOnResponsibilities: combineResolvers(
       isAuthenticated,
       (obj, { from, to }, { driver }) => removeDependency(driver, { from, to }),
+    ),
+    addRespHasDeliberation: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver, viewedOrg: { orgId } }) => {
+        const normalizedTo = { url: NormalizeUrl(to.url, { stripHash: true }) };
+        return addRespHasDeliberation(driver, { from, to: normalizedTo, orgId });
+      },
+    ),
+    removeRespHasDeliberation: combineResolvers(
+      isAuthenticated,
+      (obj, { from, to }, { driver }) => removeDeliberation(driver, { from, to }),
     ),
   },
 };

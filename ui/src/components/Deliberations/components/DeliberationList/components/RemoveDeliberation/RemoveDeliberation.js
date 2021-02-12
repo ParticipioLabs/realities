@@ -6,12 +6,12 @@ import {
   Button,
 } from 'reactstrap';
 
-const REMOVE_REALITY_HAS_DELIBERATION = gql`
-  mutation RemoveDeliberation_removeRealityHasDeliberationMutation(
-    $from: _RealityInput!
+const REMOVE_RESP_HAS_DELIBERATION = gql`
+  mutation RemoveDeliberation_removeRespHasDeliberationMutation(
+    $from: _ResponsibilityInput!
     $to: _InfoInput!
   ) {
-    removeRealityHasDeliberation(from: $from, to: $to) {
+    removeRespHasDeliberation(from: $from, to: $to) {
       from {
         nodeId
         deliberations {
@@ -23,7 +23,7 @@ const REMOVE_REALITY_HAS_DELIBERATION = gql`
 `;
 
 const RemoveDeliberation = withRouter(({ match, url }) => {
-  const [removeDeliberation, { loading }] = useMutation(REMOVE_REALITY_HAS_DELIBERATION);
+  const [removeDeliberation, { loading }] = useMutation(REMOVE_RESP_HAS_DELIBERATION);
 
   return (
     <Button
@@ -34,7 +34,7 @@ const RemoveDeliberation = withRouter(({ match, url }) => {
         e.stopPropagation();
         removeDeliberation({
           variables: {
-            from: { nodeId: match.params.responsibilityId || match.params.needId },
+            from: { nodeId: match.params.responsibilityId },
             to: { url },
           },
         });
@@ -48,23 +48,17 @@ const RemoveDeliberation = withRouter(({ match, url }) => {
 RemoveDeliberation.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      needId: PropTypes.string,
       responsibilityId: PropTypes.string,
     }),
   }),
-  nodeType: PropTypes.string,
-  nodeId: PropTypes.string,
 };
 
 RemoveDeliberation.defaultProps = {
   match: {
     params: {
-      needId: undefined,
       responsibilityId: undefined,
     },
   },
-  nodeType: 'Info',
-  nodeId: '',
 };
 
 export default RemoveDeliberation;

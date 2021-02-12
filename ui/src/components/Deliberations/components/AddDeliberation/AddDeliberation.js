@@ -9,12 +9,12 @@ import { withRouter } from 'react-router-dom';
 import InfoForm from 'components/InfoForm';
 import { FaUnlink } from 'react-icons/fa';
 
-const ADD_REALITY_HAS_DELIBERATION = gql`
-  mutation AddRealityHasDeliberation_addHasDeliberationMutation(
-    $from: _RealityInput!
+const ADD_RESP_HAS_DELIBERATION = gql`
+  mutation AddRespHasDeliberation_addHasDeliberationMutation(
+    $from: _ResponsibilityInput!
     $to: _InfoInput!
   ) {
-    addRealityHasDeliberation(from: $from, to: $to) {
+    addRespHasDeliberation(from: $from, to: $to) {
       from {
         nodeId
         deliberations {
@@ -27,14 +27,13 @@ const ADD_REALITY_HAS_DELIBERATION = gql`
   }
 `;
 
-
 const InvalidUrlText = styled.span`
   color: #ff0000;
   font-weight: bold;
 `;
 
 const AddDeliberation = withRouter(({ nodeId }) => {
-  const [createDeliberation] = useMutation(ADD_REALITY_HAS_DELIBERATION);
+  const [createDeliberation] = useMutation(ADD_RESP_HAS_DELIBERATION);
 
   return (
     <FormGroup>
@@ -59,24 +58,30 @@ const AddDeliberation = withRouter(({ nodeId }) => {
           errors,
           touched,
         }) => (
-            <div>
-              <Label for="editDeliberationUrl">
-                Add a discussion reference {touched.url && errors.url &&
+          <div>
+            <Label for="editDeliberationUrl">
+              Add a discussion reference
+              {' '}
+              {touched.url && errors.url
+                  && (
                   <InvalidUrlText>
-                    <FaUnlink /> {errors.url}
-                  </InvalidUrlText>}
-              </Label>
-              <InfoForm
-                inputName="url"
-                placeholder="Enter a discussion URL..."
-                value={values.url}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
-                handleSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-              />
-            </div>
-          )}
+                    <FaUnlink />
+                    {' '}
+                    {errors.url}
+                  </InvalidUrlText>
+                  )}
+            </Label>
+            <InfoForm
+              inputName="url"
+              placeholder="Enter a discussion URL..."
+              value={values.url}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              handleSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+        )}
       </Formik>
     </FormGroup>
   );

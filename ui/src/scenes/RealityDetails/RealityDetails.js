@@ -6,7 +6,7 @@ import {
   Row,
 } from 'reactstrap';
 import Search from 'components/Search';
-import FullscreenDetailViewContainer from './components/FullscreenDetailViewContainer';
+import DetailViewContainer from 'components/DetailViewContainer';
 
 const SearchRow = styled(Row)`
   margin-bottom: 20px;
@@ -22,7 +22,7 @@ const RealityDetails = () => (
     <Row>
       <Col md="1" />
       <Col md="10">
-        <FullscreenDetailViewContainer />
+        <DetailViewContainer fullscreen />
       </Col>
       <Col md="1" />
     </Row>

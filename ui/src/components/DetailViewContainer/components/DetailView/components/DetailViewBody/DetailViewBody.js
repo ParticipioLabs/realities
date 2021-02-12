@@ -20,7 +20,7 @@ const CardSection = styled.div`
   margin-bottom: 1rem;
 `;
 
-const DetailViewBody = ({ node }) => (
+const DetailViewBody = ({ node, isResp }) => (
   <CardBody>
     <CardTitle>
       {node.title}
@@ -37,6 +37,7 @@ const DetailViewBody = ({ node }) => (
       )}
     </CardText>
 
+    {isResp && (
     <CardText>
       <LabelSpan>
         Realizer:
@@ -48,6 +49,7 @@ const DetailViewBody = ({ node }) => (
       )}
       {!node.realizer && <RealizersMissingIcon />}
     </CardText>
+    )}
 
     <CardSection>
       <LabelSpan>
@@ -58,40 +60,38 @@ const DetailViewBody = ({ node }) => (
       </div>
     </CardSection>
 
-    <CardSection>
-      <LabelSpan>Related discussions:</LabelSpan>
-      <Deliberations
-        nodeType={node.__typename}
-        nodeId={node.nodeId}
-        deliberations={[
-          ...(node.deliberations || []),
-        ]}
-      />
-    </CardSection>
+    {isResp && (
+    <>
+      <CardSection>
+        <LabelSpan>Related discussions:</LabelSpan>
+        <Deliberations
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          deliberations={[
+            ...(node.deliberations || []),
+          ]}
+        />
+      </CardSection>
 
-    <CardSection>
-      <LabelSpan>Depends on:</LabelSpan>
-      <Dependencies
-        nodeType={node.__typename}
-        nodeId={node.nodeId}
-        dependencies={[
-          ...(node.dependsOnNeeds || []),
-          ...(node.dependsOnResponsibilities || []),
-        ]}
-      />
-    </CardSection>
+      <CardSection>
+        <LabelSpan>Depends on:</LabelSpan>
+        <Dependencies
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          dependencies={node.dependsOnResponsibilities || []}
+        />
+      </CardSection>
 
-    <CardSection>
-      <LabelSpan>What depends on this:</LabelSpan>
-      <Dependencies
-        nodeType={node.__typename}
-        nodeId={node.nodeId}
-        dependencies={[
-          ...(node.needsThatDependOnThis || []),
-          ...(node.responsibilitiesThatDependOnThis || []),
-        ]}
-      />
-    </CardSection>
+      <CardSection>
+        <LabelSpan>What depends on this:</LabelSpan>
+        <Dependencies
+          nodeType={node.__typename}
+          nodeId={node.nodeId}
+          dependencies={node.responsibilitiesThatDependOnThis || []}
+        />
+      </CardSection>
+    </>
+    )}
 
   </CardBody>
 );
@@ -102,7 +102,6 @@ DetailViewBody.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
-    deliberationLink: PropTypes.string,
     guide: PropTypes.shape({
       nodeId: PropTypes.string,
       email: PropTypes.string,
@@ -113,16 +112,11 @@ DetailViewBody.propTypes = {
       email: PropTypes.string,
       name: PropTypes.string,
     }),
-    hasDeliberations: PropTypes.arrayOf(PropTypes.shape({
+    deliberations: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
       nodeId: PropTypes.string,
       title: PropTypes.string,
       url: PropTypes.string,
-    })),
-    dependsOnNeeds: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
-      nodeId: PropTypes.string,
-      title: PropTypes.string,
     })),
     dependsOnResponsibilities: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
@@ -131,11 +125,6 @@ DetailViewBody.propTypes = {
       fulfills: PropTypes.shape({
         nodeId: PropTypes.string,
       }),
-    })),
-    needsThatDependOnThis: PropTypes.arrayOf(PropTypes.shape({
-      __typename: PropTypes.string,
-      nodeId: PropTypes.string,
-      title: PropTypes.string,
     })),
     responsibilitiesThatDependOnThis: PropTypes.arrayOf(PropTypes.shape({
       __typename: PropTypes.string,
@@ -146,6 +135,7 @@ DetailViewBody.propTypes = {
       }),
     })),
   }),
+  isResp: PropTypes.bool,
 };
 
 DetailViewBody.defaultProps = {
@@ -153,7 +143,6 @@ DetailViewBody.defaultProps = {
     nodeId: '',
     title: '',
     description: '',
-    deliberationLink: '',
     guide: {
       nodeId: '',
       email: '',
@@ -164,10 +153,10 @@ DetailViewBody.defaultProps = {
       email: '',
       name: '',
     },
-    hasDeliberations: [],
-    dependsOnNeeds: [],
+    deliberations: [],
     dependsOnResponsibilities: [],
   },
+  isResp: false,
 };
 
 export default DetailViewBody;

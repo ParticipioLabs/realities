@@ -21,11 +21,6 @@ const NEED_FRAGMENT = gql`
       email
       name
     }
-    realizer {
-      nodeId
-      email
-      name
-    }
   }
 `;
 
@@ -54,18 +49,6 @@ const GET_NEED = gql`
       fulfilledBy {
         ...LocalGraphResponsibilityFields
       }
-      dependsOnNeeds {
-        ...LocalGraphNeedFields
-      }
-      dependsOnResponsibilities {
-        ...LocalGraphResponsibilityFields
-      }
-      needsThatDependOnThis {
-        ...LocalGraphNeedFields
-      }
-      responsibilitiesThatDependOnThis {
-        ...LocalGraphResponsibilityFields
-      }
     }
   }
   ${NEED_FRAGMENT}
@@ -80,14 +63,8 @@ const GET_RESPONSIBILITY = gql`
       fulfills {
         ...LocalGraphNeedFields
       }
-      dependsOnNeeds {
-        ...LocalGraphNeedFields
-      }
       dependsOnResponsibilities {
         ...LocalGraphResponsibilityFields
-      }
-      needsThatDependOnThis {
-        ...LocalGraphNeedFields
       }
       responsibilitiesThatDependOnThis {
         ...LocalGraphResponsibilityFields
@@ -103,10 +80,6 @@ const NEED_ON_PERSON_FRAGMENT = gql`
     nodeId
     title
     guide {
-      nodeId
-      name
-    }
-    realizer {
       nodeId
       name
     }
@@ -151,10 +124,6 @@ const RESPONSIBILITY_ON_PERSON_FRAGMENT = gql`
         nodeId
         name
       }
-      realizer {
-        nodeId
-        name
-      }
     }
   }
 `;
@@ -164,9 +133,6 @@ const GET_PERSON = gql`
       nodeId
       name
       guidesNeeds {
-        ...NeedOnPerson
-      }
-      realizesNeeds {
         ...NeedOnPerson
       }
       guidesResponsibilities {
@@ -261,7 +227,7 @@ const LocalGraphInstance = ({ nodeType, nodeId }) => {
         <Graph
           graph={graphData}
           options={graphOptions}
-          events={{ select: event => onSelectNode(event, graphData) }}
+          events={{ select: (event) => onSelectNode(event, graphData) }}
           style={{ height: '20em' }}
         />
       </div>
