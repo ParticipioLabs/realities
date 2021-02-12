@@ -103,4 +103,10 @@ export const migrateTo = {
     `;
     await runQueryAndGetRecords(driver.session(), query, {});
   },
+  v7: async (driver) => {
+    const query = `
+    MATCH (:Need)-[d:DEPENDS_ON]-() DELETE d
+    `;
+    await runQueryAndGetRecords(driver.session(), query, {});
+  },
 };
