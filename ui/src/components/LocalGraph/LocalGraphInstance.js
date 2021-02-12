@@ -106,10 +106,6 @@ const NEED_ON_PERSON_FRAGMENT = gql`
       nodeId
       name
     }
-    realizer {
-      nodeId
-      name
-    }
     fulfilledBy {
       nodeId
       title
@@ -151,10 +147,6 @@ const RESPONSIBILITY_ON_PERSON_FRAGMENT = gql`
         nodeId
         name
       }
-      realizer {
-        nodeId
-        name
-      }
     }
   }
 `;
@@ -164,9 +156,6 @@ const GET_PERSON = gql`
       nodeId
       name
       guidesNeeds {
-        ...NeedOnPerson
-      }
-      realizesNeeds {
         ...NeedOnPerson
       }
       guidesResponsibilities {
@@ -261,7 +250,7 @@ const LocalGraphInstance = ({ nodeType, nodeId }) => {
         <Graph
           graph={graphData}
           options={graphOptions}
-          events={{ select: event => onSelectNode(event, graphData) }}
+          events={{ select: (event) => onSelectNode(event, graphData) }}
           style={{ height: '20em' }}
         />
       </div>

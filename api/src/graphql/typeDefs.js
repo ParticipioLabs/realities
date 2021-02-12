@@ -108,7 +108,6 @@ const typeDefs = `
     email: String!
     created: String
     guidesNeeds: [Need]
-    realizesNeeds: [Need]
     guidesResponsibilities: [Responsibility]
     realizesResponsibilities: [Responsibility]
   }
@@ -120,7 +119,6 @@ const typeDefs = `
     created: String
     deleted: String
     guide: Person
-    realizer: Person
     dependsOnNeeds: [Need]
     dependsOnResponsibilities: [Responsibility]
     needsThatDependOnThis: [Need]
@@ -134,7 +132,6 @@ const typeDefs = `
     created: String
     deleted: String
     guide: Person
-    realizer: Person
     fulfilledBy: [Responsibility]
     dependsOnNeeds: [Need]
     dependsOnResponsibilities: [Responsibility]
@@ -168,7 +165,7 @@ const typeDefs = `
     nodeId: ID!
     url: String!
     title: String
-    isDeliberationFor: [Reality]
+    isDeliberationFor: [Responsibility]
     created: String
     deleted: String
   }

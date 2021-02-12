@@ -108,9 +108,6 @@ const resolvers = {
     guidesNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Need');
     },
-    realizesNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Need');
-    },
     guidesResponsibilities({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Responsibility');
     },
@@ -131,9 +128,6 @@ const resolvers = {
     guide({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'GUIDES', 'Person', 'IN');
     },
-    realizer({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
-      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Person', 'IN');
-    },
     dependsOnNeeds({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodesByRelationshipAndLabel({ driver, orgId }, nodeId, 'DEPENDS_ON', 'Need');
     },
@@ -153,6 +147,9 @@ const resolvers = {
     },
   },
   Responsibility: {
+    realizer({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
+      return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'REALIZES', 'Person', 'IN');
+    },
     fulfills({ nodeId }, args, { driver, viewedOrg: { orgId } }) {
       return findNodeByRelationshipAndLabel({ driver, orgId }, nodeId, 'FULFILLS', 'Need');
     },

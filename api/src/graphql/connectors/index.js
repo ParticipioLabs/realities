@@ -120,7 +120,6 @@ export function createNeed(driver, { title }, { user, viewedOrg }) {
     CREATE (need:Need {title:$title, nodeId:$needId, created:timestamp()})
     CREATE (org)-[:HAS]->(need)
     CREATE (person)-[:GUIDES]->(need)
-    CREATE (person)-[:REALIZES]->(need)
     RETURN need
   `;
   return runQueryAndGetRecord(driver.session(), query, queryParams);
