@@ -174,11 +174,14 @@ EditDetailsForm.propTypes = {
   touched: PropTypes.shape({
     title: PropTypes.bool,
     description: PropTypes.bool,
-    guide: PropTypes.shape({
-      nodeId: PropTypes.bool,
-      email: PropTypes.bool,
-      name: PropTypes.bool,
-    }),
+    guide: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.shape({
+        nodeId: PropTypes.bool,
+        email: PropTypes.bool,
+        name: PropTypes.bool,
+      }),
+    ]),
     realizer: PropTypes.oneOfType([
       PropTypes.bool,
       PropTypes.shape({
