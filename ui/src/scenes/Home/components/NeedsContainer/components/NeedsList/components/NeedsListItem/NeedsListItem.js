@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ListGroupItem, Collapse } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import colors from 'styles/colors';
+import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 import MissingRealizersAmount from '../MissingRealizersAmount';
 
 const NeedsListGroupItem = styled(ListGroupItem)`
@@ -37,7 +38,7 @@ const NeedsListItem = ({ need, isSelected }) => {
         <MissingRealizersAmount need={need} />
       </NeedsListGroupItem>
       <Collapse isOpen={isSelected}>
-        hiiii
+        <ResponsibilitiesContainer />
       </Collapse>
     </>
   );
