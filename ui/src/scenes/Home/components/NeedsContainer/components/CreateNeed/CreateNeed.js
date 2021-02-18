@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { useHistory, useParams } from 'react-router-dom';
 import { Formik } from 'formik';
-import { GET_NEEDS, SET_CACHE } from 'services/queries';
+import { GET_NEEDS, CACHE_QUERY } from 'services/queries';
 import ListForm from 'components/ListForm';
 
 const CREATE_NEED = gql`
@@ -29,7 +29,7 @@ const CreateNeed = () => {
   const [createNeed] = useMutation(CREATE_NEED, {
     update: (cache, { data: { createNeed: createNeedRes } }) => {
       cache.writeQuery({
-        query: SET_CACHE,
+        query: CACHE_QUERY,
         data: {
           showCreateNeed: false,
         },

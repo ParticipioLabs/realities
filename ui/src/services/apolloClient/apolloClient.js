@@ -5,7 +5,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { setContext } from '@apollo/client/link/context';
 import { InMemoryCache } from '@apollo/client/cache';
-import { SET_CACHE } from 'services/queries';
+import { CACHE_QUERY } from 'services/queries';
 import { resolvers, defaults } from './localState';
 // import introspectionQueryResultData from './fragmentTypes.json';
 
@@ -74,7 +74,7 @@ export default function apolloClient(orgSlug) {
 
   const initStore = () => {
     cache.writeQuery({
-      query: SET_CACHE,
+      query: CACHE_QUERY,
       data: defaults,
     });
   };

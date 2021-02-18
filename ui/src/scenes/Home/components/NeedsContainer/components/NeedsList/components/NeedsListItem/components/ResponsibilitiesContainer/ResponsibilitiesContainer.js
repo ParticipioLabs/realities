@@ -1,37 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
-import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
+import { GET_RESPONSIBILITIES, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
   REALITIES_UPDATE_SUBSCRIPTION,
 } from 'services/subscriptions';
 import withAuth from 'components/withAuth';
-import ListHeader from 'components/ListHeader';
-import colors from 'styles/colors';
 import WrappedLoader from 'components/WrappedLoader';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
-
-const GET_SHOW_CREATE_RESPONSIBILITY = gql`
-  query ResponsibilitiesContainer_showCreateResponsibility {
-    showCreateResponsibility @client
-  }
-`;
 
 const RespWrapper = styled.div`
   margin-left: 2rem;
 `;
 
-const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
+const ResponsibilitiesContainer = withAuth(withRouter(({ match }) => {
   if (!match.params.needId) return null;
   const {
     data: localData = {},
-    client,
-  } = useQuery(GET_SHOW_CREATE_RESPONSIBILITY);
+  } = useQuery(CACHE_QUERY);
   const {
     subscribeToMore,
     loading,
@@ -44,18 +35,6 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
 
   return (
     <RespWrapper>
-      <ListHeader
-        text="Responsibilities"
-        color={colors.responsibility}
-        showButton={auth.isLoggedIn && !!match.params.needId}
-        onButtonClick={() => client.writeQuery({
-          query: SET_CACHE,
-          data: {
-            showCreateResponsibility: !localData.showCreateResponsibility,
-            showCreateNeed: false,
-          },
-        })}
-      />
       {localData.showCreateResponsibility && <CreateResponsibility />}
       {(() => {
         if (loading && !data.responsibilities) return <WrappedLoader />;

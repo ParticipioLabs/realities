@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { useHistory, useParams } from 'react-router-dom';
 import { Formik } from 'formik';
-import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
+import { GET_RESPONSIBILITIES, CACHE_QUERY } from 'services/queries';
 import ListForm from 'components/ListForm';
 
 const CREATE_RESPONSIBILITY = gql`
@@ -25,7 +25,7 @@ const CreateResponsibility = () => {
   const [createResponsibility] = useMutation(CREATE_RESPONSIBILITY, {
     update: (cache, { data: { createResponsibility: createRespRes } }) => {
       cache.writeQuery({
-        query: SET_CACHE,
+        query: CACHE_QUERY,
         data: {
           showCreateResponsibility: false,
         },

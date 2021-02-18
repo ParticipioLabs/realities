@@ -1,58 +1,75 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Card } from 'reactstrap';
+import { useParams } from 'react-router-dom';
+import { Button, Card } from 'reactstrap';
+import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
-import IconButton from 'components/IconButton';
+import { CACHE_QUERY } from 'services/queries';
 
+// background-color: ${(props) => props.color || '#999'};
 const StyledHeader = styled(Card)`
-  background-color: ${(props) => props.color || '#999'};
   color: white;
   flex-direction: row;
   font-size: 1.25rem;
-  justify-content: space-between;
+  justify-content: end;
   margin-bottom: 0.5rem;
   padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+`;
+
+const AddButton = styled(Button)`
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  grid-column-gap: 0.3rem;
+  margin-left: 0.5rem;
 `;
 
 const ListHeaderText = styled.span`
   line-height: 2.1rem;
 `;
 
-const ListHeader = ({
-  text,
-  showButton,
-  onButtonClick,
-  color,
-}) => (
-  <StyledHeader color={color}>
-    <ListHeaderText>
-      {text}
-    </ListHeaderText>
-    { showButton
-        && (
-        <IconButton
-          onClick={onButtonClick}
-          data-cy="list-header-plus-btn"
-        >
-          <FaPlus />
-        </IconButton>
-        )}
-  </StyledHeader>
-);
+const ListHeader = () => {
+  const params = useParams();
+  const { data: localData = {}, client } = useQuery(CACHE_QUERY);
 
-ListHeader.propTypes = {
-  text: PropTypes.string,
-  showButton: PropTypes.bool,
-  onButtonClick: PropTypes.func,
-  color: PropTypes.string,
-};
-
-ListHeader.defaultProps = {
-  text: '',
-  showButton: false,
-  onButtonClick: () => null,
-  color: '',
+  return (
+    <StyledHeader>
+      <AddButton
+        onClick={() => client.writeQuery({
+          query: CACHE_QUERY,
+          data: {
+            showCreateNeed: !localData.showCreateNeed,
+            showCreateResponsibility: false,
+          },
+        })}
+        color="need"
+        data-cy="list-header-plus-btn"
+      >
+        <ListHeaderText>
+          Need
+        </ListHeaderText>
+        <FaPlus />
+      </AddButton>
+      {!!params.needId && (
+      <AddButton
+        onClick={() => client.writeQuery({
+          query: CACHE_QUERY,
+          data: {
+            showCreateResponsibility: !localData.showCreateResponsibility,
+            showCreateNeed: false,
+          },
+        })}
+        color="responsibility"
+        data-cy="list-header-plus-btn"
+      >
+        <ListHeaderText>
+          Responsibility
+        </ListHeaderText>
+        <FaPlus />
+      </AddButton>
+      )}
+    </StyledHeader>
+  );
 };
 
 export default ListHeader;

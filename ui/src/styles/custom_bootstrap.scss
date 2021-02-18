@@ -14,4 +14,15 @@ $brand-primary: $primary-color;
 $brand-danger: $error_color;
 $body-bg: $background-color;
 
+// should be same as in styles/colors.js
+$theme-colors: (
+  need: #00cf19,
+  responsibility: #843cfd,
+  person: #ef9322,
+  info: #666666,
+  dependency: #CE003D,
+  guide: #666666,
+  realizer: #843cfd,
+);
+
 @import '~bootstrap/scss/bootstrap.scss';

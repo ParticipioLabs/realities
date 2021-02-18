@@ -4,7 +4,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useHistory, useParams } from 'react-router-dom';
 import useAuth from 'services/useAuth';
 import WrappedLoader from 'components/WrappedLoader';
-import { SET_CACHE } from 'services/queries';
+import { CACHE_QUERY } from 'services/queries';
 import DetailView from './components/DetailView';
 
 const createDetailViewQuery = (nodeType) => {
@@ -103,13 +103,13 @@ const DetailViewContainer = ({ fullscreen }) => {
       showEdit={data.showDetailedEditView}
       isLoggedIn={auth.isLoggedIn}
       onClickEdit={() => client.writeQuery({
-        query: SET_CACHE,
+        query: CACHE_QUERY,
         data: {
           showDetailedEditView: true,
         },
       })}
       onClickCancel={() => client.writeQuery({
-        query: SET_CACHE,
+        query: CACHE_QUERY,
         data: {
           showDetailedEditView: false,
         },
