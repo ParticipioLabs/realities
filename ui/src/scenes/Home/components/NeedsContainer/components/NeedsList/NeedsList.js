@@ -50,6 +50,7 @@ const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
       <NeedsListGroup>
         {sortedNeeds.map((need) => (
           <NeedsListItem
+            key={need.nodeId}
             need={need}
             isSelected={need.nodeId === selectedNeedId}
           />

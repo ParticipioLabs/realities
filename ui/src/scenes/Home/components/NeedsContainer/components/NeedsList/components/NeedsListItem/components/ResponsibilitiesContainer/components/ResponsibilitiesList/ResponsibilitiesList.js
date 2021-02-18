@@ -7,15 +7,7 @@ import colors from 'styles/colors';
 import RealizersMissingIcon from 'components/RealizersMissingIcon';
 import _ from 'lodash';
 
-const ResponsibilitiesListGroup = styled(ListGroup)`
-  margin-bottom: 1rem;
-`;
-
-const SelectedResponsibilitiesListGroup = styled(ListGroup)`
-  margin-bottom: 0.5rem;
-`;
-
-const ResponsibilitiesListGroupHeader = styled(ListGroupItem)`
+const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
   display: flex;
   justify-content: space-between;
   &:focus {
@@ -25,19 +17,6 @@ const ResponsibilitiesListGroupHeader = styled(ListGroupItem)`
     background-color: ${colors.responsibility};
     border-color: ${colors.responsibility};
     color: white;
-  }
-`;
-
-const ResponsibilitiesListGroupItem = styled(ListGroupItem)`
-  display: flex;
-  justify-content: space-between;
-  &:focus {
-    outline: none;
-  }
-  &.active {
-    background-color: white;
-    border-color: ${colors.responsibility};
-    color: ${colors.responsibility};
   }
 `;
 
@@ -63,35 +42,21 @@ const ResponsibilitiesList = ({
     return '';
   }], ['asc']);
   return (
-    <div>
-      {sortedResponsibilities
-        .filter((responsibility) => responsibility.nodeId === selectedResponsibilityId)
-        .map((responsibility) => (
-          <SelectedResponsibilitiesListGroup key={1}>
-            <ResponsibilitiesListGroupHeader
-              active
-            >
-              {responsibility.title}
-              {renderMissingRealizerIcon(responsibility)}
-            </ResponsibilitiesListGroupHeader>
-          </SelectedResponsibilitiesListGroup>
-        ))}
-      <ResponsibilitiesListGroup>
-        {sortedResponsibilities.map((responsibility) => (
-          <ResponsibilitiesListGroupItem
-            key={responsibility.nodeId}
-            tag="button"
-            href="#"
-            action
-            active={responsibility.nodeId === selectedResponsibilityId}
-            onClick={() => history.push(`/${orgSlug}/${needId}/${responsibility.nodeId}`)}
-          >
-            {responsibility.title}
-            {renderMissingRealizerIcon(responsibility)}
-          </ResponsibilitiesListGroupItem>
-        ))}
-      </ResponsibilitiesListGroup>
-    </div>
+    <ListGroup>
+      {sortedResponsibilities.map((responsibility) => (
+        <ResponsibilitiesListGroupItem
+          key={responsibility.nodeId}
+          tag="button"
+          href="#"
+          action
+          active={responsibility.nodeId === selectedResponsibilityId}
+          onClick={() => history.push(`/${orgSlug}/${needId}/${responsibility.nodeId}`)}
+        >
+          {responsibility.title}
+          {renderMissingRealizerIcon(responsibility)}
+        </ResponsibilitiesListGroupItem>
+      ))}
+    </ListGroup>
   );
 };
 

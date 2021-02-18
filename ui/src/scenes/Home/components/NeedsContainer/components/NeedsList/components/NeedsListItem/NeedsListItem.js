@@ -27,7 +27,6 @@ const NeedsListItem = ({ need, isSelected }) => {
   return (
     <>
       <NeedsListGroupItem
-        key={need.nodeId}
         tag="button"
         href="#"
         action

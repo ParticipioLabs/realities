@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'react-router-dom';
 import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
@@ -21,6 +22,10 @@ const GET_SHOW_CREATE_RESPONSIBILITY = gql`
   }
 `;
 
+const RespWrapper = styled.div`
+  margin-left: 2rem;
+`;
+
 const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
   if (!match.params.needId) return null;
   const {
@@ -38,7 +43,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
   });
 
   return (
-    <div>
+    <RespWrapper>
       <ListHeader
         text="Responsibilities"
         color={colors.responsibility}
@@ -122,7 +127,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
           />
         );
       })()}
-    </div>
+    </RespWrapper>
   );
 }));
 
