@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { useHistory, useParams } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import colors from 'styles/colors';
-import RealizersMissingIcon from 'components/RealizersMissingIcon';
 import _ from 'lodash';
+import colors from 'styles/colors';
+import MissingRealizersAmount from './components/MissingRealizersAmount';
+import NeedsListItem from './components/NeedsListItem';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
@@ -28,48 +28,7 @@ const NeedsListGroupHeader = styled(ListGroupItem)`
   }
 `;
 
-const NeedsListGroupItem = styled(ListGroupItem)`
-  display: flex;
-  justify-content: space-between;
-  &:focus {
-    outline: none;
-  }
-  &.active {
-    background-color: white;
-    border-color: ${colors.need};
-    color: ${colors.need};
-  }
-`;
-
-const RightMarginSpan = styled.span`
-  margin-right: 10px;
-`;
-
-const renderMissingRealizersAmount = (need) => {
-  let realizersMissing = [];
-  if (need.fulfilledBy) {
-    realizersMissing = need.fulfilledBy.filter((resp) => !resp.realizer);
-  }
-
-  if (realizersMissing.length > 0) {
-    return (
-      <div>
-        <RightMarginSpan>
-          {realizersMissing.length}
-          x
-        </RightMarginSpan>
-        {' '}
-        <RealizersMissingIcon />
-      </div>
-    );
-  }
-  return '';
-};
-
 const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
-  const history = useHistory();
-  const { orgSlug } = useParams();
-
   useEffect(() => subscribeToNeedsEvents(), [subscribeToNeedsEvents]);
 
   const sortedNeeds = _.orderBy(needs, [(r) => {
@@ -84,23 +43,16 @@ const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
             active
           >
             {need.title}
-            {renderMissingRealizersAmount(need)}
+            <MissingRealizersAmount need={need} />
           </NeedsListGroupHeader>
         </SelectedNeedGroup>
       ))}
       <NeedsListGroup>
         {sortedNeeds.map((need) => (
-          <NeedsListGroupItem
-            key={need.nodeId}
-            tag="button"
-            href="#"
-            action
-            active={need.nodeId === selectedNeedId}
-            onClick={() => history.push(`/${orgSlug}/${need.nodeId}`)}
-          >
-            {need.title}
-            {renderMissingRealizersAmount(need)}
-          </NeedsListGroupItem>
+          <NeedsListItem
+            need={need}
+            isSelected={need.nodeId === selectedNeedId}
+          />
         ))}
       </NeedsListGroup>
     </div>
