@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
 import { CACHE_QUERY } from 'services/queries';
 
-// background-color: ${(props) => props.color || '#999'};
 const StyledHeader = styled(Card)`
   color: white;
   flex-direction: row;
@@ -42,7 +41,7 @@ const ListHeader = ({ needIsSelected }) => {
           },
         })}
         color="need"
-        data-cy="list-header-plus-btn"
+        data-cy="list-header-create-need-btn"
       >
         <ListHeaderText>
           Need
@@ -61,7 +60,7 @@ const ListHeader = ({ needIsSelected }) => {
           },
         })}
         color="responsibility"
-        data-cy="list-header-plus-btn"
+        data-cy="list-header-create-resp-btn"
       >
         <ListHeaderText>
           Responsibility

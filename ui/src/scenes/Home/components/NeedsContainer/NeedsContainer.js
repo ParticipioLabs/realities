@@ -39,7 +39,10 @@ const NeedsContainer = () => {
     loading: loadingFulfills,
     error: errorFulfills,
     data: dataFulfills,
-  } = useQuery(GET_RESP_FULFILLS, { variables: { responsibilityId } });
+  } = useQuery(GET_RESP_FULFILLS, {
+    variables: { responsibilityId },
+    skip: !responsibilityId,
+  });
 
   const [selectedNeedId, setSelectedNeedId] = useState(undefined);
 
@@ -48,7 +51,8 @@ const NeedsContainer = () => {
       data-cy="needs-container"
     >
       {auth.isLoggedIn && <ListHeader needIsSelected={!!selectedNeedId} />}
-      {localData.showCreateNeed && <CreateNeed />}
+      {localData.showCreateNeed
+        && <CreateNeed setSelectedNeedId={setSelectedNeedId} />}
       {(() => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;

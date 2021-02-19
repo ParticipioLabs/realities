@@ -16,3 +16,4 @@ node_modules/
 
 cypress/videos/
 cypress/screenshots/
+cypress/fixtures/

@@ -23,9 +23,7 @@ const CREATE_NEED = gql`
   }
 `;
 
-const CreateNeed = () => {
-  const history = useHistory();
-  const params = useParams();
+const CreateNeed = ({ setSelectedNeedId }) => {
   const [createNeed] = useMutation(CREATE_NEED, {
     update: (cache, { data: { createNeed: createNeedRes } }) => {
       cache.writeQuery({
@@ -55,7 +53,7 @@ const CreateNeed = () => {
       onSubmit={(values, { resetForm }) => {
         createNeed({ variables: { title: values.title } }).then(({ data }) => {
           resetForm();
-          history.push(`/${params.orgSlug}/${data.createNeed.nodeId}`);
+          setSelectedNeedId(data.createNeed.nodeId);
         });
       }}
     >

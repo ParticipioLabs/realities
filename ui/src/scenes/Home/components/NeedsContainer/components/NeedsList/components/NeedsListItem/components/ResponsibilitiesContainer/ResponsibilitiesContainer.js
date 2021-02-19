@@ -36,7 +36,7 @@ const ResponsibilitiesContainer = ({ needId }) => {
 
   return (
     <RespWrapper>
-      {localData.showCreateResponsibility && <CreateResponsibility />}
+      {localData.showCreateResponsibility && <CreateResponsibility needId={needId} />}
       {(() => {
         if (loading && !data.responsibilities) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
@@ -112,11 +112,7 @@ const ResponsibilitiesContainer = ({ needId }) => {
 };
 
 ResponsibilitiesContainer.propTypes = {
-  needId: PropTypes.string,
-};
-
-ResponsibilitiesContainer.defaultProps = {
-  needId: undefined,
+  needId: PropTypes.string.isRequired,
 };
 
 export default ResponsibilitiesContainer;
