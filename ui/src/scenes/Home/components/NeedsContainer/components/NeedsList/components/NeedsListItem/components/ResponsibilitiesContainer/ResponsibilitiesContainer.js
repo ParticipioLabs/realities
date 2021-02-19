@@ -2,14 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useQuery } from '@apollo/client';
-import { withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { GET_RESPONSIBILITIES, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
   REALITIES_UPDATE_SUBSCRIPTION,
 } from 'services/subscriptions';
-import withAuth from 'components/withAuth';
 import WrappedLoader from 'components/WrappedLoader';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
@@ -18,8 +17,10 @@ const RespWrapper = styled.div`
   margin-left: 2rem;
 `;
 
-const ResponsibilitiesContainer = withAuth(withRouter(({ match }) => {
-  if (!match.params.needId) return null;
+const ResponsibilitiesContainer = ({ needId }) => {
+  const params = useParams();
+  // TODO: need to avoid rendering some other way
+  // if (!match.params.needId) return null;
   const {
     data: localData = {},
   } = useQuery(CACHE_QUERY);
@@ -29,7 +30,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ match }) => {
     error,
     data = {},
   } = useQuery(GET_RESPONSIBILITIES, {
-    variables: { needId: match.params.needId },
+    variables: { needId },
     fetchPolicy: 'cache-and-network',
   });
 
@@ -43,7 +44,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ match }) => {
         return (
           <ResponsibilitiesList
             responsibilities={data.responsibilities}
-            selectedResponsibilityId={match.params.responsibilityId}
+            selectedResponsibilityId={params.responsibilityId}
             subscribeToResponsibilitiesEvents={() => {
               const unsubscribes = [
                 subscribeToMore({
@@ -108,30 +109,14 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ match }) => {
       })()}
     </RespWrapper>
   );
-}));
+};
 
 ResponsibilitiesContainer.propTypes = {
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
-  }),
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      needId: PropTypes.string,
-      resposibilityId: PropTypes.string,
-    }),
-  }),
+  needId: PropTypes.string,
 };
 
 ResponsibilitiesContainer.defaultProps = {
-  auth: {
-    isLoggedIn: false,
-  },
-  match: {
-    params: {
-      needId: undefined,
-      responsibilityId: undefined,
-    },
-  },
+  needId: undefined,
 };
 
 export default ResponsibilitiesContainer;

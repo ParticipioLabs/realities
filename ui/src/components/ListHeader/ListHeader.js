@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { Button, Card } from 'reactstrap';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
@@ -28,8 +28,7 @@ const ListHeaderText = styled.span`
   line-height: 2.1rem;
 `;
 
-const ListHeader = () => {
-  const params = useParams();
+const ListHeader = ({ needIsSelected }) => {
   const { data: localData = {}, client } = useQuery(CACHE_QUERY);
 
   return (
@@ -50,8 +49,10 @@ const ListHeader = () => {
         </ListHeaderText>
         <FaPlus />
       </AddButton>
-      {!!params.needId && (
       <AddButton
+        style={{
+          visibility: needIsSelected ? '' : 'hidden',
+        }}
         onClick={() => client.writeQuery({
           query: CACHE_QUERY,
           data: {
@@ -67,9 +68,16 @@ const ListHeader = () => {
         </ListHeaderText>
         <FaPlus />
       </AddButton>
-      )}
     </StyledHeader>
   );
+};
+
+ListHeader.propTypes = {
+  needIsSelected: PropTypes.bool,
+};
+
+ListHeader.defaultProps = {
+  needIsSelected: false,
 };
 
 export default ListHeader;

@@ -33,7 +33,7 @@ const ResponsibilitiesList = ({
   subscribeToResponsibilitiesEvents,
 }) => {
   const history = useHistory();
-  const { orgSlug, needId } = useParams();
+  const { orgSlug } = useParams();
 
   useEffect(() => subscribeToResponsibilitiesEvents(), [subscribeToResponsibilitiesEvents]);
 
@@ -50,7 +50,7 @@ const ResponsibilitiesList = ({
           href="#"
           action
           active={responsibility.nodeId === selectedResponsibilityId}
-          onClick={() => history.push(`/${orgSlug}/${needId}/${responsibility.nodeId}`)}
+          onClick={() => history.push(`/${orgSlug}/${responsibility.nodeId}`)}
         >
           {responsibility.title}
           {renderMissingRealizerIcon(responsibility)}

@@ -20,28 +20,23 @@ const NeedsListGroupItem = styled(ListGroupItem)`
   }
 `;
 
-const NeedsListItem = ({ need, isSelected }) => {
-  const history = useHistory();
-  const { orgSlug } = useParams();
-
-  return (
-    <>
-      <NeedsListGroupItem
-        tag="button"
-        href="#"
-        action
-        active={isSelected}
-        onClick={() => history.push(`/${orgSlug}/${need.nodeId}`)}
-      >
-        {need.title}
-        <MissingRealizersAmount need={need} />
-      </NeedsListGroupItem>
-      <Collapse isOpen={isSelected}>
-        <ResponsibilitiesContainer />
-      </Collapse>
-    </>
-  );
-};
+const NeedsListItem = ({ need, isSelected, selectThisNeed }) => (
+  <>
+    <NeedsListGroupItem
+      tag="button"
+      href="#"
+      action
+      active={isSelected}
+      onClick={selectThisNeed}
+    >
+      {need.title}
+      <MissingRealizersAmount need={need} />
+    </NeedsListGroupItem>
+    <Collapse isOpen={isSelected}>
+      <ResponsibilitiesContainer needId={need.nodeId} />
+    </Collapse>
+  </>
+);
 
 NeedsListItem.propTypes = {
   need: PropTypes.shape({
@@ -49,10 +44,12 @@ NeedsListItem.propTypes = {
     title: PropTypes.string,
   }).isRequired,
   isSelected: PropTypes.bool,
+  selectThisNeed: PropTypes.func,
 };
 
 NeedsListItem.defaultProps = {
   isSelected: false,
+  selectThisNeed: () => null,
 };
 
 export default NeedsListItem;

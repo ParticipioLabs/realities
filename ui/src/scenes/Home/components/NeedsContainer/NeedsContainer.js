@@ -1,5 +1,5 @@
-import React from 'react';
-import { useQuery } from '@apollo/client';
+import React, { useState } from 'react';
+import { useQuery, gql } from '@apollo/client';
 import _ from 'lodash';
 import { useParams, Redirect } from 'react-router-dom';
 import { GET_NEEDS, CACHE_QUERY } from 'services/queries';
@@ -14,8 +14,20 @@ import WrappedLoader from 'components/WrappedLoader';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 
+const GET_RESP_FULFILLS = gql`
+  query NeedsContainer_getRespFulfills($responsibilityId: ID!) {
+    responsibility(nodeId: $responsibilityId) {
+      nodeId
+      fulfills {
+        nodeId
+      }
+    }
+  }
+`;
+
 const NeedsContainer = () => {
   const auth = useAuth();
+  const { responsibilityId, orgSlug } = useParams();
   const { data: localData = {} } = useQuery(CACHE_QUERY);
   const {
     subscribeToMore,
@@ -23,27 +35,41 @@ const NeedsContainer = () => {
     error,
     data,
   } = useQuery(GET_NEEDS);
-  const { needId, orgSlug } = useParams();
+  const {
+    loading: loadingFulfills,
+    error: errorFulfills,
+    data: dataFulfills,
+  } = useQuery(GET_RESP_FULFILLS, { variables: { responsibilityId } });
+
+  const [selectedNeedId, setSelectedNeedId] = useState(undefined);
 
   return (
     <div
       data-cy="needs-container"
     >
-      {auth.isLoggedIn && <ListHeader />}
+      {auth.isLoggedIn && <ListHeader needIsSelected={!!selectedNeedId} />}
       {localData.showCreateNeed && <CreateNeed />}
       {(() => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
+        if (errorFulfills) return `Error! ${errorFulfills.message}`;
 
-        const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-        if (!_.find(data.needs, { nodeId: needId }) && firstNeedId) {
-          return <Redirect to={`/${orgSlug}/${firstNeedId}`} />;
+        if (!selectedNeedId && !loadingFulfills && dataFulfills) {
+          const fulfillsNeedId = dataFulfills.responsibility.fulfills.nodeId;
+          setSelectedNeedId(fulfillsNeedId);
         }
+
+        // TODO: when there isn't a respid in the url, pick one
+        // const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
+        // if (!_.find(data.needs, { nodeId: needId }) && firstNeedId) {
+        //   return <Redirect to={`/${orgSlug}/${firstNeedId}`} />;
+        // }
 
         return (
           <NeedsList
             needs={data.needs}
-            selectedNeedId={needId}
+            selectedNeedId={selectedNeedId}
+            setSelectedNeedId={setSelectedNeedId}
             subscribeToNeedsEvents={() => {
               const unsubscribes = [
                 subscribeToMore({

@@ -9,7 +9,9 @@ const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
-const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
+const NeedsList = ({
+  selectedNeedId, setSelectedNeedId, needs, subscribeToNeedsEvents,
+}) => {
   useEffect(() => subscribeToNeedsEvents(), [subscribeToNeedsEvents]);
 
   const sortedNeeds = _.orderBy(needs, [(r) => {
@@ -23,6 +25,7 @@ const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
           key={need.nodeId}
           need={need}
           isSelected={need.nodeId === selectedNeedId}
+          selectThisNeed={() => setSelectedNeedId(need.nodeId)}
         />
       ))}
     </NeedsListGroup>
@@ -36,11 +39,13 @@ NeedsList.propTypes = {
     title: PropTypes.string,
   })),
   selectedNeedId: PropTypes.string,
+  setSelectedNeedId: PropTypes.func,
 };
 
 NeedsList.defaultProps = {
   needs: [],
   selectedNeedId: undefined,
+  setSelectedNeedId: () => null,
 };
 
 export default NeedsList;
