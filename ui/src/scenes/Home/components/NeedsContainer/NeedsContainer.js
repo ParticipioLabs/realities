@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import _ from 'lodash';
 import { useParams, Redirect } from 'react-router-dom';
-import { GET_NEEDS, CACHE_QUERY } from 'services/queries';
+import { GET_NEEDS, GET_RESP_FULFILLS, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
@@ -13,17 +13,6 @@ import ListHeader from 'components/ListHeader';
 import WrappedLoader from 'components/WrappedLoader';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
-
-const GET_RESP_FULFILLS = gql`
-  query NeedsContainer_getRespFulfills($responsibilityId: ID!) {
-    responsibility(nodeId: $responsibilityId) {
-      nodeId
-      fulfills {
-        nodeId
-      }
-    }
-  }
-`;
 
 const NeedsContainer = () => {
   const auth = useAuth();

@@ -4,7 +4,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useHistory, useParams } from 'react-router-dom';
 import useAuth from 'services/useAuth';
 import WrappedLoader from 'components/WrappedLoader';
-import { CACHE_QUERY } from 'services/queries';
+import { GET_RESP_FULFILLS, CACHE_QUERY } from 'services/queries';
 import DetailView from './components/DetailView';
 
 const createDetailViewQuery = (nodeType) => {
@@ -58,26 +58,39 @@ const createDetailViewQuery = (nodeType) => {
 const GET_NEED = createDetailViewQuery('need');
 const GET_RESPONSIBILITY = createDetailViewQuery('responsibility');
 
-const DetailViewContainer = ({ fullscreen }) => {
+const DetailViewContainer = ({ fullscreen, viewResp }) => {
   const auth = useAuth();
   const history = useHistory();
   const params = useParams();
 
-  const skip = !params.needId && !params.responsibilityId;
-  const queryProps = !params.responsibilityId ? {
-    query: GET_NEED,
-    variables: {
-      nodeId: params.needId,
-    },
-    skip,
-  } : {
+  const { responsibilityId } = params;
+  const skip = !responsibilityId;
+
+  const {
+    loading: loadingFulfills,
+    error: errorFulfills,
+    data: dataFulfills,
+  } = useQuery(GET_RESP_FULFILLS, {
+    variables: { responsibilityId },
+    skip: skip || viewResp,
+  });
+
+  const needId = (responsibilityId && !loadingFulfills && dataFulfills)
+    ? dataFulfills.responsibility.fulfills.nodeId : '';
+
+  const queryProps = viewResp ? {
     query: GET_RESPONSIBILITY,
     variables: {
       nodeId: params.responsibilityId,
     },
     skip,
+  } : {
+    query: GET_NEED,
+    variables: {
+      nodeId: needId,
+    },
+    skip: skip && needId,
   };
-
   const {
     loading,
     error,
@@ -86,15 +99,16 @@ const DetailViewContainer = ({ fullscreen }) => {
   } = useQuery(queryProps.query, queryProps);
 
   if (skip) return null;
-  if (loading) return <WrappedLoader />;
+  if (loadingFulfills || loading) return <WrappedLoader />;
   if (error) return `Error! ${error.message}`;
+  if (errorFulfills) return `Error! ${errorFulfills.message}`;
 
   const fullscreenToggleUrl = fullscreen
-    ? `/${params.orgSlug}/${params.needId}/${params.responsibilityId || ''}`
-    : `/${params.orgSlug}/reality/${params.needId}/${params.responsibilityId || ''}`;
+    ? `/${params.orgSlug}/${params.responsibilityId || ''}`
+    : `/${params.orgSlug}/reality/${params.responsibilityId || ''}`;
   const onClickFullscreen = () => history.push(fullscreenToggleUrl);
 
-  const node = !params.responsibilityId ? data.need : data.responsibility;
+  const node = viewResp ? data.responsibility : data.need;
   if (!node) return null;
   return (
     <DetailView
@@ -121,6 +135,7 @@ const DetailViewContainer = ({ fullscreen }) => {
 
 DetailViewContainer.propTypes = {
   fullscreen: PropTypes.bool,
+  viewResp: PropTypes.bool.isRequired,
 };
 
 DetailViewContainer.defaultProps = {

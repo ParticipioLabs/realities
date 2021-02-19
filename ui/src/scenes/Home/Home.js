@@ -25,7 +25,8 @@ const Home = () => (
         <NeedsContainer />
       </Col>
       <Col md="6">
-        <DetailViewContainer />
+        <DetailViewContainer viewResp={false} />
+        <DetailViewContainer viewResp />
       </Col>
     </Row>
   </Container>

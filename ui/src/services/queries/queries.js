@@ -28,18 +28,19 @@ export const GET_RESPONSIBILITIES = gql`
         nodeId
         name
       }
+      fulfills {
+        nodeId
+      }
     }
   }
 `;
 
-export const GET_REALITY_INFOS = gql`
-  query RealityInfos($realityId: ID!) {
-    reality(nodeId: $realityId) {
+export const GET_RESP_FULFILLS = gql`
+  query GetRespFulfills($responsibilityId: ID!) {
+    responsibility(nodeId: $responsibilityId) {
       nodeId
-      fulfilledBy {
+      fulfills {
         nodeId
-        title
-        url
       }
     }
   }
