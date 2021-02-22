@@ -5,7 +5,7 @@ import { ListGroupItem, Collapse } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import colors from 'styles/colors';
 import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
-import MissingRealizersAmount from '../MissingRealizersAmount';
+import MissingRealitiesOnNeed from './components/MissingRealitiesOnNeed';
 
 const NeedsListGroupItem = styled(ListGroupItem)`
   display: flex;
@@ -30,7 +30,7 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => (
       onClick={selectThisNeed}
     >
       {need.title}
-      <MissingRealizersAmount need={need} />
+      <MissingRealitiesOnNeed need={need} />
     </NeedsListGroupItem>
     <Collapse isOpen={isSelected}>
       <ResponsibilitiesContainer needId={need.nodeId} />
