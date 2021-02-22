@@ -109,8 +109,8 @@ const DetailViewContainer = ({ fullscreen, viewResp }) => {
   if (errorFulfills) return `Error! ${errorFulfills.message}`;
 
   const fullscreenToggleUrl = fullscreen
-    ? `/${params.orgSlug}/${params.responsibilityId || ''}`
-    : `/${params.orgSlug}/reality/${params.responsibilityId || ''}`;
+    ? `/${params.orgSlug}/${params.responsibilityId || `need/${needId}`}`
+    : `/${params.orgSlug}/reality/${params.responsibilityId || `need/${needId}`}`;
   const onClickFullscreen = () => history.push(fullscreenToggleUrl);
 
   const node = viewResp ? data.responsibility : data.need;
