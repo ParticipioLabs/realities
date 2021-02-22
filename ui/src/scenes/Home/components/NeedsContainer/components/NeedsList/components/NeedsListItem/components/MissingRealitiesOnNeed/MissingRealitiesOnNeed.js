@@ -6,7 +6,7 @@ const RightMarginSpan = styled.span`
   margin-right: 10px;
 `;
 
-const MissingRealizersAmount = ({ need }) => {
+const MissingRealitiesOnNeed = ({ need }) => {
   let realizersMissing = [];
   if (need.fulfilledBy) {
     realizersMissing = need.fulfilledBy.filter((resp) => !resp.realizer);
@@ -27,4 +27,4 @@ const MissingRealizersAmount = ({ need }) => {
   return '';
 };
 
-export default MissingRealizersAmount;
+export default MissingRealitiesOnNeed;
