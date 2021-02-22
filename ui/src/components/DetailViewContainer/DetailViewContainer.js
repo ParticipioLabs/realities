@@ -63,33 +63,38 @@ const DetailViewContainer = ({ fullscreen, viewResp }) => {
   const history = useHistory();
   const params = useParams();
 
-  const { responsibilityId } = params;
-  const skip = !responsibilityId;
+  // sorry for the confusing code, i blame not being able to use control flow
+  // around hooks
 
   const {
     loading: loadingFulfills,
     error: errorFulfills,
     data: dataFulfills,
   } = useQuery(GET_RESP_FULFILLS, {
-    variables: { responsibilityId },
-    skip: skip || viewResp,
+    variables: { responsibilityId: params.responsibilityId },
+    skip: !params.responsibilityId || viewResp,
   });
 
-  const needId = (responsibilityId && !loadingFulfills && dataFulfills)
-    ? dataFulfills.responsibility.fulfills.nodeId : '';
+  let needId;
+  if (params.responsibilityId) {
+    needId = (!loadingFulfills && dataFulfills)
+      ? dataFulfills.responsibility.fulfills.nodeId : '';
+  } else if (params.needId) {
+    needId = params.needId;
+  }
 
   const queryProps = viewResp ? {
     query: GET_RESPONSIBILITY,
     variables: {
       nodeId: params.responsibilityId,
     },
-    skip,
+    skip: !params.responsibilityId,
   } : {
     query: GET_NEED,
     variables: {
       nodeId: needId,
     },
-    skip: skip && needId,
+    skip: !needId,
   };
   const {
     loading,
@@ -98,7 +103,7 @@ const DetailViewContainer = ({ fullscreen, viewResp }) => {
     client,
   } = useQuery(queryProps.query, queryProps);
 
-  if (skip) return null;
+  if (!params.responsibilityId && !needId) return null;
   if (loadingFulfills || loading) return <WrappedLoader />;
   if (error) return `Error! ${error.message}`;
   if (errorFulfills) return `Error! ${errorFulfills.message}`;
