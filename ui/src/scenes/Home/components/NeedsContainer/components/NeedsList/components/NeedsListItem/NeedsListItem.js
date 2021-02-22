@@ -50,7 +50,7 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
       </NeedsListGroupItem>
       <Collapse isOpen={isSelected}>
         {need.fulfilledBy.length === 0
-          ? (
+          && (
             <NoRespsContainer>
               This Need doesn&apos;t contain any Responsibilities yet. Click above to add one, or
               {' '}
@@ -62,8 +62,8 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
               {' '}
               to view the Need directly.
             </NoRespsContainer>
-          )
-          : <ResponsibilitiesContainer needId={need.nodeId} />}
+          )}
+        <ResponsibilitiesContainer needId={need.nodeId} />
       </Collapse>
     </>
   );
