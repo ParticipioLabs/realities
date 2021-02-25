@@ -14,9 +14,9 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     outline: none;
   }
   &.active {
-    background-color: white;
+    background-color: ${({ filledIn }) => (filledIn ? colors.need : 'white')};
     border-color: ${colors.need};
-    color: ${colors.need};
+    color: ${({ filledIn }) => (filledIn ? 'white' : colors.need)};
   }
 `;
 
@@ -34,7 +34,7 @@ const SimpleLink = styled.span`
 
 const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
   const history = useHistory();
-  const { orgSlug } = useParams();
+  const params = useParams();
 
   return (
     <>
@@ -42,7 +42,8 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
         tag="button"
         href="#"
         action
-        active={isSelected}
+        filledIn={params.needId === need.nodeId}
+        active={isSelected || params.needId === need.nodeId}
         onClick={selectThisNeed}
       >
         {need.title}
@@ -55,8 +56,11 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
               This Need doesn&apos;t contain any Responsibilities yet. Click above to add one, or
               {' '}
               <SimpleLink
-                onClick={() => history.push(`/${orgSlug}/need/${need.nodeId}`)}
+                onClick={() => history.push(`/${params.orgSlug}/need/${need.nodeId}`)}
               >
+                {/* TODO: would want to put this button on the bar for the need but
+                  that wasn't working properly with bootstrap. maybe do it
+                  when we're switching to another style */}
                 click here
               </SimpleLink>
               {' '}
