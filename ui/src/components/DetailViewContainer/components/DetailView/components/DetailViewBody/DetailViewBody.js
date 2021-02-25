@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import {
   CardBody,
   CardText,
-  CardTitle,
 } from 'reactstrap';
 import ReactMarkdown from 'react-markdown';
 import Dependencies from 'components/Dependencies';
@@ -22,10 +21,6 @@ const CardSection = styled.div`
 
 const DetailViewBody = ({ node, isResp }) => (
   <CardBody>
-    <CardTitle>
-      {node.title}
-    </CardTitle>
-
     <CardText>
       <LabelSpan>
         Guide:

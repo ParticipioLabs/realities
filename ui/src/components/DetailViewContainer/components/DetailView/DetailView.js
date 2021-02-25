@@ -62,10 +62,10 @@ const DetailView = ({
             : <FaExpand />}
         </HeaderButton>
         <HeaderText>
-          {node.__typename}
+          {`${node.__typename}: ${node.title}`}
         </HeaderText>
-        {isLoggedIn && (
-          showEdit ? (
+        <div style={{ visibility: !isLoggedIn && 'hidden' }}>
+          {showEdit ? (
             <HeaderButton onClick={onClickCancel}>
               <FaTimesCircle />
             </HeaderButton>
@@ -73,8 +73,8 @@ const DetailView = ({
             <HeaderButton onClick={onClickEdit}>
               <FaEdit />
             </HeaderButton>
-          )
-        )}
+          )}
+        </div>
       </DetailViewCardHeader>
       {showEdit ? (
         <CardBody>

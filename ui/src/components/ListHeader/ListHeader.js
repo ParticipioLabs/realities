@@ -10,9 +10,9 @@ const StyledHeader = styled(Card)`
   color: white;
   flex-direction: row;
   font-size: 1.25rem;
-  justify-content: end;
+  justify-content: start;
   margin-bottom: 0.5rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
 `;
 
 const AddButton = styled(Button)`
@@ -20,7 +20,7 @@ const AddButton = styled(Button)`
   grid-auto-flow: column;
   align-items: center;
   grid-column-gap: 0.3rem;
-  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 `;
 
 const ListHeaderText = styled.span`
