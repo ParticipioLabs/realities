@@ -1,6 +1,6 @@
 import NormalizeUrl from 'normalize-url';
 import { combineResolvers } from 'graphql-resolvers';
-import { PubSub, withFilter } from 'apollo-server';
+import { PubSub, withFilter } from 'apollo-server-express';
 
 import {
   findNodesByLabelAnyOrg,
