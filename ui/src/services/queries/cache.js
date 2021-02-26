@@ -5,6 +5,7 @@ export const CACHE_QUERY = gql`
   query ShowCreates {
     showCreateNeed @client
     showCreateResponsibility @client
-    showDetailedEditView @client
+    showDetailedEditNeedView @client
+    showDetailedEditRespView @client
   }
 `;

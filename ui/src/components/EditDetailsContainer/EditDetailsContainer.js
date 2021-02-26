@@ -38,8 +38,8 @@ const createEditDetailsMutation = (nodeType, isResp) => gql`
   }
 `;
 
-const EditDetailsContainer = ({ node, isResp }) => {
-  const [updateNode, { client }] = useMutation(createEditDetailsMutation(node.__typename, isResp));
+const EditDetailsContainer = ({ node, isResp, stopEdit }) => {
+  const [updateNode] = useMutation(createEditDetailsMutation(node.__typename, isResp));
 
   return (
     <Formik
@@ -71,12 +71,7 @@ const EditDetailsContainer = ({ node, isResp }) => {
           },
         }).then(() => {
           resetForm();
-          client.writeQuery({
-            query: CACHE_QUERY,
-            data: {
-              showDetailedEditView: false,
-            },
-          });
+          stopEdit();
         });
       }}
     >
@@ -100,12 +95,7 @@ const EditDetailsContainer = ({ node, isResp }) => {
           handleSubmit={handleSubmit}
           setFieldValue={setFieldValue}
           isSubmitting={isSubmitting}
-          cancel={() => client.writeQuery({
-            query: CACHE_QUERY,
-            data: {
-              showDetailedEditView: false,
-            },
-          })}
+          cancel={stopEdit}
         />
       )}
     </Formik>
@@ -138,6 +128,7 @@ EditDetailsContainer.propTypes = {
     })),
   }),
   isResp: PropTypes.bool,
+  stopEdit: PropTypes.func,
 };
 
 EditDetailsContainer.defaultProps = {
@@ -158,6 +149,7 @@ EditDetailsContainer.defaultProps = {
     dependsOnResponsibilities: [],
   },
   isResp: false,
+  stopEdit: () => null,
 };
 
 export default EditDetailsContainer;

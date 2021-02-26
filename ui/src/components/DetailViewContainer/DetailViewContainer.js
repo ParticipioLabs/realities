@@ -50,7 +50,8 @@ const createDetailViewQuery = (nodeType) => {
         title
       }
     }
-    showDetailedEditView @client
+    showDetailedEditNeedView @client
+    showDetailedEditRespView @client
   }
 `;
 };
@@ -65,6 +66,19 @@ const DetailViewContainer = ({ fullscreen, viewResp }) => {
 
   // sorry for the confusing code, i blame not being able to use control flow
   // around hooks
+
+  /* there are 5 cases to handle
+    * we're on an /orgSlug/respId url. we want to render need and resp at
+    the same time
+      1. we're rendering a need. get the needId from checking the resp's
+      fulfills field
+      2. we're rendering a resp. get the respId from the url
+    * we're on an /orgSlug/need/needId url. we just want to render the need
+      3. we're rendering the need. get the needId from the url
+      4. we're "rendering" a resp. return null
+    * we're just on /orgslug
+      5. don't render anything
+  */
 
   const {
     loading: loadingFulfills,
@@ -113,26 +127,26 @@ const DetailViewContainer = ({ fullscreen, viewResp }) => {
     : `/${params.orgSlug}/reality/${params.responsibilityId || `need/${needId}`}`;
   const onClickFullscreen = () => history.push(fullscreenToggleUrl);
 
+  const showEdit = viewResp ? data.showDetailedEditRespView : data.showDetailedEditNeedView;
+
+  const setEdit = (val) => client.writeQuery({
+    query: CACHE_QUERY,
+    data: {
+      showDetailedEditNeedView: !viewResp ? val : undefined,
+      showDetailedEditRespView: viewResp ? val : undefined,
+    },
+  });
+
   const node = viewResp ? data.responsibility : data.need;
   if (!node) return null;
   return (
     <DetailView
       node={node}
       fullscreen={fullscreen}
-      showEdit={data.showDetailedEditView}
+      showEdit={showEdit}
       isLoggedIn={auth.isLoggedIn}
-      onClickEdit={() => client.writeQuery({
-        query: CACHE_QUERY,
-        data: {
-          showDetailedEditView: true,
-        },
-      })}
-      onClickCancel={() => client.writeQuery({
-        query: CACHE_QUERY,
-        data: {
-          showDetailedEditView: false,
-        },
-      })}
+      startEdit={() => setEdit(true)}
+      stopEdit={() => setEdit(false)}
       onClickFullscreen={onClickFullscreen}
     />
   );

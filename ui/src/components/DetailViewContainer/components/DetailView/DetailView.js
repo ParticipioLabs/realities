@@ -43,8 +43,8 @@ const DetailView = ({
   fullscreen,
   showEdit,
   isLoggedIn,
-  onClickEdit,
-  onClickCancel,
+  startEdit,
+  stopEdit,
   onClickFullscreen,
 }) => {
   const isResp = node.__typename === 'Responsibility';
@@ -66,11 +66,11 @@ const DetailView = ({
         </HeaderText>
         <div style={{ visibility: !isLoggedIn && 'hidden' }}>
           {showEdit ? (
-            <HeaderButton onClick={onClickCancel}>
+            <HeaderButton onClick={stopEdit}>
               <FaTimesCircle />
             </HeaderButton>
           ) : (
-            <HeaderButton onClick={onClickEdit}>
+            <HeaderButton onClick={startEdit}>
               <FaEdit />
             </HeaderButton>
           )}
@@ -78,7 +78,7 @@ const DetailView = ({
       </DetailViewCardHeader>
       {showEdit ? (
         <CardBody>
-          <EditDetailsContainer node={node} isResp={isResp} />
+          <EditDetailsContainer node={node} isResp={isResp} stopEdit={stopEdit} />
           <Divider />
           {isResp
             && (
@@ -141,8 +141,8 @@ DetailView.propTypes = {
   fullscreen: PropTypes.bool,
   showEdit: PropTypes.bool,
   isLoggedIn: PropTypes.bool,
-  onClickEdit: PropTypes.func,
-  onClickCancel: PropTypes.func,
+  startEdit: PropTypes.func,
+  stopEdit: PropTypes.func,
   onClickFullscreen: PropTypes.func,
 };
 
@@ -167,8 +167,8 @@ DetailView.defaultProps = {
   fullscreen: false,
   showEdit: false,
   isLoggedIn: false,
-  onClickEdit: () => null,
-  onClickCancel: () => null,
+  startEdit: () => null,
+  stopEdit: () => null,
   onClickFullscreen: () => null,
 };
 
