@@ -56,7 +56,10 @@ const DetailView = ({
       <DetailViewCardHeader
         color={isResp ? colors.responsibility : colors.need}
       >
-        <HeaderButton onClick={onClickFullscreen}>
+        <HeaderButton
+          onClick={onClickFullscreen}
+          style={{ visibility: isResp && 'hidden' }}
+        >
           {fullscreen
             ? <FaBars />
             : <FaExpand />}
