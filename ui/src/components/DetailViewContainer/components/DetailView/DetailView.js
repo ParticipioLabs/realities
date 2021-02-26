@@ -51,7 +51,7 @@ const DetailView = ({
 
   return (
     <Card
-      data-cy="detail-view"
+      data-cy={`detail-view-${node.__typename.toLowerCase()}`}
     >
       <DetailViewCardHeader
         color={isResp ? colors.responsibility : colors.need}

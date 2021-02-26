@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { GET_RESPONSIBILITIES, CACHE_QUERY } from 'services/queries';

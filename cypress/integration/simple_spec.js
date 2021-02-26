@@ -58,9 +58,9 @@ describe('Test basic functionality', () => {
       .get('[data-cy=list-form')
       .submit()
 
-      .get('[data-cy=detail-view]')
+      .get('[data-cy=detail-view-responsibility]')
       .contains('Responsibility')
-      .get('[data-cy=detail-view]')
+      .get('[data-cy=detail-view-responsibility]')
       .contains(respName)
   })
 })
