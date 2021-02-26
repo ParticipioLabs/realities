@@ -34,7 +34,7 @@ const SimpleLink = styled.span`
 `;
 
 const NeedsListItem = ({
-  need, isHighlighted, isSelected, selectThisNeed,
+  need, isHighlighted, isExpanded, expandThisNeed,
 }) => {
   const history = useHistory();
   const params = useParams();
@@ -48,12 +48,12 @@ const NeedsListItem = ({
         action
         filledin={params.needId === need.nodeId ? 'true' : ''}
         active={isHighlighted || params.needId === need.nodeId}
-        onClick={selectThisNeed}
+        onClick={expandThisNeed}
       >
         {need.title}
         <MissingRealitiesOnNeed need={need} />
       </NeedsListGroupItem>
-      <Collapse isOpen={isSelected}>
+      <Collapse isOpen={isExpanded}>
         {need.fulfilledBy.length === 0
           && (
             <NoRespsContainer>
@@ -90,14 +90,14 @@ NeedsListItem.propTypes = {
     ),
   }).isRequired,
   isHighlighted: PropTypes.bool,
-  isSelected: PropTypes.bool,
-  selectThisNeed: PropTypes.func,
+  isExpanded: PropTypes.bool,
+  expandThisNeed: PropTypes.func,
 };
 
 NeedsListItem.defaultProps = {
   isHighlighted: false,
-  isSelected: false,
-  selectThisNeed: () => null,
+  isExpanded: false,
+  expandThisNeed: () => null,
 };
 
 export default NeedsListItem;

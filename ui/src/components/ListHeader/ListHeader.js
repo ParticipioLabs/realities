@@ -27,7 +27,7 @@ const ListHeaderText = styled.span`
   line-height: 2.1rem;
 `;
 
-const ListHeader = ({ needIsSelected }) => {
+const ListHeader = ({ needIsExpanded }) => {
   const { data: localData = {}, client } = useQuery(CACHE_QUERY);
 
   return (
@@ -50,7 +50,7 @@ const ListHeader = ({ needIsSelected }) => {
       </AddButton>
       <AddButton
         style={{
-          visibility: needIsSelected ? '' : 'hidden',
+          visibility: needIsExpanded ? '' : 'hidden',
         }}
         onClick={() => client.writeQuery({
           query: CACHE_QUERY,
@@ -72,11 +72,11 @@ const ListHeader = ({ needIsSelected }) => {
 };
 
 ListHeader.propTypes = {
-  needIsSelected: PropTypes.bool,
+  needIsExpanded: PropTypes.bool,
 };
 
 ListHeader.defaultProps = {
-  needIsSelected: false,
+  needIsExpanded: false,
 };
 
 export default ListHeader;

@@ -39,7 +39,7 @@ const NeedsContainer = () => {
     <div
       data-cy="needs-container"
     >
-      {auth.isLoggedIn && <ListHeader needIsSelected={!!expandedNeedId} />}
+      {auth.isLoggedIn && <ListHeader needIsExpanded={!!expandedNeedId} />}
       {localData.showCreateNeed
         && <CreateNeed setExpandedNeedId={setExpandedNeedId} />}
       {(() => {

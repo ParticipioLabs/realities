@@ -29,8 +29,8 @@ const NeedsList = ({
           key={need.nodeId}
           need={need}
           isHighlighted={need.nodeId === highlightedNeedId}
-          isSelected={need.nodeId === expandedNeedId}
-          selectThisNeed={() => setExpandedNeedId(need.nodeId)}
+          isExpanded={need.nodeId === expandedNeedId}
+          expandThisNeed={() => setExpandedNeedId(need.nodeId)}
         />
       ))}
     </NeedsListGroup>
