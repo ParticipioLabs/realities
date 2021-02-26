@@ -64,7 +64,7 @@ const DeleteNodeContainer = ({ node, stopEdit }) => {
                 .filter((r) => r.nodeId !== data.softDeleteResponsibility.nodeId),
             },
           });
-          history.push(`/${params.orgSlug}`);
+          history.push(`/${params.orgSlug}/need/${needId}`);
         }
       },
     },
