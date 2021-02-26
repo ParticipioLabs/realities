@@ -10,7 +10,11 @@ const NeedsListGroup = styled(ListGroup)`
 `;
 
 const NeedsList = ({
-  selectedNeedId, setSelectedNeedId, needs, subscribeToNeedsEvents,
+  selectedNeedId,
+  setSelectedNeedId,
+  needs,
+  subscribeToNeedsEvents,
+  highlightedNeedId,
 }) => {
   useEffect(() => subscribeToNeedsEvents(), [subscribeToNeedsEvents]);
 
@@ -24,6 +28,7 @@ const NeedsList = ({
         <NeedsListItem
           key={need.nodeId}
           need={need}
+          isHighlighted={need.nodeId === highlightedNeedId}
           isSelected={need.nodeId === selectedNeedId}
           selectThisNeed={() => setSelectedNeedId(need.nodeId)}
         />
@@ -38,12 +43,14 @@ NeedsList.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
   })),
+  highlightedNeedId: PropTypes.string,
   selectedNeedId: PropTypes.string,
   setSelectedNeedId: PropTypes.func,
 };
 
 NeedsList.defaultProps = {
   needs: [],
+  highlightedNeedId: undefined,
   selectedNeedId: undefined,
   setSelectedNeedId: () => null,
 };

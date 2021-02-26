@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
-import _ from 'lodash';
-import { useParams, Redirect } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
+import { useParams } from 'react-router-dom';
 import { GET_NEEDS, GET_RESP_FULFILLS, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
@@ -16,7 +15,7 @@ import NeedsList from './components/NeedsList';
 
 const NeedsContainer = () => {
   const auth = useAuth();
-  const { responsibilityId, orgSlug } = useParams();
+  const { responsibilityId, needId } = useParams();
   const { data: localData = {} } = useQuery(CACHE_QUERY);
   const {
     subscribeToMore,
@@ -34,6 +33,7 @@ const NeedsContainer = () => {
   });
 
   const [selectedNeedId, setSelectedNeedId] = useState(undefined);
+  const [highlightedNeedId, setHighlightedNeedId] = useState(undefined);
 
   return (
     <div
@@ -47,20 +47,22 @@ const NeedsContainer = () => {
         if (error) return `Error! ${error.message}`;
         if (errorFulfills) return `Error! ${errorFulfills.message}`;
 
-        if (!selectedNeedId && !loadingFulfills && dataFulfills) {
+        if (!responsibilityId && needId !== highlightedNeedId) {
+          setHighlightedNeedId(needId);
+        } else if (!loadingFulfills && dataFulfills) {
           const fulfillsNeedId = dataFulfills.responsibility.fulfills.nodeId;
-          setSelectedNeedId(fulfillsNeedId);
+          if (!selectedNeedId) {
+            setSelectedNeedId(fulfillsNeedId);
+          }
+          if (fulfillsNeedId !== highlightedNeedId) {
+            setHighlightedNeedId(fulfillsNeedId);
+          }
         }
-
-        // TODO: when there isn't a respid in the url, pick one
-        // const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-        // if (!_.find(data.needs, { nodeId: needId }) && firstNeedId) {
-        //   return <Redirect to={`/${orgSlug}/${firstNeedId}`} />;
-        // }
 
         return (
           <NeedsList
             needs={data.needs}
+            highlightedNeedId={highlightedNeedId}
             selectedNeedId={selectedNeedId}
             setSelectedNeedId={setSelectedNeedId}
             subscribeToNeedsEvents={() => {

@@ -32,7 +32,9 @@ const SimpleLink = styled.span`
   }
 `;
 
-const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
+const NeedsListItem = ({
+  need, isHighlighted, isSelected, selectThisNeed,
+}) => {
   const history = useHistory();
   const params = useParams();
 
@@ -43,7 +45,7 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
         href="#"
         action
         filledin={params.needId === need.nodeId ? 'true' : ''}
-        active={isSelected || params.needId === need.nodeId}
+        active={isHighlighted || params.needId === need.nodeId}
         onClick={selectThisNeed}
       >
         {need.title}
@@ -83,11 +85,13 @@ NeedsListItem.propTypes = {
       }),
     ),
   }).isRequired,
+  isHighlighted: PropTypes.bool,
   isSelected: PropTypes.bool,
   selectThisNeed: PropTypes.func,
 };
 
 NeedsListItem.defaultProps = {
+  isHighlighted: false,
   isSelected: false,
   selectThisNeed: () => null,
 };
