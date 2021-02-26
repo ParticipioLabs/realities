@@ -102,7 +102,7 @@ const DetailView = ({
               <Divider />
             </>
             )}
-          <DeleteNodeContainer node={node} />
+          <DeleteNodeContainer node={node} stopEdit={stopEdit} />
         </CardBody>
       ) : (
         <DetailViewBody node={node} isResp={isResp} />
