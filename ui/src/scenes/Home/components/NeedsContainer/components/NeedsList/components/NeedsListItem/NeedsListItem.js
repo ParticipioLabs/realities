@@ -21,8 +21,8 @@ const NeedsListGroupItem = styled(ListGroupItem)`
   }
 `;
 
-const NoRespsContainer = styled.div`
-  margin: 0 1rem;
+const CollapseWrapper = styled.div`
+  margin-left: 2rem;
 `;
 
 const SimpleLink = styled.span`
@@ -53,10 +53,11 @@ const NeedsListItem = ({
         {need.title}
         <MissingRealitiesOnNeed need={need} />
       </NeedsListGroupItem>
-      <Collapse isOpen={isExpanded}>
-        {need.fulfilledBy.length === 0
+      <CollapseWrapper>
+        <Collapse isOpen={isExpanded}>
+          {need.fulfilledBy.length === 0
           && (
-            <NoRespsContainer>
+            <div>
               This Need doesn&apos;t contain any Responsibilities yet.
               {' '}
               {isLoggedIn ? 'Click above to add one, or' : ''}
@@ -71,10 +72,11 @@ const NeedsListItem = ({
               </SimpleLink>
               {' '}
               to view the Need directly.
-            </NoRespsContainer>
+            </div>
           )}
-        {isExpanded && <ResponsibilitiesContainer needId={need.nodeId} />}
-      </Collapse>
+          {isExpanded && <ResponsibilitiesContainer needId={need.nodeId} />}
+        </Collapse>
+      </CollapseWrapper>
     </>
   );
 };

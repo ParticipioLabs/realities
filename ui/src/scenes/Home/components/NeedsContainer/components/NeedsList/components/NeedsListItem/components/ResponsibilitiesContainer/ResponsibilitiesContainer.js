@@ -13,10 +13,6 @@ import WrappedLoader from 'components/WrappedLoader';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
-const RespWrapper = styled.div`
-  margin-left: 2rem;
-`;
-
 const ResponsibilitiesContainer = ({ needId }) => {
   const params = useParams();
   const {
@@ -33,7 +29,7 @@ const ResponsibilitiesContainer = ({ needId }) => {
   });
 
   return (
-    <RespWrapper>
+    <div>
       {localData.showCreateResponsibility && <CreateResponsibility needId={needId} />}
       {(() => {
         if (loading && !data.responsibilities) return <WrappedLoader />;
@@ -105,7 +101,7 @@ const ResponsibilitiesContainer = ({ needId }) => {
           />
         );
       })()}
-    </RespWrapper>
+    </div>
   );
 };
 
