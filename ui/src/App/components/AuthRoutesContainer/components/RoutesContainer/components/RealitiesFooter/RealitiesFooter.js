@@ -17,7 +17,7 @@ const RealitiesFooter = () => (
     {' '}
     is a tool for tribal decentralised organisations. It is a part of
     {' '}
-    <a target="_blank" rel="noopener noreferrer" href="https://www.platoproject.org/eng">Plato Project</a>
+    <a target="_blank" rel="noopener noreferrer" href="https://www.platoproject.org/">Plato Project</a>
     .
   </StyledFooter>
 );

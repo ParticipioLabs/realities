@@ -91,7 +91,7 @@ const DetailViewContainer = ({ fullscreen, viewResp }) => {
 
   let needId;
   if (params.responsibilityId) {
-    needId = (!loadingFulfills && dataFulfills)
+    needId = (!loadingFulfills && dataFulfills && dataFulfills.responsibility)
       ? dataFulfills.responsibility.fulfills.nodeId : '';
   } else if (params.needId) {
     needId = params.needId;

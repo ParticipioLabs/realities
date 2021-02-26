@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { GET_NEEDS, GET_RESP_FULFILLS, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
@@ -15,7 +15,8 @@ import NeedsList from './components/NeedsList';
 
 const NeedsContainer = () => {
   const auth = useAuth();
-  const { responsibilityId, needId } = useParams();
+  const history = useHistory();
+  const { orgSlug, responsibilityId, needId } = useParams();
   const { data: localData = {} } = useQuery(CACHE_QUERY);
   const {
     subscribeToMore,
@@ -50,6 +51,11 @@ const NeedsContainer = () => {
         if (!responsibilityId && needId !== highlightedNeedId) {
           setHighlightedNeedId(needId);
         } else if (!loadingFulfills && dataFulfills) {
+          if (dataFulfills.responsibility === null) {
+            // if the respId is invalid for some reason
+            history.push(`/${orgSlug}`);
+            return null;
+          }
           const fulfillsNeedId = dataFulfills.responsibility.fulfills.nodeId;
           if (!expandedNeedId) {
             setExpandedNeedId(fulfillsNeedId);
