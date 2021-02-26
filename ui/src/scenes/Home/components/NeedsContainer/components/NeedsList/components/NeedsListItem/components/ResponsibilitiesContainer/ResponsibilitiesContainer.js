@@ -19,8 +19,6 @@ const RespWrapper = styled.div`
 
 const ResponsibilitiesContainer = ({ needId }) => {
   const params = useParams();
-  // TODO: need to avoid rendering some other way
-  // if (!match.params.needId) return null;
   const {
     data: localData = {},
   } = useQuery(CACHE_QUERY);

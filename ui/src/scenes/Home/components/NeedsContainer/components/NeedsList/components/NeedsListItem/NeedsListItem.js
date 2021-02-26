@@ -73,7 +73,7 @@ const NeedsListItem = ({
               to view the Need directly.
             </NoRespsContainer>
           )}
-        <ResponsibilitiesContainer needId={need.nodeId} />
+        {isExpanded && <ResponsibilitiesContainer needId={need.nodeId} />}
       </Collapse>
     </>
   );
