@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
-import { useHistory, useParams } from 'react-router-dom';
 import { Formik } from 'formik';
 import { GET_NEEDS, CACHE_QUERY } from 'services/queries';
 import ListForm from 'components/ListForm';
@@ -23,7 +23,7 @@ const CREATE_NEED = gql`
   }
 `;
 
-const CreateNeed = ({ setSelectedNeedId }) => {
+const CreateNeed = ({ setExpandedNeedId }) => {
   const [createNeed] = useMutation(CREATE_NEED, {
     update: (cache, { data: { createNeed: createNeedRes } }) => {
       cache.writeQuery({
@@ -53,7 +53,7 @@ const CreateNeed = ({ setSelectedNeedId }) => {
       onSubmit={(values, { resetForm }) => {
         createNeed({ variables: { title: values.title } }).then(({ data }) => {
           resetForm();
-          setSelectedNeedId(data.createNeed.nodeId);
+          setExpandedNeedId(data.createNeed.nodeId);
         });
       }}
     >
@@ -76,6 +76,14 @@ const CreateNeed = ({ setSelectedNeedId }) => {
       )}
     </Formik>
   );
+};
+
+CreateNeed.propTypes = {
+  setExpandedNeedId: PropTypes.func,
+};
+
+CreateNeed.defaultProps = {
+  setExpandedNeedId: () => null,
 };
 
 export default CreateNeed;

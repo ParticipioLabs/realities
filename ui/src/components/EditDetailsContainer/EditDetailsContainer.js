@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import { CACHE_QUERY } from 'services/queries';
 import EditDetailsForm from './components/EditDetailsForm';
 
 const createEditDetailsMutation = (nodeType, isResp) => gql`

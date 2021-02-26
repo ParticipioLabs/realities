@@ -32,16 +32,16 @@ const NeedsContainer = () => {
     skip: !responsibilityId,
   });
 
-  const [selectedNeedId, setSelectedNeedId] = useState(undefined);
+  const [expandedNeedId, setExpandedNeedId] = useState(undefined);
   const [highlightedNeedId, setHighlightedNeedId] = useState(undefined);
 
   return (
     <div
       data-cy="needs-container"
     >
-      {auth.isLoggedIn && <ListHeader needIsSelected={!!selectedNeedId} />}
+      {auth.isLoggedIn && <ListHeader needIsSelected={!!expandedNeedId} />}
       {localData.showCreateNeed
-        && <CreateNeed setSelectedNeedId={setSelectedNeedId} />}
+        && <CreateNeed setExpandedNeedId={setExpandedNeedId} />}
       {(() => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
@@ -51,8 +51,8 @@ const NeedsContainer = () => {
           setHighlightedNeedId(needId);
         } else if (!loadingFulfills && dataFulfills) {
           const fulfillsNeedId = dataFulfills.responsibility.fulfills.nodeId;
-          if (!selectedNeedId) {
-            setSelectedNeedId(fulfillsNeedId);
+          if (!expandedNeedId) {
+            setExpandedNeedId(fulfillsNeedId);
           }
           if (fulfillsNeedId !== highlightedNeedId) {
             setHighlightedNeedId(fulfillsNeedId);
@@ -63,8 +63,8 @@ const NeedsContainer = () => {
           <NeedsList
             needs={data.needs}
             highlightedNeedId={highlightedNeedId}
-            selectedNeedId={selectedNeedId}
-            setSelectedNeedId={setSelectedNeedId}
+            expandedNeedId={expandedNeedId}
+            setExpandedNeedId={setExpandedNeedId}
             subscribeToNeedsEvents={() => {
               const unsubscribes = [
                 subscribeToMore({

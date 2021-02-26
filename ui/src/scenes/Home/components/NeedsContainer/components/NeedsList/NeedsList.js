@@ -10,8 +10,8 @@ const NeedsListGroup = styled(ListGroup)`
 `;
 
 const NeedsList = ({
-  selectedNeedId,
-  setSelectedNeedId,
+  expandedNeedId,
+  setExpandedNeedId,
   needs,
   subscribeToNeedsEvents,
   highlightedNeedId,
@@ -29,8 +29,8 @@ const NeedsList = ({
           key={need.nodeId}
           need={need}
           isHighlighted={need.nodeId === highlightedNeedId}
-          isSelected={need.nodeId === selectedNeedId}
-          selectThisNeed={() => setSelectedNeedId(need.nodeId)}
+          isSelected={need.nodeId === expandedNeedId}
+          selectThisNeed={() => setExpandedNeedId(need.nodeId)}
         />
       ))}
     </NeedsListGroup>
@@ -44,15 +44,15 @@ NeedsList.propTypes = {
     title: PropTypes.string,
   })),
   highlightedNeedId: PropTypes.string,
-  selectedNeedId: PropTypes.string,
-  setSelectedNeedId: PropTypes.func,
+  expandedNeedId: PropTypes.string,
+  setExpandedNeedId: PropTypes.func,
 };
 
 NeedsList.defaultProps = {
   needs: [],
   highlightedNeedId: undefined,
-  selectedNeedId: undefined,
-  setSelectedNeedId: () => null,
+  expandedNeedId: undefined,
+  setExpandedNeedId: () => null,
 };
 
 export default NeedsList;
