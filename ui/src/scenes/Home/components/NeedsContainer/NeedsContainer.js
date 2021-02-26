@@ -35,6 +35,7 @@ const NeedsContainer = () => {
 
   const [expandedNeedId, setExpandedNeedId] = useState(undefined);
   const [highlightedNeedId, setHighlightedNeedId] = useState(undefined);
+  const [lastRespId, setLastRespId] = useState(undefined);
 
   return (
     <div
@@ -50,6 +51,7 @@ const NeedsContainer = () => {
 
         if (!responsibilityId && needId !== highlightedNeedId) {
           setHighlightedNeedId(needId);
+          setExpandedNeedId(needId);
         } else if (!loadingFulfills && dataFulfills) {
           if (dataFulfills.responsibility === null) {
             // if the respId is invalid for some reason
@@ -57,8 +59,11 @@ const NeedsContainer = () => {
             return null;
           }
           const fulfillsNeedId = dataFulfills.responsibility.fulfills.nodeId;
-          if (!expandedNeedId) {
+          if (!expandedNeedId || lastRespId !== responsibilityId) {
+            // if we're new on the page or if something makes us nav to another
+            // resp
             setExpandedNeedId(fulfillsNeedId);
+            setLastRespId(responsibilityId);
           }
           if (fulfillsNeedId !== highlightedNeedId) {
             setHighlightedNeedId(fulfillsNeedId);
