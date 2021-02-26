@@ -14,9 +14,9 @@ const NeedsListGroupItem = styled(ListGroupItem)`
     outline: none;
   }
   &.active {
-    background-color: ${({ filledIn }) => (filledIn ? colors.need : 'white')};
+    background-color: ${({ filledin }) => (filledin ? colors.need : 'white')};
     border-color: ${colors.need};
-    color: ${({ filledIn }) => (filledIn ? 'white' : colors.need)};
+    color: ${({ filledin }) => (filledin ? 'white' : colors.need)};
   }
 `;
 
@@ -42,7 +42,7 @@ const NeedsListItem = ({ need, isSelected, selectThisNeed }) => {
         tag="button"
         href="#"
         action
-        filledIn={params.needId === need.nodeId}
+        filledin={params.needId === need.nodeId ? 'true' : ''}
         active={isSelected || params.needId === need.nodeId}
         onClick={selectThisNeed}
       >
