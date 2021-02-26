@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ListGroupItem, Collapse } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import colors from 'styles/colors';
+import useAuth from 'services/useAuth';
 import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 import MissingRealitiesOnNeed from './components/MissingRealitiesOnNeed';
 
@@ -37,6 +38,7 @@ const NeedsListItem = ({
 }) => {
   const history = useHistory();
   const params = useParams();
+  const { isLoggedIn } = useAuth();
 
   return (
     <>
@@ -55,7 +57,9 @@ const NeedsListItem = ({
         {need.fulfilledBy.length === 0
           && (
             <NoRespsContainer>
-              This Need doesn&apos;t contain any Responsibilities yet. Click above to add one, or
+              This Need doesn&apos;t contain any Responsibilities yet.
+              {' '}
+              {isLoggedIn ? 'Click above to add one, or' : ''}
               {' '}
               <SimpleLink
                 onClick={() => history.push(`/${params.orgSlug}/need/${need.nodeId}`)}
@@ -63,7 +67,7 @@ const NeedsListItem = ({
                 {/* TODO: would want to put this button on the bar for the need but
                   that wasn't working properly with bootstrap. maybe do it
                   when we're switching to another style */}
-                click here
+                {isLoggedIn ? 'click here' : 'Click here'}
               </SimpleLink>
               {' '}
               to view the Need directly.
