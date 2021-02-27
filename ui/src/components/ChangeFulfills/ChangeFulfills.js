@@ -97,7 +97,7 @@ const ChangeFulfills = ({ node }) => {
             }}
           />
         ) : (
-          <ListGroupItem onClick={() => history.push(`/${orgSlug}/${node.fulfills.nodeId}`)} action>
+          <ListGroupItem onClick={() => history.push(`/${orgSlug}/need/${node.fulfills.nodeId}`)} action>
             <TypeBadge nodeType="Need" />
             {node.fulfills.title}
             <ButtonWrapper>

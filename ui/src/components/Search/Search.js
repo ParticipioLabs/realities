@@ -22,10 +22,10 @@ const Search = () => {
         if (node) {
           switch (node.__typename) {
             case 'Need':
-              history.push(`/${orgSlug}/${node.nodeId}`);
+              history.push(`/${orgSlug}/need/${node.nodeId}`);
               break;
             case 'Responsibility':
-              history.push(`/${orgSlug}/${node.fulfills.nodeId}/${node.nodeId}`);
+              history.push(`/${orgSlug}/${node.nodeId}`);
               break;
             case 'Person':
               history.push(`/${orgSlug}/profile/${node.nodeId}`);

@@ -11,6 +11,7 @@ describe('Test basic functionality', () => {
     const orgName = randomString();
     const orgSlug = randomString();
     const needName = randomString();
+    const respName = randomString();
 
     cy
       .visit('localhost:3001')
@@ -43,17 +44,24 @@ describe('Test basic functionality', () => {
       .contains('Create')
       .click()
 
-      .get('[data-cy=needs-container] [data-cy=list-header-plus-btn]')
+      .get('[data-cy=list-header-create-need-btn]')
       .click()
-      .get('[data-cy=needs-container] [data-cy=list-form-name-input]')
+      .get('[data-cy=list-form-name-input]')
       .type(needName)
-      .get('[data-cy=needs-container] [data-cy=list-form')
+      .get('[data-cy=list-form')
       .submit()
 
-      .get('[data-cy=detail-view]')
-      .contains('Need')
-      .get('[data-cy=detail-view]')
-      .contains(needName)
+      .get('[data-cy=list-header-create-resp-btn]')
+      .click()
+      .get('[data-cy=list-form-name-input]')
+      .type(respName)
+      .get('[data-cy=list-form')
+      .submit()
+
+      .get('[data-cy=detail-view-responsibility]')
+      .contains('Responsibility')
+      .get('[data-cy=detail-view-responsibility]')
+      .contains(respName)
   })
 })
   

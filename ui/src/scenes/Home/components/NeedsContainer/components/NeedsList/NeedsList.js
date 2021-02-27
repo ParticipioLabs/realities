@@ -1,75 +1,21 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { useHistory, useParams } from 'react-router-dom';
-import { ListGroup, ListGroupItem } from 'reactstrap';
-import colors from 'styles/colors';
-import RealizersMissingIcon from 'components/RealizersMissingIcon';
+import { ListGroup } from 'reactstrap';
 import _ from 'lodash';
+import NeedsListItem from './components/NeedsListItem';
 
 const NeedsListGroup = styled(ListGroup)`
   margin-bottom: 1rem;
 `;
 
-const SelectedNeedGroup = styled(ListGroup)`
-  margin-bottom: 0.5rem;
-`;
-
-const NeedsListGroupHeader = styled(ListGroupItem)`
-  display: flex;
-  justify-content: space-between;
-  &:focus {
-    outline: none;
-  }
-  &.active {
-    background-color: ${colors.need};
-    border-color: ${colors.need};
-    color: white;
-  }
-`;
-
-const NeedsListGroupItem = styled(ListGroupItem)`
-  display: flex;
-  justify-content: space-between;
-  &:focus {
-    outline: none;
-  }
-  &.active {
-    background-color: white;
-    border-color: ${colors.need};
-    color: ${colors.need};
-  }
-`;
-
-const RightMarginSpan = styled.span`
-  margin-right: 10px;
-`;
-
-const renderMissingRealizersAmount = (need) => {
-  let realizersMissing = [];
-  if (need.fulfilledBy) {
-    realizersMissing = need.fulfilledBy.filter((resp) => !resp.realizer);
-  }
-
-  if (realizersMissing.length > 0) {
-    return (
-      <div>
-        <RightMarginSpan>
-          {realizersMissing.length}
-          x
-        </RightMarginSpan>
-        {' '}
-        <RealizersMissingIcon />
-      </div>
-    );
-  }
-  return '';
-};
-
-const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
-  const history = useHistory();
-  const { orgSlug } = useParams();
-
+const NeedsList = ({
+  expandedNeedId,
+  setExpandedNeedId,
+  needs,
+  subscribeToNeedsEvents,
+  highlightedNeedId,
+}) => {
   useEffect(() => subscribeToNeedsEvents(), [subscribeToNeedsEvents]);
 
   const sortedNeeds = _.orderBy(needs, [(r) => {
@@ -77,33 +23,17 @@ const NeedsList = ({ selectedNeedId, needs, subscribeToNeedsEvents }) => {
     return '';
   }], ['asc']);
   return (
-    <div>
-      {sortedNeeds.filter((need) => need.nodeId === selectedNeedId).map((need) => (
-        <SelectedNeedGroup key={1}>
-          <NeedsListGroupHeader
-            active
-          >
-            {need.title}
-            {renderMissingRealizersAmount(need)}
-          </NeedsListGroupHeader>
-        </SelectedNeedGroup>
+    <NeedsListGroup>
+      {sortedNeeds.map((need) => (
+        <NeedsListItem
+          key={need.nodeId}
+          need={need}
+          isHighlighted={need.nodeId === highlightedNeedId}
+          isExpanded={need.nodeId === expandedNeedId}
+          expandThisNeed={() => setExpandedNeedId(need.nodeId)}
+        />
       ))}
-      <NeedsListGroup>
-        {sortedNeeds.map((need) => (
-          <NeedsListGroupItem
-            key={need.nodeId}
-            tag="button"
-            href="#"
-            action
-            active={need.nodeId === selectedNeedId}
-            onClick={() => history.push(`/${orgSlug}/${need.nodeId}`)}
-          >
-            {need.title}
-            {renderMissingRealizersAmount(need)}
-          </NeedsListGroupItem>
-        ))}
-      </NeedsListGroup>
-    </div>
+    </NeedsListGroup>
   );
 };
 
@@ -113,12 +43,16 @@ NeedsList.propTypes = {
     nodeId: PropTypes.string,
     title: PropTypes.string,
   })),
-  selectedNeedId: PropTypes.string,
+  highlightedNeedId: PropTypes.string,
+  expandedNeedId: PropTypes.string,
+  setExpandedNeedId: PropTypes.func,
 };
 
 NeedsList.defaultProps = {
   needs: [],
-  selectedNeedId: undefined,
+  highlightedNeedId: undefined,
+  expandedNeedId: undefined,
+  setExpandedNeedId: () => null,
 };
 
 export default NeedsList;

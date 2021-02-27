@@ -22,7 +22,7 @@ const Dependencies = withAuth(({
         dependencies={dependencies.map((dep) => ({
           node: dep,
           onClick: () => history.push(
-            `/${orgSlug}/${dep.fulfills.nodeId}/${dep.nodeId}`,
+            `/${orgSlug}/${dep.nodeId}`,
           ),
         }))}
         showRemove={auth.isLoggedIn && showAddRemove}

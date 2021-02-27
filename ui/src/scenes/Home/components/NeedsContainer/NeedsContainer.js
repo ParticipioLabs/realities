@@ -1,8 +1,7 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
-import _ from 'lodash';
-import { useParams, Redirect } from 'react-router-dom';
-import { GET_NEEDS, SET_CACHE } from 'services/queries';
+import React, { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { useHistory, useParams } from 'react-router-dom';
+import { GET_NEEDS, GET_RESP_FULFILLS, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
@@ -10,58 +9,73 @@ import {
 } from 'services/subscriptions';
 import useAuth from 'services/useAuth';
 import ListHeader from 'components/ListHeader';
-import colors from 'styles/colors';
 import WrappedLoader from 'components/WrappedLoader';
 import CreateNeed from './components/CreateNeed';
 import NeedsList from './components/NeedsList';
 
-const GET_SHOW_CREATE_NEED = gql`
-  query NeedsContainer_showCreateNeed {
-    showCreateNeed @client
-  }
-`;
-
 const NeedsContainer = () => {
   const auth = useAuth();
-  const { data: localData = {}, client } = useQuery(GET_SHOW_CREATE_NEED);
+  const history = useHistory();
+  const { orgSlug, responsibilityId, needId } = useParams();
+  const { data: localData = {} } = useQuery(CACHE_QUERY);
   const {
     subscribeToMore,
     loading,
     error,
     data,
   } = useQuery(GET_NEEDS);
-  const { needId, orgSlug } = useParams();
+  const {
+    loading: loadingFulfills,
+    error: errorFulfills,
+    data: dataFulfills,
+  } = useQuery(GET_RESP_FULFILLS, {
+    variables: { responsibilityId },
+    skip: !responsibilityId,
+  });
+
+  const [expandedNeedId, setExpandedNeedId] = useState(undefined);
+  const [highlightedNeedId, setHighlightedNeedId] = useState(undefined);
+  const [lastRespId, setLastRespId] = useState(undefined);
 
   return (
     <div
       data-cy="needs-container"
     >
-      <ListHeader
-        text="Needs"
-        color={colors.need}
-        showButton={auth.isLoggedIn}
-        onButtonClick={() => client.writeQuery({
-          query: SET_CACHE,
-          data: {
-            showCreateNeed: !localData.showCreateNeed,
-            showCreateResponsibility: false,
-          },
-        })}
-      />
-      {localData.showCreateNeed && <CreateNeed />}
+      {auth.isLoggedIn && <ListHeader needIsExpanded={!!expandedNeedId} />}
+      {localData.showCreateNeed
+        && <CreateNeed />}
       {(() => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
+        if (errorFulfills) return `Error! ${errorFulfills.message}`;
 
-        const firstNeedId = data.needs && data.needs[0] && data.needs[0].nodeId;
-        if (!_.find(data.needs, { nodeId: needId }) && firstNeedId) {
-          return <Redirect to={`/${orgSlug}/${firstNeedId}`} />;
+        if (!responsibilityId && needId !== highlightedNeedId) {
+          setHighlightedNeedId(needId);
+          setExpandedNeedId(needId);
+        } else if (!loadingFulfills && dataFulfills) {
+          if (dataFulfills.responsibility === null) {
+            // if the respId is invalid for some reason
+            history.push(`/${orgSlug}`);
+            return null;
+          }
+          const fulfillsNeedId = dataFulfills.responsibility.fulfills.nodeId;
+          if (!expandedNeedId || lastRespId !== responsibilityId) {
+            // if we're new on the page or if something makes us nav to another
+            // resp
+            setExpandedNeedId(fulfillsNeedId);
+            setLastRespId(responsibilityId);
+          }
+          if (fulfillsNeedId !== highlightedNeedId) {
+            setHighlightedNeedId(fulfillsNeedId);
+          }
         }
 
         return (
           <NeedsList
             needs={data.needs}
-            selectedNeedId={needId}
+            highlightedNeedId={highlightedNeedId}
+            expandedNeedId={expandedNeedId}
+            setExpandedNeedId={setExpandedNeedId}
             subscribeToNeedsEvents={() => {
               const unsubscribes = [
                 subscribeToMore({

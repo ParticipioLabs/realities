@@ -30,14 +30,13 @@ const ResponsibilityDetailsContainer = ({ nodeId }) => {
     responsibility: {
       title,
       description,
-      fulfills,
     },
   } = data;
   return (
     <ResponsibilityDetails
       title={title}
       description={description}
-      path={`/${orgSlug}/reality/${fulfills.nodeId}/${nodeId}`}
+      path={`/${orgSlug}/reality/${nodeId}`}
     />
   );
 };

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import { SET_CACHE } from 'services/queries';
 import EditDetailsForm from './components/EditDetailsForm';
 
 const createEditDetailsMutation = (nodeType, isResp) => gql`
@@ -38,8 +37,8 @@ const createEditDetailsMutation = (nodeType, isResp) => gql`
   }
 `;
 
-const EditDetailsContainer = ({ node, isResp }) => {
-  const [updateNode, { client }] = useMutation(createEditDetailsMutation(node.__typename, isResp));
+const EditDetailsContainer = ({ node, isResp, stopEdit }) => {
+  const [updateNode] = useMutation(createEditDetailsMutation(node.__typename, isResp));
 
   return (
     <Formik
@@ -71,12 +70,7 @@ const EditDetailsContainer = ({ node, isResp }) => {
           },
         }).then(() => {
           resetForm();
-          client.writeQuery({
-            query: SET_CACHE,
-            data: {
-              showDetailedEditView: false,
-            },
-          });
+          stopEdit();
         });
       }}
     >
@@ -100,12 +94,7 @@ const EditDetailsContainer = ({ node, isResp }) => {
           handleSubmit={handleSubmit}
           setFieldValue={setFieldValue}
           isSubmitting={isSubmitting}
-          cancel={() => client.writeQuery({
-            query: SET_CACHE,
-            data: {
-              showDetailedEditView: false,
-            },
-          })}
+          cancel={stopEdit}
         />
       )}
     </Formik>
@@ -138,6 +127,7 @@ EditDetailsContainer.propTypes = {
     })),
   }),
   isResp: PropTypes.bool,
+  stopEdit: PropTypes.func,
 };
 
 EditDetailsContainer.defaultProps = {
@@ -158,6 +148,7 @@ EditDetailsContainer.defaultProps = {
     dependsOnResponsibilities: [],
   },
   isResp: false,
+  stopEdit: () => null,
 };
 
 export default EditDetailsContainer;

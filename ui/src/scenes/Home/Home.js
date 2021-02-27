@@ -8,7 +8,6 @@ import {
 import Search from 'components/Search';
 import DetailViewContainer from 'components/DetailViewContainer';
 import NeedsContainer from './components/NeedsContainer';
-import ResponsibilitiesContainer from './components/ResponsibilitiesContainer';
 
 const SearchRow = styled(Row)`
   margin-bottom: 20px;
@@ -22,18 +21,12 @@ const Home = () => (
       </Col>
     </SearchRow>
     <Row>
-      <Col md="6">
-        <Row>
-          <Col lg="6">
-            <NeedsContainer />
-          </Col>
-          <Col lg="6">
-            <ResponsibilitiesContainer />
-          </Col>
-        </Row>
+      <Col md="6" lg={{ size: 4, offset: 1 }}>
+        <NeedsContainer />
       </Col>
       <Col md="6">
-        <DetailViewContainer />
+        <DetailViewContainer viewResp={false} />
+        <DetailViewContainer viewResp />
       </Col>
     </Row>
   </Container>

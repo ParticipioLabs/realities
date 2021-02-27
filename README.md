@@ -1,10 +1,10 @@
 # Realities Platform
 
-A tool for tribal decentralised organisations. [Read more about the concept behind it here](https://edgeryders.eu/t/realities-project-white-paper/9064). Realities is a part of [Plato project](https://www.platoproject.org/eng).
+A tool for tribal decentralised organisations. [Read more about the concept behind it here](https://edgeryders.eu/t/realities-project-white-paper/9064). Realities is a part of [Plato project](https://www.platoproject.org/).
 
 ## Wanna talk about it?
 
-[We have a forum](https://forum.blivande.com/c/plato/22) where you can start and participate in discussions around Realities and other Plato projects.
+[We have a forum](https://forum.blivande.com/c/plato/22) where you can start and participate in discussions around Realities and other Plato project projects.
 
 To report a bug or suggest a specific improvement or feature, create an issue right here on GitHub.
 

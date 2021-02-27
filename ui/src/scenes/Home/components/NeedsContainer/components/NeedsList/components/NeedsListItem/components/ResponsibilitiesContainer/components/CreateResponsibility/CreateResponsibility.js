@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
 import { useHistory, useParams } from 'react-router-dom';
 import { Formik } from 'formik';
-import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
+import { GET_RESPONSIBILITIES, CACHE_QUERY } from 'services/queries';
 import ListForm from 'components/ListForm';
 
 const CREATE_RESPONSIBILITY = gql`
@@ -19,20 +20,20 @@ const CREATE_RESPONSIBILITY = gql`
   }
 `;
 
-const CreateResponsibility = () => {
+const CreateResponsibility = ({ needId }) => {
   const history = useHistory();
   const params = useParams();
   const [createResponsibility] = useMutation(CREATE_RESPONSIBILITY, {
     update: (cache, { data: { createResponsibility: createRespRes } }) => {
       cache.writeQuery({
-        query: SET_CACHE,
+        query: CACHE_QUERY,
         data: {
           showCreateResponsibility: false,
         },
       });
       const { responsibilities } = cache.readQuery({
         query: GET_RESPONSIBILITIES,
-        variables: { needId: params.needId },
+        variables: { needId },
       });
 
       const alreadyExists = responsibilities
@@ -41,7 +42,7 @@ const CreateResponsibility = () => {
       if (!alreadyExists) {
         cache.writeQuery({
           query: GET_RESPONSIBILITIES,
-          variables: { needId: params.needId },
+          variables: { needId },
           data: {
             responsibilities: [createRespRes, ...responsibilities],
           },
@@ -60,11 +61,11 @@ const CreateResponsibility = () => {
         createResponsibility({
           variables: {
             title: values.title,
-            needId: params.needId,
+            needId,
           },
         }).then(({ data }) => {
           resetForm();
-          history.push(`/${params.orgSlug}/${params.needId}/${data.createResponsibility.nodeId}`);
+          history.push(`/${params.orgSlug}/${data.createResponsibility.nodeId}`);
         });
       }}
     >
@@ -87,6 +88,10 @@ const CreateResponsibility = () => {
       )}
     </Formik>
   );
+};
+
+CreateResponsibility.propTypes = {
+  needId: PropTypes.string.isRequired,
 };
 
 export default CreateResponsibility;

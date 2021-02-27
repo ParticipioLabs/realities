@@ -22,7 +22,8 @@ const RealityDetails = () => (
     <Row>
       <Col md="1" />
       <Col md="10">
-        <DetailViewContainer fullscreen />
+        <DetailViewContainer fullscreen viewResp={false} />
+        <DetailViewContainer fullscreen viewResp />
       </Col>
       <Col md="1" />
     </Row>

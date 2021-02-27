@@ -1,10 +1,10 @@
 import React from 'react';
 import { gql, useMutation } from '@apollo/client';
 import * as yup from 'yup';
-import { useHistory, useParams } from 'react-router-dom';
 import { Formik } from 'formik';
-import { GET_NEEDS, SET_CACHE } from 'services/queries';
+import { GET_NEEDS, CACHE_QUERY } from 'services/queries';
 import ListForm from 'components/ListForm';
+import { useHistory, useParams } from 'react-router-dom';
 
 const CREATE_NEED = gql`
   mutation CreateNeed_createNeedMutation($title: String!) {
@@ -25,11 +25,12 @@ const CREATE_NEED = gql`
 
 const CreateNeed = () => {
   const history = useHistory();
-  const params = useParams();
+  const { orgSlug } = useParams();
+
   const [createNeed] = useMutation(CREATE_NEED, {
     update: (cache, { data: { createNeed: createNeedRes } }) => {
       cache.writeQuery({
-        query: SET_CACHE,
+        query: CACHE_QUERY,
         data: {
           showCreateNeed: false,
         },
@@ -55,7 +56,7 @@ const CreateNeed = () => {
       onSubmit={(values, { resetForm }) => {
         createNeed({ variables: { title: values.title } }).then(({ data }) => {
           resetForm();
-          history.push(`/${params.orgSlug}/${data.createNeed.nodeId}`);
+          history.push(`/${orgSlug}/need/${data.createNeed.nodeId}`);
         });
       }}
     >

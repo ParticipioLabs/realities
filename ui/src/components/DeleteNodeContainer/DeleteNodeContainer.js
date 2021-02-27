@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { gql, useMutation } from '@apollo/client';
 import { useHistory, useParams } from 'react-router-dom';
-import { GET_NEEDS, GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
+import { GET_NEEDS, GET_RESPONSIBILITIES } from 'services/queries';
 import DeleteNodeButton from './components/DeleteNodeButton';
 
 const SOFT_DELETE_NEED = gql`
@@ -26,7 +26,7 @@ const SOFT_DELETE_RESPONSIBILITY = gql`
   }
 `;
 
-const DeleteNodeContainer = ({ node }) => {
+const DeleteNodeContainer = ({ node, stopEdit }) => {
   const { __typename: nodeType, nodeId } = node;
   const history = useHistory();
   const params = useParams();
@@ -39,12 +39,7 @@ const DeleteNodeContainer = ({ node }) => {
     {
       update: (cache, { data }) => {
         setConfirmationModalIsOpen(false);
-        cache.writeQuery({
-          query: SET_CACHE,
-          data: {
-            showDetailedEditView: false,
-          },
-        });
+        stopEdit();
 
         if (nodeType === 'Need') {
           const { needs } = cache.readQuery({ query: GET_NEEDS });
@@ -69,7 +64,7 @@ const DeleteNodeContainer = ({ node }) => {
                 .filter((r) => r.nodeId !== data.softDeleteResponsibility.nodeId),
             },
           });
-          history.push(`/${params.orgSlug}/${needId}`);
+          history.push(`/${params.orgSlug}/need/${needId}`);
         }
       },
     },
@@ -99,6 +94,7 @@ DeleteNodeContainer.propTypes = {
       nodeId: PropTypes.string,
     })),
   }),
+  stopEdit: PropTypes.func,
 };
 
 DeleteNodeContainer.defaultProps = {
@@ -107,6 +103,7 @@ DeleteNodeContainer.defaultProps = {
     nodeId: '',
     fulfilledBy: [],
   },
+  stopEdit: () => null,
 };
 
 export default DeleteNodeContainer;

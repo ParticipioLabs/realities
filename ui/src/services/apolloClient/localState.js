@@ -9,5 +9,6 @@ export const resolvers = {
 export const defaults = {
   showCreateNeed: false,
   showCreateResponsibility: false,
-  showDetailedEditView: false,
+  showDetailedEditNeedView: false,
+  showDetailedEditRespView: false,
 };

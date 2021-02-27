@@ -1,57 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql, useQuery } from '@apollo/client';
-import { withRouter } from 'react-router-dom';
-import { GET_RESPONSIBILITIES, SET_CACHE } from 'services/queries';
+import { useQuery } from '@apollo/client';
+import { useParams } from 'react-router-dom';
+import { GET_RESPONSIBILITIES, CACHE_QUERY } from 'services/queries';
 import {
   REALITIES_CREATE_SUBSCRIPTION,
   REALITIES_DELETE_SUBSCRIPTION,
   REALITIES_UPDATE_SUBSCRIPTION,
 } from 'services/subscriptions';
-import withAuth from 'components/withAuth';
-import ListHeader from 'components/ListHeader';
-import colors from 'styles/colors';
 import WrappedLoader from 'components/WrappedLoader';
 import CreateResponsibility from './components/CreateResponsibility';
 import ResponsibilitiesList from './components/ResponsibilitiesList';
 
-const GET_SHOW_CREATE_RESPONSIBILITY = gql`
-  query ResponsibilitiesContainer_showCreateResponsibility {
-    showCreateResponsibility @client
-  }
-`;
-
-const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
-  if (!match.params.needId) return null;
+const ResponsibilitiesContainer = ({ needId }) => {
+  const params = useParams();
   const {
     data: localData = {},
-    client,
-  } = useQuery(GET_SHOW_CREATE_RESPONSIBILITY);
+  } = useQuery(CACHE_QUERY);
   const {
     subscribeToMore,
     loading,
     error,
     data = {},
   } = useQuery(GET_RESPONSIBILITIES, {
-    variables: { needId: match.params.needId },
+    variables: { needId },
     fetchPolicy: 'cache-and-network',
   });
 
   return (
     <div>
-      <ListHeader
-        text="Responsibilities"
-        color={colors.responsibility}
-        showButton={auth.isLoggedIn && !!match.params.needId}
-        onButtonClick={() => client.writeQuery({
-          query: SET_CACHE,
-          data: {
-            showCreateResponsibility: !localData.showCreateResponsibility,
-            showCreateNeed: false,
-          },
-        })}
-      />
-      {localData.showCreateResponsibility && <CreateResponsibility />}
+      {localData.showCreateResponsibility && <CreateResponsibility needId={needId} />}
       {(() => {
         if (loading && !data.responsibilities) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;
@@ -59,7 +37,7 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
         return (
           <ResponsibilitiesList
             responsibilities={data.responsibilities}
-            selectedResponsibilityId={match.params.responsibilityId}
+            selectedResponsibilityId={params.responsibilityId}
             subscribeToResponsibilitiesEvents={() => {
               const unsubscribes = [
                 subscribeToMore({
@@ -124,30 +102,10 @@ const ResponsibilitiesContainer = withAuth(withRouter(({ auth, match }) => {
       })()}
     </div>
   );
-}));
-
-ResponsibilitiesContainer.propTypes = {
-  auth: PropTypes.shape({
-    isLoggedIn: PropTypes.bool,
-  }),
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      needId: PropTypes.string,
-      resposibilityId: PropTypes.string,
-    }),
-  }),
 };
 
-ResponsibilitiesContainer.defaultProps = {
-  auth: {
-    isLoggedIn: false,
-  },
-  match: {
-    params: {
-      needId: undefined,
-      responsibilityId: undefined,
-    },
-  },
+ResponsibilitiesContainer.propTypes = {
+  needId: PropTypes.string.isRequired,
 };
 
 export default ResponsibilitiesContainer;

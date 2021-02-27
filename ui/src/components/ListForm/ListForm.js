@@ -6,14 +6,22 @@ import {
   Form,
   FormGroup,
   Input,
+  Container,
+  Row,
+  Col,
 } from 'reactstrap';
 
 const Wrapper = styled.div`
-  margin-bottom: 1rem;
+  margin: 0.5rem 0;
 `;
 
 const StyledFormGroup = styled(FormGroup)`
-  margin-bottom: 0.5rem;
+  margin: 0;
+  margin-right: 0.5rem;
+`;
+
+const SaveCol = styled(Col)`
+  align-self: end;
 `;
 
 const ListForm = ({
@@ -30,34 +38,42 @@ const ListForm = ({
       onSubmit={handleSubmit}
       data-cy="list-form"
     >
-      <StyledFormGroup>
-        <Input
-          name={inputName}
-          type="textarea"
-          autoFocus
-          rows={3}
-          placeholder={placeholder}
-          value={value}
-          disabled={isSubmitting}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onKeyPress={(e) => {
-            // Submit form if user hits Enter
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
-          data-cy="list-form-name-input"
-        />
-      </StyledFormGroup>
-      <Button
-        size="sm"
-        type="submit"
-        disabled={!value || isSubmitting}
-      >
-        Save
-      </Button>
+      <Container fluid="sm">
+        <Row noGutters>
+          <Col>
+            <StyledFormGroup>
+              <Input
+                name={inputName}
+                type="textarea"
+                autoFocus
+                rows={2}
+                placeholder={placeholder}
+                value={value}
+                disabled={isSubmitting}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                onKeyPress={(e) => {
+                // Submit form if user hits Enter
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+                data-cy="list-form-name-input"
+              />
+            </StyledFormGroup>
+          </Col>
+          <SaveCol xs="auto">
+            <Button
+              size="sm"
+              type="submit"
+              disabled={!value || isSubmitting}
+            >
+              Save
+            </Button>
+          </SaveCol>
+        </Row>
+      </Container>
     </Form>
   </Wrapper>
 );

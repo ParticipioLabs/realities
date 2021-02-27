@@ -43,42 +43,45 @@ const DetailView = ({
   fullscreen,
   showEdit,
   isLoggedIn,
-  onClickEdit,
-  onClickCancel,
+  startEdit,
+  stopEdit,
   onClickFullscreen,
 }) => {
   const isResp = node.__typename === 'Responsibility';
 
   return (
     <Card
-      data-cy="detail-view"
+      data-cy={`detail-view-${node.__typename.toLowerCase()}`}
     >
       <DetailViewCardHeader
         color={isResp ? colors.responsibility : colors.need}
       >
-        <HeaderButton onClick={onClickFullscreen}>
+        <HeaderButton
+          onClick={onClickFullscreen}
+          style={{ visibility: isResp && 'hidden' }}
+        >
           {fullscreen
             ? <FaBars />
             : <FaExpand />}
         </HeaderButton>
         <HeaderText>
-          {node.__typename}
+          {`${node.__typename}: ${node.title}`}
         </HeaderText>
-        {isLoggedIn && (
-          showEdit ? (
-            <HeaderButton onClick={onClickCancel}>
+        <div style={{ visibility: !isLoggedIn && 'hidden' }}>
+          {showEdit ? (
+            <HeaderButton onClick={stopEdit}>
               <FaTimesCircle />
             </HeaderButton>
           ) : (
-            <HeaderButton onClick={onClickEdit}>
+            <HeaderButton onClick={startEdit}>
               <FaEdit />
             </HeaderButton>
-          )
-        )}
+          )}
+        </div>
       </DetailViewCardHeader>
       {showEdit ? (
         <CardBody>
-          <EditDetailsContainer node={node} isResp={isResp} />
+          <EditDetailsContainer node={node} isResp={isResp} stopEdit={stopEdit} />
           <Divider />
           {isResp
             && (
@@ -99,7 +102,7 @@ const DetailView = ({
               <Divider />
             </>
             )}
-          <DeleteNodeContainer node={node} />
+          <DeleteNodeContainer node={node} stopEdit={stopEdit} />
         </CardBody>
       ) : (
         <DetailViewBody node={node} isResp={isResp} />
@@ -141,8 +144,8 @@ DetailView.propTypes = {
   fullscreen: PropTypes.bool,
   showEdit: PropTypes.bool,
   isLoggedIn: PropTypes.bool,
-  onClickEdit: PropTypes.func,
-  onClickCancel: PropTypes.func,
+  startEdit: PropTypes.func,
+  stopEdit: PropTypes.func,
   onClickFullscreen: PropTypes.func,
 };
 
@@ -167,8 +170,8 @@ DetailView.defaultProps = {
   fullscreen: false,
   showEdit: false,
   isLoggedIn: false,
-  onClickEdit: () => null,
-  onClickCancel: () => null,
+  startEdit: () => null,
+  stopEdit: () => null,
   onClickFullscreen: () => null,
 };
 
