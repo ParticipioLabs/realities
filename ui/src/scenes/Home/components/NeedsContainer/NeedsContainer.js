@@ -43,7 +43,7 @@ const NeedsContainer = () => {
     >
       {auth.isLoggedIn && <ListHeader needIsExpanded={!!expandedNeedId} />}
       {localData.showCreateNeed
-        && <CreateNeed setExpandedNeedId={setExpandedNeedId} />}
+        && <CreateNeed />}
       {(() => {
         if (loading) return <WrappedLoader />;
         if (error) return `Error! ${error.message}`;

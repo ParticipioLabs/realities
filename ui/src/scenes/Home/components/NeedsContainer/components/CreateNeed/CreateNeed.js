@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { Formik } from 'formik';
 import { GET_NEEDS, CACHE_QUERY } from 'services/queries';
 import ListForm from 'components/ListForm';
+import { useHistory, useParams } from 'react-router-dom';
 
 const CREATE_NEED = gql`
   mutation CreateNeed_createNeedMutation($title: String!) {
@@ -23,7 +24,10 @@ const CREATE_NEED = gql`
   }
 `;
 
-const CreateNeed = ({ setExpandedNeedId }) => {
+const CreateNeed = () => {
+  const history = useHistory();
+  const { orgSlug } = useParams();
+
   const [createNeed] = useMutation(CREATE_NEED, {
     update: (cache, { data: { createNeed: createNeedRes } }) => {
       cache.writeQuery({
@@ -53,7 +57,7 @@ const CreateNeed = ({ setExpandedNeedId }) => {
       onSubmit={(values, { resetForm }) => {
         createNeed({ variables: { title: values.title } }).then(({ data }) => {
           resetForm();
-          setExpandedNeedId(data.createNeed.nodeId);
+          history.push(`/${orgSlug}/need/${data.createNeed.nodeId}`);
         });
       }}
     >
@@ -76,14 +80,6 @@ const CreateNeed = ({ setExpandedNeedId }) => {
       )}
     </Formik>
   );
-};
-
-CreateNeed.propTypes = {
-  setExpandedNeedId: PropTypes.func,
-};
-
-CreateNeed.defaultProps = {
-  setExpandedNeedId: () => null,
 };
 
 export default CreateNeed;
