@@ -21,10 +21,10 @@
       "env": {
         "REACT_APP_GRAPHQL_ENDPOINT": "http://localhost:3101/graphql",
         "REACT_APP_GRAPHQL_SUBSCRIPTION": "ws://localhost:3101/graphql",
-        "REACT_APP_KEYCLOAK_CALLBACK_URL": "http://localhost:3001/auth-callback",
+        "REACT_APP_KEYCLOAK_CALLBACK_URL": "http://localhost:2551/auth-callback",
         "REACT_APP_KEYCLOAK_REALM": "platotest",
         "REACT_APP_KEYCLOAK_CLIENT": "realitiestest",
-        "PORT": "3001"
+        "PORT": "2551"
       }
     }
   },

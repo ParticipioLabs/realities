@@ -14,7 +14,7 @@ describe('Test basic functionality', () => {
     const respName = randomString();
 
     cy
-      .visit('localhost:3001')
+      .visit('localhost:2551')
       .contains('Pick an organization')
       .root()
       .contains('Login')
