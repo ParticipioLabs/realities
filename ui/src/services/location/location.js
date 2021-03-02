@@ -2,10 +2,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 function getOrgSlug() {
-  const path = window.location.pathname.replace(
-    new RegExp(`^${process.env.REACT_APP_BASEPATH}`), '',
-  );
-  const match = path.match(/[^/]+/);
+  const match = window.location.pathname.match(/[^/]+/);
   const firstPart = match ? match[0] : '';
   if (firstPart !== 'auth-callback') {
     return firstPart;

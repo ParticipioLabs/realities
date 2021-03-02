@@ -1,3 +1,3 @@
-import createBrowserHistory from 'history/createBrowserHistory';
+import createHistory from 'history/createBrowserHistory';
 
-export default createBrowserHistory({ basename: process.env.REACT_APP_BASEPATH });
+export default createHistory();
