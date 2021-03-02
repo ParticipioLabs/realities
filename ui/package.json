@@ -2,6 +2,7 @@
   "name": "realities-ui",
   "version": "0.1.0",
   "description": "A frontend for tribal decentralised organisations.",
+  "homepage": "/realities",
   "scripts": {
     "start": "react-scripts start",
     "start:test": "better-npm-run start:test",
