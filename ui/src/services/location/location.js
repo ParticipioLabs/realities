@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 function getOrgSlug() {
   const path = window.location.pathname.replace(
-    new RegExp(`^${process.env.PUBLIC_URL}`), '',
+    new RegExp(`^${process.env.REACT_APP_BASEPATH}`), '',
   );
   const match = path.match(/[^/]+/);
   const firstPart = match ? match[0] : '';
