@@ -1,117 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Card, CardTitle, Button, Form, FormGroup, Input, FormFeedback, Alert,
+  Card, CardTitle, Button,
 } from 'reactstrap';
 import { FaPlus } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
-import { gql, useMutation } from '@apollo/client';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-
-const CREATE_ORG = gql`
-  mutation CreateOrgCard_createOrgMutation($name: String, $orgSlug: String) {
-    createOrg(name: $name, orgSlug: $orgSlug) {
-      orgId
-      orgSlug
-    }
-  }
-`;
+import useAuth from 'services/useAuth';
 
 const CreateOrgCard = () => {
   const history = useHistory();
-  const [creating, setCreating] = useState(false);
-  const [createOrg] = useMutation(CREATE_ORG);
+  const { isLoggedIn } = useAuth();
 
   return (
     <Card body>
-      { creating
-        ? (
-          <Formik
-            initialValues={{ name: '', orgSlug: '' }}
-            validationSchema={yup.object().shape({
-              name: yup.string().required('Organization name is required'),
-              orgSlug: yup.string().required('Organization URL ID is required'),
-            })}
-            onSubmit={async (values, { setFieldError }) => {
-              try {
-                const { data } = await createOrg({
-                  variables: {
-                    name: values.name,
-                    orgSlug: values.orgSlug,
-                  },
-                });
-                const { orgSlug } = data.createOrg;
-                history.push(`/${orgSlug}`);
-              } catch (err) {
-                console.error("Couldn't create org:", err);
-                setFieldError('general', err.message);
-              }
-            }}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              isSubmitting,
-            }) => (
-              <Form onSubmit={handleSubmit}>
-                {errors.general && <Alert color="danger">{errors.general}</Alert>}
-                <FormGroup>
-                  <Input
-                    name="name"
-                    type="text"
-                    autoFocus
-                    placeholder="Org name"
-                    value={values.name}
-                    disabled={isSubmitting}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    invalid={errors.name && touched.name}
-                    data-cy="create-org-orgname-input"
-                  />
-                  <FormFeedback>{errors.name}</FormFeedback>
-                </FormGroup>
-                <FormGroup>
-                  <Input
-                    name="orgSlug"
-                    type="text"
-                    placeholder="Org URL ID"
-                    value={values.orgSlug}
-                    disabled={isSubmitting}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    invalid={errors.orgSlug && touched.orgSlug}
-                    data-cy="create-org-orgslug-input"
-                  />
-                  <FormFeedback>{errors.orgSlug}</FormFeedback>
-                </FormGroup>
-                <Button
-                  size="sm"
-                  type="submit"
-                  disabled={!(values.name && values.orgSlug) || isSubmitting}
-                >
-                  Create
-                </Button>
-              </Form>
-            )}
-          </Formik>
-        )
-        : (
-          <>
-            <CardTitle>
-              Create a new organization
-            </CardTitle>
-            <Button
-              onClick={() => setCreating(true)}
-              data-cy="create-org-plus-btn"
-            >
-              <FaPlus />
-            </Button>
-          </>
-        )}
+      <CardTitle>
+        { isLoggedIn
+          ? 'Create a new organization'
+          : 'You need to be logged in to create a new organization'}
+      </CardTitle>
+      {isLoggedIn && (
+        <Button
+          onClick={() => history.push(
+            `http${
+              process.env.NODE_ENV === 'production' ? 's' : ''
+            }://${
+              process.env.REACT_APP_DREAMS_URL
+            }/organizations/create?from=realities`,
+          )}
+          data-cy="create-org-plus-btn"
+        >
+          <FaPlus />
+        </Button>
+      )}
     </Card>
   );
 };
