@@ -2,6 +2,7 @@ import neo4j from 'neo4j-driver';
 import { runDBMigrations } from './dbMigrations';
 import { createConstraints } from '../graphql/connectors';
 import { runQueryAndGetRecords } from './cypherUtils';
+import { loadFixtures } from './fixtures';
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 
@@ -37,6 +38,10 @@ async function createDriver() {
   await runDBMigrations(driver);
 
   await createConstraints(driver);
+
+  if (process.env.NODE_ENV === 'test') {
+    await loadFixtures(driver);
+  }
 
   return driver;
 }

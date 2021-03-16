@@ -8,8 +8,7 @@ describe('Test basic functionality', () => {
   it('Create an org and a need', () => {
     const userEmail = 'realitiestester@example.com';
     const userPass = 'password123';
-    const orgName = randomString();
-    const orgSlug = randomString();
+    const orgName = 'test-org';
     const needName = randomString();
     const respName = randomString();
 
@@ -34,14 +33,8 @@ describe('Test basic functionality', () => {
       // waiting to get back to the homepage
       .contains('Pick an organization')
 
-      .get('[data-cy=create-org-plus-btn]')
-      .click()
-      .get('[data-cy=create-org-orgname-input]')
-      .type(orgName)
-      .get('[data-cy=create-org-orgslug-input]')
-      .type(orgSlug)
       .root()
-      .contains('Create')
+      .contains(orgName)
       .click()
 
       .get('[data-cy=list-header-create-need-btn]')
