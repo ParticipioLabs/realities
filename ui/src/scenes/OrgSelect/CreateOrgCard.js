@@ -3,11 +3,9 @@ import {
   Card, CardTitle, Button,
 } from 'reactstrap';
 import { FaPlus } from 'react-icons/fa';
-import { useHistory } from 'react-router-dom';
 import useAuth from 'services/useAuth';
 
 const CreateOrgCard = () => {
-  const history = useHistory();
   const { isLoggedIn } = useAuth();
 
   return (
@@ -19,7 +17,7 @@ const CreateOrgCard = () => {
       </CardTitle>
       {isLoggedIn && (
         <Button
-          onClick={() => history.push(
+          onClick={() => window.location.assign(
             `http${
               process.env.NODE_ENV === 'production' ? 's' : ''
             }://${
