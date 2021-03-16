@@ -186,17 +186,6 @@ const resolvers = {
         user, viewedOrg, driver, coreModels,
       }),
     ),
-    createOrg: combineResolvers(
-      isAuthenticated,
-      async (obj, { name, orgSlug }, { coreModels }) => {
-        const newOrg = new coreModels.Organization({
-          name,
-          subdomain: orgSlug,
-        });
-        const resOrg = await newOrg.save();
-        return orgFromCore(resOrg);
-      },
-    ),
     updateNeed: combineResolvers(
       isAuthenticated,
       async (obj, args, { driver, user, viewedOrg }) => {

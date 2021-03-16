@@ -6,7 +6,6 @@ import {
 import { Link } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
 import WrappedLoader from 'components/WrappedLoader';
-import useAuth from 'services/useAuth';
 import CreateOrgCard from './CreateOrgCard';
 
 const GET_ORGS = gql`
@@ -27,7 +26,6 @@ GridCol.propTypes = {
 
 const OrgSelect = () => {
   const { loading, error, data } = useQuery(GET_ORGS);
-  const { isLoggedIn } = useAuth();
 
   if (loading) return <WrappedLoader />;
   if (error) return `Error! ${error.message}`;
@@ -38,11 +36,9 @@ const OrgSelect = () => {
     <Container>
       Pick an organization
       <Row>
-        { isLoggedIn && (
         <GridCol>
           <CreateOrgCard />
         </GridCol>
-        )}
         {orgs.map((org) => (
           <GridCol key={org.orgId}>
             <Card body tag={Link} to={`/${org.orgSlug}`}>
