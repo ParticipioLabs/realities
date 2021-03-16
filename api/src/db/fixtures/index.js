@@ -7,7 +7,7 @@ export async function loadFixtures(driver) {
   const coreModels = await getCoreModels();
 
   const testOrg = new coreModels.Organization({
-    name: 'test org',
+    name: 'Test org',
     subdomain: 'test-org',
   });
   await testOrg.save();

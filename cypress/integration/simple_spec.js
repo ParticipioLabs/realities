@@ -8,7 +8,7 @@ describe('Test basic functionality', () => {
   it('Create an org and a need', () => {
     const userEmail = 'realitiestester@example.com';
     const userPass = 'password123';
-    const orgName = 'test-org';
+    const orgName = 'Test org';
     const needName = randomString();
     const respName = randomString();
 
